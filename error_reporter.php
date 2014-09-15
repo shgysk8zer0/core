@@ -145,7 +145,13 @@
 		 * @return boolean (false will tell PHP to handle the error by its own means)
 		 */
 
-		public function report($error_level = null, $error_message = null, $file = null, $line = null, $scope = null) {
+		public function report(
+			$error_level = null,
+			$error_message = null,
+			$file = null,
+			$line = null,
+			$scope = null
+		) {
 			switch($this->method) {
 				case 'database': {
 					return $this->database((int)$error_level, (string)$error_message, (string)$file, (int)$line, $scope);
