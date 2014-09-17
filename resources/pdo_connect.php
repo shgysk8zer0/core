@@ -66,16 +66,7 @@
 			$this->connected = false;
 
 			if(is_string($con)) {
-				if($con === 'mysql:dbname=chriszuber') {
-					echo '<pre><code>';
-					print_r(debug_backtrace());
-					echo '</code></pre>';
-					exit();
-				}
 				$this->connect = (object)parse_ini_file("{$con}.ini");
-				/*if(is_null($this->connect)) {
-					$this->connect = (object)parse_ini_file("connect.ini");
-				}*/
 			}
 			elseif(is_object($con)) {
 				$this->connect = $con;
