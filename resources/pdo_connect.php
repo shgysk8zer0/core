@@ -76,11 +76,13 @@
 			}
 
 			try{
+				if(isset($this->connect->server) and $this->connect->server === $_SERVER['SERVER_ADDR']) unset($this->connect->server);
+				if(isset($this->connect->port) and (!isset($this->connect->server) or $this->connect->server === 'localhost')) unset($this->connect->port);
 				if(!(isset($this->connect->user) and isset($this->connect->password))) throw new \Exception('Missing credentials to connect to database');
 				$connect_string = (isset($this->connect->type)) ? "{$this->connect->type}:" : 'mysql:';
 				$connect_string .= (isset($this->connect->database)) ?  "dbname={$this->connect->database}" : "dbname={$this->connect->user}";
 				if(isset($this->connect->server)) $connect_string .= ";host={$this->connect->server}";
-				if(isset($this->connect->port) and $this->connect->server !== 'localhost') $connect_string .= ";port={$this->connect->port}";
+				if(isset($this->connect->port) and isset($this->connect->server) and $this->connect->server !== 'localhost') $connect_string .= ";port={$this->connect->port}";
 				parent::__construct($connect_string, $this->connect->user, $this->connect->password);
 				$this->connected = true;
 			}
