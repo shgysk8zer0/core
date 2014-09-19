@@ -61,20 +61,24 @@
 		 */
 
 		public function __construct($name = null) {
-			if(session_status() !== PHP_SESSION_ACTIVE) {							#Do not create new session of one has already been created
-				$this->expires = 0;
-				$this->path = '/' . trim(str_replace("{$_SERVER['REQUEST_SCHEME']}://{$_SERVER['SERVER_NAME']}", '/', URL), '/');
-				$this->domain = $_SERVER['HTTP_HOST'];
-				$this->secure = https();
-				$this->httponly = true;
+			//Do not create new session of one has already been created
+			if(session_status() !== PHP_SESSION_ACTIVE) {
+				//Avoid trying to figure out cookie paramaters for CLI
+				if(PHP_SAPI != 'cli') {
+					$this->expires = 0;
+					$this->path = '/' . trim(str_replace("{$_SERVER['REQUEST_SCHEME']}://{$_SERVER['SERVER_NAME']}", '/', URL), '/');
+					$this->domain = $_SERVER['HTTP_HOST'];
+					$this->secure = https();
+					$this->httponly = true;
 
-				if(is_null($name)) {
-					$name = end(explode('/', trim(BASE, '/')));
-				}
-				$this->name = preg_replace('/[^\w]/', null, strtolower($name));
-				session_name($this->name);
-				if(!array_key_exists($this->name, $_COOKIE)) {
-					session_set_cookie_params($this->expires, $this->path, $this->domain, $this->secure, $this->httponly);
+					if(is_null($name)) {
+						$name = end(explode('/', trim(BASE, '/')));
+					}
+					$this->name = preg_replace('/[^\w]/', null, strtolower($name));
+					session_name($this->name);
+					if(!array_key_exists($this->name, $_COOKIE)) {
+						session_set_cookie_params($this->expires, $this->path, $this->domain, $this->secure, $this->httponly);
+					}
 				}
 				session_start();
 			}
