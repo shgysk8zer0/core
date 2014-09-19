@@ -66,6 +66,73 @@
 		}
 
 		/**
+		 * Static method to get array of all functions included in all
+		 * scripts in cron/ directory
+		 *
+		 * First, gets an array of all defined functions
+		 * Then, load all scripts in cron/ directory
+		 * Cron functions are the difference between the
+		 * functions available before loading these scripts
+		 * and the functions available after loading them.
+		 *
+		 * @return array    [Array of all function names in cron/ directory]
+		 * @todo Consider skipping this and just using function_exists()
+		 */
+
+		public static function functions() {
+			static $funcs = null;
+			if(is_null($funcs)) {
+				ob_start();
+				$funcs = get_defined_functions()['user'];
+
+				//Load all scripts from the cron/ directory
+				array_map(
+					function($file) {require_once($file);},
+					glob(BASE . DIRECTORY_SEPARATOR . 'cron' . DIRECTORY_SEPARATOR . '*.php')
+				);
+
+				//Get user defined functions again. The difference is newly added functions
+				$funcs = array_diff(
+					get_defined_functions()['user'],
+					$funcs
+				);
+				$funcs = array_unique($funcs);
+				sort($funcs);
+				ob_clean();
+			}
+			return $funcs;
+		}
+
+		/**
+		 * Sets private $funcs to return from functions()
+		 *
+		 * @return void
+		 */
+
+		private function get_functions() {
+			$this->funcs = static::functions();
+		}
+
+
+		/**
+		 * Fetch all cron jobs from the database and save as $this->jobs
+		 *
+		 * @return void
+		 */
+
+		private function all_jobs(\core\_pdo &$pdo) {
+			return $pdo->fetch_array("
+				SELECT
+					`function`,
+					`arguments`,
+					`frequency`,
+					`last_ran`
+				FROM `cron`
+				ORDER BY `priority`
+				ASC
+			");
+		}
+		/**
 		 * Checks whether $function is an available cron function or not
 		 *
 		 * @param  string  $function [Name of function]
@@ -88,54 +155,6 @@
 			return strtotime($job->frequency, strtotime($job->last_ran)) < $this->time;
 		}
 
-		/**
-		 * Fetch all cron jobs from the database and save as $this->jobs
-		 *
-		 * @return void
-		 */
-
-		private function all_jobs(\core\_pdo &$pdo) {
-			return $pdo->fetch_array("
-				SELECT
-					`function`,
-					`arguments`,
-					`frequency`,
-					`last_ran`
-				FROM `cron`
-				ORDER BY `priority`
-				ASC
-			");
-		}
-
-		/**
-		 * Sets $this->funcs as all functions included in all
-		 * scripts in cron/ directory
-		 *
-		 * First, gets an array of all defined functions
-		 * Then, load all scripts in cron/ directory
-		 * Cron functions are the difference between the
-		 * functions available before loading these scripts
-		 * and the functions available after loading them.
-		 *
-		 * @return void
-		 * @todo Consider skipping this and just using function_exists()
-		 */
-
-		private function get_functions() {
-			$this->funcs = get_defined_functions()['user'];
-
-			//Load all scripts from the cron/ directory
-			array_map(
-				function($file) {require_once($file);},
-				glob(BASE . DIRECTORY_SEPARATOR . 'cron' . DIRECTORY_SEPARATOR . '*.php')
-			);
-
-			//Get user defined functions again. The difference is newly added functions
-			$this->funcs = array_diff(
-				get_defined_functions()['user'],
-				$this->funcs
-			);
-		}
 
 		/**
 		 * Runs an array_filter on all jobs, which in turn
