@@ -27,26 +27,16 @@
 	 * You should have received a copy of the GNU General Public License
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 *
-	 * @uses _pdo
-	 * @param _pdo $pdo
+	 * @uses \core\_pdo
 	 * @param int $time
 	 * @param array $jobs
 	 * @param array $funcs
 	 */
 
-	//Exit with a 403 error if not executing via command line
-	/*if(PHP_SAPI != 'cli') {
-		http_response_code(403);
-		exit();
-	}*/
-
-	//Suppress all output
-	//ob_start();
-
 	namespace core\resources;
 
 	class cron {
-		private $pdo, $time, $jobs, $funcs;
+		private $time, $jobs, $funcs;
 
 		/**
 		 * The only public method in the class.
@@ -56,21 +46,21 @@
 		 * execute all scheduled tasks, and finally update the last_run
 		 * time for all tasks which were successful.
 		 *
-		 * @param mixed $con [Variable containing connection info]
+		 * @param mixed $con [Variable containing database connection info]
 		 */
 
 		public function __construct($con = 'connect') {
-			$this->pdo = \core\_pdo::load($con);
-			if($this->pdo->connected) {
+			$pdo = \core\_pdo::load($con);
+			if($pdo->connected) {
 				$this->time = time();
 				$this->jobs = array_filter(
-					$this->all_jobs(),
+					$this->all_jobs($pdo),
 					[$this, 'check_scheduled']
 				);
 				if(is_array($this->jobs) and !empty($this->jobs)) {
 					$this->get_functions();
 					$this->call_cron();
-					$this->update_last_ran();
+					$this->update_last_ran($pdo);
 				}
 			}
 		}
@@ -104,8 +94,8 @@
 		 * @return void
 		 */
 
-		private function all_jobs() {
-			return $this->pdo->fetch_array("
+		private function all_jobs(\core\_pdo &$pdo) {
+			return $pdo->fetch_array("
 				SELECT
 					`function`,
 					`arguments`,
@@ -192,8 +182,8 @@
 		 * @return void
 		 */
 
-		private function update_last_ran() {
-			$this->pdo->prepare("
+		private function update_last_ran(\core\_pdo &$pdo) {
+			$pdo->prepare("
 				UPDATE `cron`
 				SET `last_ran` = :time
 				WHERE `function` = :function
@@ -201,12 +191,11 @@
 
 			//Update all jobs which completed with new last_run
 			foreach($this->jobs as $job) {
-				$this->pdo->bind([
+				$pdo->bind([
 					'time' => date('Y-m-d H:i:s'),
 					'function' => $job->function
 				])->execute();
 			}
 		}
 	}
-	//ob_end_clean();
 ?>
