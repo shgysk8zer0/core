@@ -211,7 +211,7 @@
 			//Update all jobs which completed with new last_run
 			foreach($this->jobs as $job) {
 				$pdo->bind([
-					'time' => date('Y-m-d H:i:s'),
+					'time' => date('Y-m-d H:i:s', $this->time),
 					'function' => $job->function
 				])->execute();
 			}
