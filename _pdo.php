@@ -122,14 +122,10 @@
 		 */
 
 		public function get_results($n = null) {
-			$results = array();
-			foreach($this->prepared->fetchAll(\PDO::FETCH_CLASS) as $data) {
-				$results[] = (object)$data;
-			}
+			$results = $this->prepared->fetchAll(\PDO::FETCH_CLASS);
 			//If $n is set, return $results[$n] (row $n of results) Else return all
-			if(!count($results)) return false;
-			if(is_int($n)) return $results[$n];
-			else return $results;
+			if(empty($results)) return false;
+			return (is_int($n)) ? $results[$n] : $results;
 		}
 
 		/**
@@ -160,6 +156,7 @@
 		 * Return the results of a query as an associative array
 		 *
 		 * @param string $query
+		 * @param int $n
 		 * @return array
 		 */
 
@@ -261,7 +258,12 @@
 		 */
 
 		public function name_value($table = null) {
-			$data = $this->fetch_array("SELECT `name`, `value` FROM `{$this->escape($table)}`");
+			$data = $this->fetch_array("
+				SELECT
+					`name`,
+					`value`
+				FROM `{$this->escape($table)}`
+			");
 			$values = new \stdClass();
 			foreach($data as $row) {
 				$name = trim($row->name);
