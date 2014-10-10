@@ -76,7 +76,7 @@
 			}
 
 			try{
-				if(isset($this->connect->server) and $this->connect->server === $_SERVER['SERVER_ADDR']) unset($this->connect->server);
+				if(isset($this->connect->server and array_key_exists('SERVER_ADDR'), $_SERVER) and $this->connect->server === $_SERVER['SERVER_ADDR']) unset($this->connect->server);
 				if(isset($this->connect->port) and (!isset($this->connect->server) or $this->connect->server === 'localhost')) unset($this->connect->port);
 				if(!(isset($this->connect->user) and isset($this->connect->password))) throw new \Exception('Missing credentials to connect to database');
 				$connect_string = (isset($this->connect->type)) ? "{$this->connect->type}:" : 'mysql:';
