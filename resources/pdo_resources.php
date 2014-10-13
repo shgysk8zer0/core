@@ -30,12 +30,11 @@
 	abstract class pdo_resources implements magic_methods {
 		public $connected;
 		protected $pdo, $data = [];
-		abstract public static function load($con);
 
 		/**
 		 * @method __construct
 		 * @desc
-		 * Gets database connection info from /connect.ini (using ini::load)
+		 * Gets database connection info from connect.ini (using ini::load)
 		 * The default ini file to use is connect, but can be passed another
 		 * in the $con argument.
 		 *
