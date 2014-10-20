@@ -89,10 +89,10 @@
 					)
 				")->bind([
 					'user' => trim($source['user']),
-					'password' => password_hash(trim((string)$source['password']), PASSWORD_BCRYPT, [
-						'cost' => 11,
-						'salt' => mcrypt_create_iv(50, MCRYPT_DEV_URANDOM)
-					])
+					'password' => password_hash(
+						trim($source['password']),
+						PASSWORD_DEFAULT
+					)
 				])->execute();
 			}
 			else {
@@ -120,11 +120,20 @@
 				")->bind([
 					'user' => $source['user']
 				])->execute()->get_results(0);
+
 				if(password_verify(
 					trim($source['password']),
 					$results->password
 				) and $results->role !== 'new') {
-					$this->setUser($results->user)->setPassword($results->password)->setRole($results->role)->setLogged_In(true);
+					$this->setUser(
+						$results->user
+					)->setPassword(
+						$results->password
+					)->setRole(
+						$results->role
+					)->setLogged_In(
+						true
+					);
 				}
 			}
 			return ($this->data['logged-in']);
@@ -138,7 +147,15 @@
 		 */
 
 		public function logout() {
-			$this->setUser(null)->setPassword(null)->setRole(null)->setLogged_In(false);
+			$this->setUser(
+				null
+			)->setPassword(
+				null
+			)->setRole(
+				null
+			)->setLogged_In(
+				false
+			);
 		}
 
 		/**
