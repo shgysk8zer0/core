@@ -57,7 +57,9 @@
 		public function __construct($expires = 0, $path = null, $domain = null, $secure = null, $httponly = null){
 			$this->expires = (int) (preg_match('/^\d+$/', $expires)) ? $expires : $this->data = date_timestamp_get(date_create($expires));
 			$this->path = (isset($path)) ? $path :'/' . trim(str_replace("{$_SERVER['REQUEST_SCHEME']}://{$_SERVER['SERVER_NAME']}", '/', URL), '/');
-			$this->domain = (isset($domain)) ? $domain : $_SERVER['HTTP_HOST'];
+			if(isset($domain)) $this->domain = $domain;
+			elseif(array_key_exists('HTTP_HOST', $_SERVER)) $this->domain = $_SERVER['HTTP_HOST'];
+			else $this->domain = $_SERVER['SERVER_NAME'];
 			$this->secure = (isset($secure)) ? $secure : false;
 			$this->httponly = (isset($httponly)) ? $httponly : false;
 		}
