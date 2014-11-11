@@ -18,12 +18,12 @@
 	 * @package core
 	 */
 
-	namespace \core;
-	class xml_api_call extends \core\resources\xml_document {
-		private $headers =[],
-				$url,
+	namespace core;
+	use core\resources as resources;
+	class xml_api_call extends resources\XML_Document {
+		private $url,
+				$headers = [],
 				$urn,
-				$charset,
 				$verbose,
 				$body;
 
@@ -36,15 +36,40 @@
 		 *
 		 * @param  boolean $verbose     [CURLOPT_VERBOSE]
 		 * @param  string  $urn         [Namespace]
+		 * @param  string  $url         [URL for cURL]
 		 * @param  string  $charset     [character encoding]
 		 */
 
 		public function __construct(
-			$verbose = false,
-			$charset = null
+			$url,
+			array $headers = null,
+			$root_tag = 'root',
+			$urn = null,
+			$charset = null,
+			$verbose = false
 		) {
-			$this->charset = (is_null($charset)) ? ini_get("default_charset") : $charset;
-			parent::__construct('1.0', $this->charset);
+			parent::__construct($charset);
+			if(isset($headers)) {
+				$this->set_headers($headers);
+			}
+			$this->url = $url;
+			$this->urn = $urn;
+			$this->verbose = $verbose;
+			if(is_null($urn)) {
+				$this->body = $this->appendChild(
+					$this->createElement(
+						preg_replace('/\W/', null, $root_tag)
+					)
+				);
+			}
+			else {
+				$this->body = $this->appendChild(
+					$this->createElementNS(
+						$this->urn,
+						preg_replace('/\W/', null, $root_tag)
+					)
+				);
+			}
 		}
 
 		/**
@@ -75,15 +100,19 @@
 			return $this;
 		}
 
+		public function appendChild(\DOMElement $node) {
+			$this
+		}
+
 		/**
 		 * Append $parent with an element ($tag) with content ($value)
 		 *
-		 * @param DOMElement $parent
+		 * @param \DOMElement $parent
 		 * @param  mixed $value [node content]
 		 * @param  string $tag  [node name]
 		 */
 
-		private function set(DOMNode &$parent, $value, $tag = null) {
+		private function set(\DOMElement &$parent, $value, $tag = null) {
 			if(is_int($value)) $value = (string)$value;
 			elseif(is_object($value)) $value = get_object_vars($value);
 
@@ -132,11 +161,11 @@
 		/**
 		 * Private method for setting attributes on $node
 		 *
-		 * @param  DOMNode       $node       [Node to be setting attributes for]
+		 * @param  \DOMElement       $node       [Node to be setting attributes for]
 		 * @param  array         $attributes [key => value array of attributes]
 		 */
 
-		private function setAttributes(DOMNode &$node, array $attributes) {
+		private function setAttributes(\DOMElement &$node, array $attributes) {
 			foreach($attributes as $prop => $value) {
 				$attr = $this->createAttribute($prop);
 				$attr->value = $value;
@@ -151,7 +180,7 @@
 
 		public function set_headers(array $headers) {
 			foreach($headers as $key => $value) {
-				$this->headers[] => "{$key}: {$value}";
+				$this->headers[] = "{$key}: {$value}";
 			}
 			return $this;
 		}
