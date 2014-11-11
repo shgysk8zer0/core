@@ -1,7 +1,13 @@
 <?php
 	/**
+	 * Wrapper for DOMElement
+	 *
+	 * Apply magic methods for setting/getting attributes to make them easier
+	 * to work with
+	 *
 	 * @author Chris Zuber
 	 * @package core
+	 * @version 2014-11-11
 	 * @link http://php.net/manual/en/class.domelement.php
 	 * @copyright 2014, Chris Zuber
 	 * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
@@ -23,39 +29,120 @@
 	use core\resources as resources;
 
 	class XML_Node extends \DOMElement {
+		/**
+		 * Class constructor | Creates a new DOMElement
+		 *
+		 * @param string $name         [TagName for new element]
+		 * @param string $value        [nodeValue/textContent for new element]
+		 * @param string $namespaceURI [Namespace for new element]
+		 */
+
 		public function __construct($name, $value = null, $namespaceURI = null) {
 			parent::__construct($name, $value, $namespaceURI);
 		}
+
+		/**
+		 * Set an attribute using magic setter method
+		 *
+		 * @param string $attribute [Property/attribute name]
+		 * @param string $value     [Value to set the attribute to]
+		 * @return void
+		 */
 
 		public function __set($attribute, $value) {
 			$this->setAttribute($attribute, $value);
 		}
 
+		/**
+		 * Get a node's attribute using magic methods
+		 *
+		 * @param  string $attribute [Property/attribute name]
+		 * @return string            [Value to set the attribute to]
+		 */
+
 		public function __get($attribute) {
 			return $this->getAttribute($attribute);
 		}
+
+		/**
+		 * Set an attribute to a comma separated list of values
+		 *
+		 * @param  string $key  [Property/attribute name]
+		 * @param  array  $args [array of values to be setting]
+		 * @return XML_Node
+		 */
 
 		public function __call($key, array $args) {
 			$this->setAttribute($key, join(',', $args));
 			return $this;
 		}
 
+		/**
+		 * Check whether or not an XML_Node has an attribute
+		 *
+		 * @param  string  $attribute [Property/attribute name]
+		 * @return boolean            [Whether or not the attribute is set]
+		 */
+
 		public function __isset($attribute) {
 			return $this->hasAttribute($attribute);
 		}
+
+		/**
+		 * Remove an attribute from an XML_Node
+		 *
+		 * @param string $attribute [Property/attribute name]
+		 */
 
 		public function __unset($attribute) {
 			return $this->removeAttribute($attribute);
 		}
 
+		/**
+		 * Magic method to set nodeValue/textContent
+		 *
+		 * Method is called when class is called as a fucntion
+		 * @param  string $value [nodeValue/textContent]
+		 * @return XML_Node
+		 */
+
+		public function __invoke($value) {
+			return $this->value($value);
+		}
+
+		/**
+		 * Set the nodeValue/textContent of an XML_Node
+		 *
+		 * @param  string $value [nodeValue/textContent]
+		 * @return XML_Node
+		 */
+
+
 		public function value($value) {
 			$this->nodeValue = $this->encode($value);
+			return $this;
 		}
+
+		/**
+		 * XML_Node class' appencChild method
+		 *
+		 * DOMElement's appendChild method returns the appended node, breaking
+		 * possible chaining of methods. Return XML_Node instead to maintain it.
+		 *
+		 * @param  XML_Node $node [Node to be appended]
+		 * @return XML_Node         [Parent node/Self]
+		 */
 
 		public function append(XML_Node $node) {
 			$this->appendChild($node);
 			return $this;
 		}
+
+		/**
+		 * Make a string safe for use in XML
+		 * @param  string $str [unencoded string]
+		 * @return string      [encoded string]
+		 */
 
 		private function encode($str) {
 			return htmlentities((string)$str, ENT_XML1, $this->charset);

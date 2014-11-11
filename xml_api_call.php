@@ -1,5 +1,8 @@
 <?php
 	/**
+	 * @author Chris Zuber
+	 * @package core
+	 * @version 2014-11-11
 	 * @copyright 2014, Chris Zuber
 	 * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
 	 * This program is free software; you can redistribute it and/or
@@ -14,8 +17,6 @@
 	 *
 	 * You should have received a copy of the GNU General Public License
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-	 * @version 2014-11-10
-	 * @package core
 	 */
 
 	namespace core;
@@ -83,6 +84,25 @@
 		public function __call($name, array $arguments) {
 			foreach($arguments as $value) {
 				$this->set($this->body, $value, $name);
+			}
+			return $this;
+		}
+
+		/**
+		 * Append a child to a parent node
+		 * @param  DOMElement $node   [node to append]
+		 * @param  string     $parent [tagName of parent element]
+		 * @param  integer    $n      [for multiple instances of $parent, which one?]
+		 * @return XML_API_Call
+		 */
+
+		public function append(\DOMElement $node, $parent = null, $n = 0) {
+			if(is_null($parent)) {
+				$this->body->append($node);
+			}
+
+			else {
+				$this->body->getElementsByTagName($parent)->item($n)->appendChild($node);
 			}
 			return $this;
 		}

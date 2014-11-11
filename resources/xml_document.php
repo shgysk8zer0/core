@@ -2,6 +2,7 @@
 	/**
 	 * @author Chris Zuber
 	 * @package core
+	 * @version 2014-11-11
 	 * @link http://php.net/manual/en/class.domdocument.php
 	 * @copyright 2014, Chris Zuber
 	 * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
@@ -21,7 +22,6 @@
 
 	namespace core\resources;
 	class XML_Document extends \DOMDocument {
-
 		protected $charset;
 
 		public function __construct($charset = null) {
