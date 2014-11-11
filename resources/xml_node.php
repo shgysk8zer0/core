@@ -2,7 +2,7 @@
 	/**
 	 * @author Chris Zuber
 	 * @package core
-	 * @link http://php.net/manual/en/class.domdocument.php
+	 * @link http://php.net/manual/en/class.domelement.php
 	 * @copyright 2014, Chris Zuber
 	 * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
 	 * This program is free software; you can redistribute it and/or
@@ -22,74 +22,43 @@
 	namespace core\resources;
 	use core\resources as resources;
 
-	class XML_Node extends resources\XML_Document {
-		protected $tag, $attrs = [], $node = null;
-		public $content = null;
-
-		public function __construct(
-			$tag,
-			array $attributes = null,
-			$urn = null,
-			$content = null,
-			$charset = null
-		) {
-			$this->tag = preg_replace('/\W/', null, $tag);
-			$this->attrs = $attributes;
-			$this->content = $content;
-			parent::__construct($charset);
+	class XML_Node extends \DOMElement {
+		public function __construct($name, $value = null, $namespaceURI = null) {
+			parent::__construct($name, $value, $namespaceURI);
 		}
 
-		public function __set($prop, $value) {
-			$this->set($prop, $value);
+		public function __set($attribute, $value) {
+			$this->setAttribute($attribute, $value);
 		}
 
-		public function __get($prop) {
-			if(array_key_exists($prop, $this->attrs)) {
-				return $this->attrs[$prop];
-			}
-
-			else {
-				return null;
-			}
+		public function __get($attribute) {
+			return $this->getAttribute($attribute);
 		}
 
-		public function __call($prop, array $args) {
-			$this->set($prop, joni(',', $args));
+		public function __call($key, array $args) {
+			$this->setAttribute($key, join(',', $args));
 			return $this;
 		}
 
-		private function set($prop, $value) {
-			$this->attrs[$prop] = $value;
-			if(isset($this->node)) {
-				$this->set_attribute($this->node, $prop, $value);
-			}
+		public function __isset($attribute) {
+			return $this->hasAttribute($attribute);
 		}
 
-		public function append_to(XML_Node &$parent) {
-			if(is_null($this->urn)) {
-				$this->node = $parent->appendChild(
-					$this->createElement(
-					$this->tag,
-						$this->content
-					)
-				);
-			}
+		public function __unset($attribute) {
+			return $this->removeAttribute($attribute);
+		}
 
-			else {
-				$this->node = $parent->appendChild(
-					$this->createElementNS(
-						$this->urn,
-						$this->tag,
-						$this->content
-					)
-				);
-			}
+		public function value($value) {
+			$this->nodeValue = $this->encode($value);
+		}
 
-			if(is_array($this->attributes)) {
-				$this->set_attributes($this->node, $this->attrs);
-			}
-
+		public function append(XML_Node $node) {
+			$this->appendChild($node);
 			return $this;
+		}
+
+		private function encode($str) {
+			return htmlentities((string)$str, ENT_XML1, $this->charset);
 		}
 	}
 ?>
