@@ -55,21 +55,8 @@
 			$this->url = $url;
 			$this->urn = $urn;
 			$this->verbose = $verbose;
-			if(is_null($urn)) {
-				$this->body = $this->appendChild(
-					$this->createElement(
-						preg_replace('/\W/', null, $root_tag)
-					)
-				);
-			}
-			else {
-				$this->body = $this->appendChild(
-					$this->createElementNS(
-						$this->urn,
-						preg_replace('/\W/', null, $root_tag)
-					)
-				);
-			}
+			$this->body = new resources\XML_Node($root_tag, null, $urn);
+			$this->appendChild($this->body);
 		}
 
 		/**
@@ -100,10 +87,6 @@
 			return $this;
 		}
 
-		public function appendChild(\DOMElement $node) {
-			$this
-		}
-
 		/**
 		 * Append $parent with an element ($tag) with content ($value)
 		 *
@@ -112,14 +95,15 @@
 		 * @param  string $tag  [node name]
 		 */
 
-		private function set(\DOMElement &$parent, $value, $tag = null) {
+		private function set(resources\XML_Node &$parent, $value, $tag = null) {
 			if(is_int($value)) $value = (string)$value;
 			elseif(is_object($value)) $value = get_object_vars($value);
 
 			if(is_array($value)) {
 				if(is_string($tag)) {
 					if(is_assoc($value)) {
-						$node = $this->createElement($tag);
+						$node = $this->create($tag);
+						$parent->appendChild($node);
 					}
 					foreach($value as $key => $val) {
 						if(is_string($key)) {
@@ -128,9 +112,6 @@
 						else {
 							$this->set($parent, $val, $tag);
 						}
-					}
-					if(isset($node)) {
-						$parent->appendChild($node);
 					}
 				}
 				else {
@@ -147,7 +128,7 @@
 			elseif(is_string($value)) {
 				if(is_string($tag)) {
 					$parent->appendChild(
-						$this->createElement($tag, $value)
+						$this->create($tag, $value)
 					);
 				}
 				else {
@@ -165,12 +146,16 @@
 		 * @param  array         $attributes [key => value array of attributes]
 		 */
 
-		private function setAttributes(\DOMElement &$node, array $attributes) {
+		private function setAttributes(resources\XML_Node &$node, array $attributes) {
 			foreach($attributes as $prop => $value) {
 				$attr = $this->createAttribute($prop);
 				$attr->value = $value;
 				$node->appendChild($attr);
 			}
+		}
+
+		public function create($name, $value = null, $namespaceURI = null) {
+			return new resources\XML_Node($name, $value, $namespaceURI);
 		}
 
 		/**
