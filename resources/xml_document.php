@@ -37,6 +37,7 @@
 				$this->formatOutput = true;
 				$this->save($filename);
 				$this->formatOutput = false;
+				return $this;
 			}
 		}
 
