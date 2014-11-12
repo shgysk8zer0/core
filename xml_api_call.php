@@ -21,7 +21,7 @@
 
 	namespace core;
 	use core\resources as resources;
-	class xml_api_call extends resources\XML_Document {
+	class XML_API_Call extends resources\XML_Document {
 		private $url,
 				$headers = [],
 				$urn,
