@@ -247,10 +247,24 @@
 		 */
 
 		public function set_headers(array $headers) {
-			foreach($headers as $key => $value) {
-				$this->headers[] = "{$key}: {$value}";
-			}
+			$this->headers = array_merge($this->headers, $headers);
 			return $this;
+		}
+
+		/**
+		 * Returns $key => $value array of headers to
+		 * an $index => $key: $value array
+		 *
+		 * @return array [Converted headers array]
+		 */
+
+		private function get_headers() {
+			$headers = array_merge($this->headers, [
+				'Content-Length' => $this->length()
+			]);
+			return array_map(function($key, $value) {
+				return "{$key}: {$value}";
+			}, array_keys($headers), array_values($headers));
 		}
 
 		/**
@@ -263,7 +277,7 @@
 		public function send() {
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $this->url);
-			curl_setopt($ch, CURLOPT_HTTPHEADER, $this->headers);
+			curl_setopt($ch, CURLOPT_HTTPHEADER, $this->get_headers());
 			curl_setopt($ch, CURLOPT_POST, TRUE);
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $this->saveXML());
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
