@@ -34,9 +34,14 @@
 				return $this->saveXML();
 			}
 			else {
-				$this->formatOutput = true;
-				$this->save($filename);
-				$this->formatOutput = false;
+				if($this->formatOutput) {
+					$this->save($filename);
+				}
+				else {
+					$this->formatOutput = true;
+					$this->save($filename);
+					$this->formatOutput = false;
+				}
 				return $this;
 			}
 		}
