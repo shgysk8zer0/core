@@ -58,6 +58,7 @@
 			$this->verbose = $verbose;
 			$this->body = new resources\XML_Node($root_tag, null, $urn);
 			$this->appendChild($this->body);
+			return $this;
 		}
 
 		/**
@@ -82,8 +83,33 @@
 		 */
 
 		public function __call($name, array $arguments) {
-			foreach($arguments as $value) {
-				$this->set($this->body, $value, $name);
+			$attributes = [];
+			$namespace = null;
+			$parent = $this->body;
+			switch(count($arguments)) {
+				case 1: {
+					$content = $arguments[0];
+					$node = new \core\resources\XML_Node($name, $content);
+					$this->body->append($node);
+				} break;
+
+				case 2: {
+					list($content, $attributes) = $arguments;
+					$node = new resources\XML_Node($name, $content);
+					$this->body->append($node);
+					foreach($attributes as $prop => $val) {
+						$node->setAttribute($prop, $val);
+					}
+				} break;
+
+				case 3: {
+					list($content, $attributes, $namespace) = $arguments;
+					$node = new resources\XML_Node($name, $content, $namespace);
+					$this->body->append($node);
+					foreach($attributes as $prop => $val) {
+						$node->setAttribute($prop, $val);
+					}
+				} break;
 			}
 			return $this;
 		}
