@@ -37,8 +37,21 @@
 		 * @param string $namespaceURI [Namespace for new element]
 		 */
 
-		public function __construct($name, $value = null, $namespaceURI = null) {
-			parent::__construct($name, $value, $namespaceURI);
+		public function __construct($name, $content = null, $namespaceURI = null) {
+			if(is_string($content) or is_numeric($content)) {
+				parent::__construct($name, "{$content}", $namespaceURI);
+			}
+			elseif(isset($content) and is_object($content) and in_array(get_class($content), [
+				'DOMElement',
+				'DOMNode',
+				'core\resources\XML_Node'
+			])) {
+				parent::__construct($name, null, $namespaceURI);
+				$this->append($content);
+			}
+			else {
+				parent::__construct($name, null, $namespaceURI);
+			}
 		}
 
 		/**
@@ -118,8 +131,21 @@
 		 */
 
 
-		public function value($value) {
-			$this->nodeValue = $this->encode($value);
+		public function value($content) {
+			if(is_string($content)) {
+				$this->nodeValue = $this->encode($content);
+			}
+			elseif(in_array(get_class($content), [
+				'DOMElement',
+				'DOMNode',
+				'core\resources\XML_Node',
+				'core\XML_API_Call'
+			])) {
+				$node = new self($name);
+				$this->body->append($node);
+				$node->appendChild($content);
+			}
+
 			return $this;
 		}
 
