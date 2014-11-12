@@ -174,6 +174,19 @@
 			}
 		}
 
+		/**
+		 * Create a new XML_Node
+		 *
+		 * DOMDocument::createElement would return a DOMElement, which lacks
+		 * magic methods. Use this method to use my extended DOMElement class
+		 * instead.
+		 *
+		 * @param  string $name         [tagName for new XML_Node]
+		 * @param  string $value        [nodeValue/textContent for created XML_Node]
+		 * @param  string $namespaceURI [Namespace URI for created node]
+		 * @return XML_Node
+		 */
+
 		public function create($name, $value = null, $namespaceURI = null) {
 			return new resources\XML_Node($name, $value, $namespaceURI);
 		}
@@ -181,6 +194,7 @@
 		/**
 		 * Sets headers for API call
 		 * @param array $headers [$key => $value set of headers]
+		 * @return XML_API_Call
 		 */
 
 		public function set_headers(array $headers) {
