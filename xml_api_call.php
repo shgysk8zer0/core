@@ -89,8 +89,20 @@
 			switch(count($arguments)) {
 				case 1: {
 					$content = $arguments[0];
-					$node = new \core\resources\XML_Node($name, $content);
-					$this->body->append($node);
+					if(is_string($content)) {
+						$node = new \core\resources\XML_Node($name, $content);
+						$this->body->append($node);
+					}
+					elseif(in_array(get_class($content), [
+						'DOMElement',
+						'DOMNode',
+						'core\resources\XML_Node',
+						'core\XML_API_Call'
+					])) {
+						$node = new \core\resources\XML_Node($name);
+						$this->body->append($node);
+						$node->appendChild($content);
+					}
 				} break;
 
 				case 2: {
@@ -131,6 +143,17 @@
 				$this->body->getElementsByTagName($parent)->item($n)->appendChild($node);
 			}
 			return $this;
+		}
+
+		/**
+		 * Get length (Content-Length) of XML content
+		 *
+		 * @param void
+		 * @return integer [Cotnent-Length]
+		 */
+
+		public function length() {
+			return strlen($this->saveXML());
 		}
 
 		/**
