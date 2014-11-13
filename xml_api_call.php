@@ -92,8 +92,8 @@
 			elseif(is_array($content)) {
 				$node = new resources\XML_Node($name, null, $namespace);
 				(isset($parent)) ? $parent->append($node) : $this->body->append($node);
-				foreach($content as $tag => $content) {
-					$node->appendChild(new \DOMElement($tag, $content));
+				foreach($content as $tag => $val) {
+					$this->set($node, $val, $tag);
 				}
 			}
 			elseif(is_object($content) and in_array(get_class($content), [
@@ -180,15 +180,15 @@
 					}
 				}
 			}
-			elseif(is_string($value)) {
+			else {
 				if(is_string($tag)) {
 					$parent->appendChild(
-						$this->create($tag, $value)
+						$this->create($tag, "{$value}")
 					);
 				}
 				else {
 					$parent->appendChild(
-						$this->createTextNode($value)
+						$this->createTextNode("{$value}")
 					);
 				}
 			}
