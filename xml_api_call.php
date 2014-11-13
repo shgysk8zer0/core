@@ -83,45 +83,31 @@
 		 */
 
 		public function __call($name, array $arguments) {
-			$attributes = [];
-			$namespace = null;
-			$parent = $this->body;
-			switch(count($arguments)) {
-				case 1: {
-					$content = $arguments[0];
-					if(is_string($content)) {
-						$node = new \core\resources\XML_Node($name, $content);
-						$this->body->append($node);
-					}
-					elseif(in_array(get_class($content), [
-						'DOMElement',
-						'DOMNode',
-						'core\resources\XML_Node',
-						'core\XML_API_Call'
-					])) {
-						$node = new \core\resources\XML_Node($name);
-						$this->body->append($node);
-						$node->appendChild($content);
-					}
-				} break;
-
-				case 2: {
-					list($content, $attributes) = $arguments;
-					$node = new resources\XML_Node($name, $content);
-					$this->body->append($node);
-					foreach($attributes as $prop => $val) {
-						$node->setAttribute($prop, $val);
-					}
-				} break;
-
-				case 3: {
-					list($content, $attributes, $namespace) = $arguments;
-					$node = new resources\XML_Node($name, $content, $namespace);
-					$this->body->append($node);
-					foreach($attributes as $prop => $val) {
-						$node->setAttribute($prop, $val);
-					}
-				} break;
+			list($content, $attributes, $namespace) = array_pad($arguments, 4, null);
+			if(is_null($attributes)) $attributes = [];
+			if(is_string($content) or is_numeric($content)) {
+				$node = new resources\XML_Node($name, "{$content}", $namespace);
+				(isset($parent)) ? $parent->append($node) : $this->body->append($node);
+			}
+			elseif(is_array($content)) {
+				$node = new resources\XML_Node($name, null, $namespace);
+				(isset($parent)) ? $parent->append($node) : $this->body->append($node);
+				foreach($content as $tag => $content) {
+					$node->appendChild(new \DOMElement($tag, $content));
+				}
+			}
+			elseif(is_object($content) and in_array(get_class($content), [
+				'DOMElement',
+				'DOMNode',
+				'core\resources\XML_Node',
+				'core\XML_API_Call'
+			])) {
+				$node = new resources\XML_Node($name, null, $namespace);
+				(isset($parent)) ? $parent->append($node) : $this->body->append($node);
+				$node->appendChild($content);
+			}
+			foreach($attributes as $prop => $value) {
+				$node->setAttribute($prop, $value);
 			}
 			return $this;
 		}
