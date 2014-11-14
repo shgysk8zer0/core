@@ -256,11 +256,11 @@
 		/**
 		 * Create cURL request and return response object
 		 *
-		 * @param void
+		 * @param string $output [Destination filename for requests and responses]
 		 * @return SimpleXMLElement
 		 */
 
-		public function send() {
+		public function send($output = null) {
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $this->url);
 			curl_setopt($ch, CURLOPT_HTTPHEADER, $this->get_headers());
@@ -269,9 +269,13 @@
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 			if($this->verbose) curl_setopt($ch, CURLOPT_VERBOSE, TRUE);
 			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-			$ch_result = curl_exec($ch);
+			$ch_result = simplexml_load_string(curl_exec($ch));
 			curl_close($ch);
-			return simplexml_load_string($ch_result);
+			if(isset($output) and is_string($output)) {
+				$this->out($output . '_' . date('Y-m-d\TH:i') . '_request.xml');
+				$ch_result->asXML($output . '_' . date('Y-m-d\TH:i') . '_response.xml');
+			}
+			return $ch_result;
 		}
 	}
 ?>
