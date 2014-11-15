@@ -198,8 +198,10 @@
 					}
 				}
 				else {
+					$value = (string)$value;
+					$this->trim($value);
 					$parent->appendChild(
-						$this->createTextNode($this->trim("{$value}"))
+						$this->createTextNode($value)
 					);
 				}
 			}
