@@ -60,8 +60,25 @@
 			return $node;
 		}
 
-		private function encode($str) {
+		public function encode($str) {
 			return htmlentities($str, ENT_XML1, $this->charset);
+		}
+
+		public function trim(&$content) {
+			if(is_string($content) or is_numeric($content)) {
+				$content = str_replace(["\r", "\r\n", "\n", "\t"], null, trim("{$content}"));
+				$content = $this->encode($content);
+			}
+			elseif(is_array($content)) {
+				array_walk($content, [$this, 'trim']);
+			}
+			elseif(is_object($content)) {
+				foreach(get_object_vars($content) as $key => $value) {
+					$content->$key = $this->trim($value);
+				}
+			}
+
+			return $content;
 		}
 
 	}
