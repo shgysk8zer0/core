@@ -155,17 +155,24 @@
 
 		private function set(resources\XML_Node &$parent, $value, $tag = null) {
 			if(is_int($value)) $value = (string)$value;
+			elseif(is_object($value) and get_class($value) === 'DOMAttr') {
+				$parent->appendChild($value);
+				return $this;
+			}
 			elseif(is_object($value)) $value = get_object_vars($value);
 
-			if(is_array($value)) {
+			if(is_array($value) and !empty($value)) {
 				if(is_string($tag)) {
-					if(is_assoc($value)) {
+					if(is_assoc($value) and !(is_object(current($value)) and get_class(current($value)) === 'DOMAttr')) {
 						$node = $this->create($tag);
 						$parent->appendChild($node);
 					}
-					foreach($value as $key => $val) {
+					else {
+						$node = null;
+					}
+					array_map(function($val, $key) use (&$node, &$parent, $tag) {
 						if(is_object($val) and get_class($val) === 'DOMAttr') {
-							$parent->appendChild($val);
+							(isset($node)) ? $node->appendChild($val) : $parent->appendChild($val);
 						}
 						elseif(is_string($key)) {
 							$this->set($node, $val, $key);
@@ -173,10 +180,10 @@
 						else {
 							$this->set($parent, $val, $tag);
 						}
-					}
+					}, array_values($value), array_keys($value));
 				}
 				else {
-					foreach($value as $key => $val) {
+					array_map(function($val, $key) use (&$parent) {
 						if(is_object($val) and get_class($val) === 'DOMAttr') {
 							$parent->appendChild($val);
 						}
@@ -186,7 +193,7 @@
 						else {
 							$this->set($parent, $val);
 						}
-					}
+					}, array_values($value), array_keys($value));
 				}
 			}
 			else {
@@ -195,6 +202,9 @@
 						$parent->appendChild(
 							$this->create($tag, "{$value}")
 						);
+					}
+					if(is_object($value) and get_class($value) === 'DOMAttr') {
+						$parent->appendChild($value);
 					}
 				}
 				else {
