@@ -22,7 +22,7 @@
 	namespace core;
 	use core\resources as resources;
 	class XML_API_Call extends resources\XML_Document {
-		private $url,
+		protected $url,
 				$headers = [],
 				$urn,
 				$verbose,
@@ -86,7 +86,8 @@
 			list($content, $attributes, $namespace) = array_pad($arguments, 4, null);
 			if(is_null($attributes)) $attributes = [];
 			if(is_string($content) or is_numeric($content)) {
-				$node = new resources\XML_Node($name, "{$content}", $namespace);
+				$this->trim($content);
+				$node = new resources\XML_Node($name, $content, $namespace);
 				(isset($parent)) ? $parent->append($node) : $this->body->append($node);
 			}
 			elseif(is_array($content)) {
@@ -188,7 +189,7 @@
 				}
 				else {
 					$parent->appendChild(
-						$this->createTextNode("{$value}")
+						$this->createTextNode($this->trim("{$value}"))
 					);
 				}
 			}
