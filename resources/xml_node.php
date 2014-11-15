@@ -133,7 +133,7 @@
 
 		public function value($content) {
 			if(is_string($content)) {
-				$this->nodeValue = $this->encode($content);
+				$this->nodeValue = $this->trim($content);
 			}
 			elseif(in_array(get_class($content), [
 				'DOMElement',
@@ -173,5 +173,23 @@
 		private function encode($str) {
 			return htmlentities((string)$str, ENT_XML1, $this->charset);
 		}
+
+		protected function trim(&$content) {
+			if(is_string($content) or is_numeric($content)) {
+				$content = str_replace(["\r", "\r\n", "\n", "\t"], null, trim("{$content}"));
+				$content = $this->encode($str);
+			}
+			elseif(is_array($content)) {
+				array_walk($content, [$this, 'trim']);
+			}
+			elseif(is_object($content)) {
+				foreach(get_object_vars($content) as $key => $value) {
+					$content->$key = $this->trim($value);
+				}
+			}
+
+			return $content;
+		}
+
 	}
 ?>
