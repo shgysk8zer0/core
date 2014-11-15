@@ -90,6 +90,7 @@
 				$node = new resources\XML_Node($name, $content, $namespace);
 				(isset($parent)) ? $parent->append($node) : $this->body->append($node);
 			}
+
 			elseif(is_array($content)) {
 				$node = new resources\XML_Node($name, null, $namespace);
 				(isset($parent)) ? $parent->append($node) : $this->body->append($node);
@@ -100,6 +101,7 @@
 			elseif(is_object($content) and in_array(get_class($content), [
 				'DOMElement',
 				'DOMNode',
+				'DOMAttr',
 				'core\resources\XML_Node',
 				'core\XML_API_Call'
 			])) {
@@ -162,7 +164,10 @@
 						$parent->appendChild($node);
 					}
 					foreach($value as $key => $val) {
-						if(is_string($key)) {
+						if(is_object($val) and get_class($val) === 'DOMAttr') {
+							$parent->appendChild($val);
+						}
+						elseif(is_string($key)) {
 							$this->set($node, $val, $key);
 						}
 						else {
@@ -172,7 +177,10 @@
 				}
 				else {
 					foreach($value as $key => $val) {
-						if(is_string($key)) {
+						if(is_object($val) and get_class($val) === 'DOMAttr') {
+							$parent->appendChild($val);
+						}
+						elseif(is_string($key)) {
 							$this->set($parent, $val, $key);
 						}
 						else {
@@ -183,9 +191,11 @@
 			}
 			else {
 				if(is_string($tag)) {
-					$parent->appendChild(
-						$this->create($tag, "{$value}")
-					);
+					if(is_string($value) or is_numeric($value)) {
+						$parent->appendChild(
+							$this->create($tag, "{$value}")
+						);
+					}
 				}
 				else {
 					$parent->appendChild(

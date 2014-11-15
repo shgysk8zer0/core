@@ -60,6 +60,14 @@
 			return $node;
 		}
 
+		public function create_attributes(array $attributes) {
+			return array_values(array_map(function($value, $name) {
+				$attr = $this->createAttribute($name);
+				$attr->value = $value;
+				return $attr;
+			}, array_values($attributes), array_keys($attributes)));
+		}
+
 		public function encode($str) {
 			return htmlentities($str, ENT_XML1, $this->charset);
 		}
