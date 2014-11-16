@@ -85,30 +85,9 @@
 		public function __call($name, array $arguments) {
 			list($content, $attributes, $namespace) = array_pad($arguments, 4, null);
 			if(is_null($attributes)) $attributes = [];
-			if(is_string($content) or is_numeric($content)) {
-				$this->trim($content);
-				$node = new resources\XML_Node($name, $content, $namespace);
-				(isset($parent)) ? $parent->append($node) : $this->body->append($node);
-			}
-
-			elseif(is_array($content)) {
-				$node = new resources\XML_Node($name, null, $namespace);
-				(isset($parent)) ? $parent->append($node) : $this->body->append($node);
-				foreach($content as $tag => $val) {
-					$this->set($node, $val, $tag);
-				}
-			}
-			elseif(is_object($content) and in_array(get_class($content), [
-				'DOMElement',
-				'DOMNode',
-				'DOMAttr',
-				'core\resources\XML_Node',
-				'core\XML_API_Call'
-			])) {
-				$node = new resources\XML_Node($name, null, $namespace);
-				(isset($parent)) ? $parent->append($node) : $this->body->append($node);
-				$node->appendChild($content);
-			}
+			$node = new resources\XML_Node($name, null, $namespace);
+			$this->body->appendChild($node);
+			$this->set($node, $content);
 			foreach($attributes as $prop => $value) {
 				$node->setAttribute($prop, $value);
 			}
@@ -154,7 +133,31 @@
 		 */
 
 		private function set(resources\XML_Node &$parent, $value, $tag = null) {
-			if(is_int($value)) $value = (string)$value;
+			if(is_string($tag)) {
+				$node = $this->create($tag);
+				$parent->appendChild($node);
+				$parent = $node;
+				$tag = null;
+				unset($node);
+			}
+			if(is_string($value) or is_numeric($value)) {
+				$this->trim($value);
+				$parent->appendChild($this->createTextNode($value));
+			}
+			elseif(is_array($value)) {
+				array_map(function($val, $tag) use (&$parent) {
+					$this->set($parent, $val, $tag);
+				}, array_values($value), array_keys($value));
+			}
+			elseif(is_object($value) and in_array(get_class($value), [
+				'DOMElement',
+				'DOMNode',
+				'DOMAttr',
+				'core\resources\XML_Node'
+			])) {
+				$parent->appendChild($value);
+			}
+			/*if(is_int($value)) $value = (string)$value;
 			elseif(is_object($value) and get_class($value) === 'DOMAttr') {
 				$parent->appendChild($value);
 				return $this;
@@ -214,7 +217,7 @@
 						$this->createTextNode($value)
 					);
 				}
-			}
+			}*/
 		}
 
 		/**
