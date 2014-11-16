@@ -61,11 +61,11 @@
 		}
 
 		public function create_attributes(array $attributes) {
-			return array_values(array_map(function($value, $name) {
-				$attr = $this->createAttribute($name);
-				$attr->value = $value;
-				return $attr;
-			}, array_values($attributes), array_keys($attributes)));
+			return array_values(array_map(
+				[$this, 'attribute'],
+				array_keys($attributes),
+				array_values($attributes)
+			));
 		}
 
 		public function encode($str) {
@@ -87,6 +87,10 @@
 			}
 
 			return $content;
+		}
+
+		public function attribute($name, $value) {
+			return new \DOMAttr($name, $value);
 		}
 
 	}
