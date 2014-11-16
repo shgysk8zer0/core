@@ -134,11 +134,8 @@
 
 		private function set(resources\XML_Node &$parent, $value, $tag = null) {
 			if(is_string($tag)) {
-				$node = $this->create($tag);
-				$parent->appendChild($node);
-				$parent = $node;
-				$tag = null;
-				unset($node);
+				$tmp = $parent;
+				$parent = $parent->appendChild($this->createElement($tag));
 			}
 			if(is_string($value) or is_numeric($value)) {
 				$this->trim($value);
@@ -157,67 +154,7 @@
 			])) {
 				$parent->appendChild($value);
 			}
-			/*if(is_int($value)) $value = (string)$value;
-			elseif(is_object($value) and get_class($value) === 'DOMAttr') {
-				$parent->appendChild($value);
-				return $this;
-			}
-			elseif(is_object($value)) $value = get_object_vars($value);
-
-			if(is_array($value) and !empty($value)) {
-				if(is_string($tag)) {
-					if(is_assoc($value) and !(is_object(current($value)) and get_class(current($value)) === 'DOMAttr')) {
-						$node = $this->create($tag);
-						$parent->appendChild($node);
-					}
-					else {
-						$node = null;
-					}
-					array_map(function($val, $key) use (&$node, &$parent, $tag) {
-						if(is_object($val) and get_class($val) === 'DOMAttr') {
-							(isset($node)) ? $node->appendChild($val) : $parent->appendChild($val);
-						}
-						elseif(is_string($key)) {
-							$this->set($node, $val, $key);
-						}
-						else {
-							$this->set($parent, $val, $tag);
-						}
-					}, array_values($value), array_keys($value));
-				}
-				else {
-					array_map(function($val, $key) use (&$parent) {
-						if(is_object($val) and get_class($val) === 'DOMAttr') {
-							$parent->appendChild($val);
-						}
-						elseif(is_string($key)) {
-							$this->set($parent, $val, $key);
-						}
-						else {
-							$this->set($parent, $val);
-						}
-					}, array_values($value), array_keys($value));
-				}
-			}
-			else {
-				if(is_string($tag)) {
-					if(is_string($value) or is_numeric($value)) {
-						$parent->appendChild(
-							$this->create($tag, "{$value}")
-						);
-					}
-					if(is_object($value) and get_class($value) === 'DOMAttr') {
-						$parent->appendChild($value);
-					}
-				}
-				else {
-					$value = (string)$value;
-					$this->trim($value);
-					$parent->appendChild(
-						$this->createTextNode($value)
-					);
-				}
-			}*/
+			if(isset($tmp)) $parent = $tmp;
 		}
 
 		/**
