@@ -64,7 +64,7 @@
 				'user' => null,
 				'password' => null,
 				'role' => null,
-				'logged-in' => false
+				'logged_in' => false
 			);
 		}
 
@@ -78,22 +78,28 @@
 
 		public function create_from(array $source) {
 			if(array_keys_exist('user', 'password', $source)) {
-				if(array_key_exists('repeat', $source) and $source['password'] !== $source['repeat']) return false;
+				$keys = array_map(function($key) {
+					return preg_replace('/\W/', null, $key);
+				}, array_keys($source));
+
+				$source = array_combine($keys, array_values($source));
+
+				$source['password'] = password_hash(
+					$source['password'],
+					PASSWORD_DEFAULT
+				);
+
 				return $this->prepare("
 					INSERT INTO `users` (
-						`user`,
-						`password`
-					) VALUES (
-						:user,
-						:password
+						`" . join('`, `', $keys) . "`
+					) VALUES ("
+						. join(', ', array_map(function($key) {
+							return ':' . $key;
+						}, $keys)) . "
 					)
-				")->bind([
-					'user' => trim($source['user']),
-					'password' => password_hash(
-						trim($source['password']),
-						PASSWORD_DEFAULT
-					)
-				])->execute();
+				")->bind(
+					$source
+				)->execute();
 			}
 			else {
 				return false;
@@ -110,10 +116,9 @@
 
 		public function login_with(array $source) {
 			if(array_keys_exist('user', 'password', $source)) {
+				array_walk($source, 'trim');
 				$results = $this->prepare("
-					SELECT `user`,
-					`password`,
-					`role`
+					SELECT *
 					FROM `users`
 					WHERE `user` = :user
 					LIMIT 1
@@ -122,21 +127,18 @@
 				])->execute()->get_results(0);
 
 				if(password_verify(
-					trim($source['password']),
+					$source['password'],
 					$results->password
 				) and $results->role !== 'new') {
-					$this->setUser(
-						$results->user
-					)->setPassword(
-						$results->password
-					)->setRole(
-						$results->role
-					)->setLogged_In(
-						true
+					$results->logged_in = true;
+					$this->data = array_merge(
+						$this->data,
+						get_object_vars($results)
 					);
+					return true;
 				}
 			}
-			return ($this->data['logged-in']);
+			return false;
 		}
 
 		/**
@@ -147,7 +149,11 @@
 		 */
 
 		public function logout() {
-			$this->setUser(
+			$this->data = array_combine(
+				array_keys($this->data),
+				array_pad([], count($this->data), null)
+			);
+			/*$this->setUser(
 				null
 			)->setPassword(
 				null
@@ -155,7 +161,7 @@
 				null
 			)->setLogged_In(
 				false
-			);
+			);*/
 		}
 
 		/**
