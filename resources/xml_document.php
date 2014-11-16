@@ -29,6 +29,72 @@
 			parent::__construct('1.0', $this->charset);
 		}
 
+		/**
+		* Magic setter method
+		*
+		* Creates a node($key) with content $value
+		*
+		* @param  string $key   [description]
+		* @param  mixed $value [description]
+		*/
+
+		public function __set($key, $value) {
+			$this->set($this->body, $value, $key);
+		}
+
+		/**
+		* Chained setter. Appends to $body
+		*
+		* @param  string $name      [name of element]
+		* @param  array  $arguments [array of values]
+		* @return ebay_call
+		*/
+
+		public function __call($name, array $arguments) {
+			list($content, $attributes, $namespace) = array_pad($arguments, 4, null);
+			if(is_null($attributes)) $attributes = [];
+			$node = new XML_Node($name, null, $namespace);
+			$this->body->appendChild($node);
+			$this->set($node, $content);
+			foreach($attributes as $prop => $value) {
+				$node->setAttribute($prop, $value);
+			}
+			return $this;
+		}
+
+		/**
+		* Append $parent with an element ($tag) with content ($value)
+		*
+		* @param \DOMElement $parent
+		* @param  mixed $value [node content]
+		* @param  string $tag  [node name]
+		*/
+
+		private function set(\DOMNode &$parent, $value, $tag = null) {
+			if(is_string($tag)) {
+				$tmp = $parent;
+				$parent = $parent->appendChild($this->createElement($tag));
+			}
+			if(is_string($value) or is_numeric($value)) {
+				$this->trim($value);
+				$parent->appendChild($this->createTextNode($value));
+			}
+			elseif(is_array($value)) {
+				array_map(function($val, $tag) use (&$parent) {
+					$this->set($parent, $val, $tag);
+				}, array_values($value), array_keys($value));
+			}
+			elseif(is_object($value) and in_array(get_class($value), [
+				'DOMElement',
+				'DOMNode',
+				'DOMAttr',
+				'core\resources\XML_Node'
+			])) {
+				$parent->appendChild($value);
+			}
+			if(isset($tmp)) $parent = $tmp;
+		}
+
 		public function out($filename = null) {
 			if(is_null($filename)) {
 				return $this->saveXML();
@@ -54,9 +120,7 @@
 		}
 
 		private function set_attribute(\DOMElement &$node, $prop, $value) {
-			$attr = $this->createAttribute($prop);
-			$attr->value = str_replace('"', '&quote', $value);
-			$node->appendChild($attr);
+			$node->setAttribute($prop, $value);
 			return $node;
 		}
 
