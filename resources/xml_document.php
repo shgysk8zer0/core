@@ -73,7 +73,7 @@
 		private function set(\DOMNode &$parent, $value, $tag = null) {
 			if(is_string($tag)) {
 				$tmp = $parent;
-				$parent = $parent->appendChild($this->createElement($tag));
+				$parent = $parent->appendChild($this->createElement(trim($tag)));
 			}
 			if(is_string($value) or is_numeric($value)) {
 				$this->trim($value);
@@ -91,6 +91,9 @@
 				'core\resources\XML_Node'
 			])) {
 				$parent->appendChild($value);
+			}
+			elseif(is_object($value)) {
+				$this->set($parent, get_object_vars($value));
 			}
 			if(isset($tmp)) $parent = $tmp;
 		}
