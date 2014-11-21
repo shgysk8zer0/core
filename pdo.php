@@ -25,7 +25,7 @@
 
 	namespace core;
 	use \core\resources\pdo_resources as pdo_resources;
-	class _pdo extends pdo_resources {
+	class PDO extends pdo_resources {
 		protected $pdo, $prepared, $connect;
 		private $query;
 		protected static $instances = [];
@@ -33,13 +33,13 @@
 		/**
 		 * Static load function avoids creating multiple instances/connections
 		 * It stores an array of instances in the static instances array.
-		 * It uses $con as the key to the array, and the _pdo instance as
+		 * It uses $con as the key to the array, and the PDO instance as
 		 * the value.
 		 *
 		 * @method load
 		 * @param  string $con [.ini file to use for database credentials]
-		 * @return _pdo
-		 * @example $pdo = _pdo::load or $pdo = _pdo::load('connect')
+		 * @return PDO
+		 * @example $pdo = PDO::load or $pdo = PDO::load('connect')
 		 */
 
 		public static function load($con = 'connect') {
@@ -58,7 +58,7 @@
 		 *
 		 * @method __construct
 		 * @param  string      $con [.ini file to use for database credentials]
-		 * @example $pdo = new _pdo()
+		 * @example $pdo = new PDO()
 		 */
 
 		public function __construct($con = 'connect') {
@@ -74,7 +74,7 @@
 		 * Returns $this for chaining. Most further functions will do the same where useful
 		 * @method prepare
 		 * @param  string $query  [Any given MySQL query]
-		 * @return _pdo
+		 * @return PDO
 		 */
 
 		public function prepare($query) {
@@ -86,7 +86,7 @@
 		 * Binds values to prepared statements
 		 *
 		 * @param array $array    [:key => value]
-		 * @return _pdo
+		 * @return PDO
 		 * @example $pdo->prepare(...)->bind([
 		 * 	'col_name' => $value,
 		 * 	'col2' => 'something else'
@@ -104,7 +104,7 @@
 		 * Executes prepared statements. Does not return results
 		 *
 		 * @param void
-		 * @return _pdo
+		 * @return PDO
 		 */
 
 		public function execute() {
