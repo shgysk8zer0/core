@@ -6,7 +6,7 @@
 	 * @author Chris Zuber <shgysk8zer0@gmail.com>
 	 * @package core_shared
 	 * @version 2014-04-19
-	 * @uses /classes/_pdo.php
+	 * @uses /classes/PDO.php
 	 * @copyright 2014, Chris Zuber
 	 * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
 	 * This program is free software; you can redistribute it and/or
@@ -27,7 +27,7 @@
 	 */
 
 	namespace core;
-	class login extends _pdo {
+	class login extends PDO {
 		public $data = [];
 		protected static $instance = null;
 
@@ -58,7 +58,7 @@
 		 */
 
 		public function __construct($ini = 'connect') {
-			parent::__construct($ini);	//login extends _pdo, so create new instance of parent.
+			parent::__construct($ini);	//login extends PDO, so create new instance of parent.
 
 			$this->data = array(
 				'user' => null,

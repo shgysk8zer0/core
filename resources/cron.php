@@ -27,7 +27,7 @@
 	 * You should have received a copy of the GNU General Public License
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 *
-	 * @uses \core\_pdo
+	 * @uses \core\PDO
 	 * @param int $time
 	 * @param array $jobs
 	 * @param array $funcs
@@ -50,7 +50,7 @@
 		 */
 
 		public function __construct($con = 'connect') {
-			$pdo = \core\_pdo::load($con);
+			$pdo = \core\PDO::load($con);
 			if($pdo->connected) {
 				$this->time = time();
 				$this->jobs = array_filter(
@@ -120,7 +120,7 @@
 		 * @return void
 		 */
 
-		private function all_jobs(\core\_pdo &$pdo) {
+		private function all_jobs(\core\PDO &$pdo) {
 			return $pdo->fetch_array("
 				SELECT
 					`function`,
@@ -201,7 +201,7 @@
 		 * @return void
 		 */
 
-		private function update_last_ran(\core\_pdo &$pdo) {
+		private function update_last_ran(\core\PDO &$pdo) {
 			$pdo->prepare("
 				UPDATE `cron`
 				SET `last_ran` = :time
