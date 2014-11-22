@@ -104,7 +104,8 @@
 		 * @return void
 		 */
 
-		public function output($image_type=IMAGETYPE_JPEG) {
+		public function output($image_type = IMAGETYPE_JPEG, $return = false) {
+			if($return) ob_start();
 			if( $image_type == IMAGETYPE_JPEG ) {
 				imagejpeg($this->image);
 			}
@@ -114,6 +115,7 @@
 			elseif( $image_type == IMAGETYPE_PNG ) {
 				imagepng($this->image);
 			}
+			if($return) return ob_get_clean();
 		}
 
 		/**
