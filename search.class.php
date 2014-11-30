@@ -1,12 +1,12 @@
 <?php
 	/**
-	 * Uses _pdo, but does not extend it.
+	 * Uses PDO, but does not extend it.
 	 * Optimized for searching databases
 	 *
-	 * @depreciated (should modify _pdo to simplify this anyways)
+	 * @depreciated (should modify PDO to simplify this anyways)
 	 * @author Chris Zuber <shgysk8zer0@gmail.com>
 	 * @package core_shared
-	 * @uses _pdo
+	 * @uses PDO
 	 * @version 2014-08-21
 	 * @copyright 2014, Chris Zuber
 	 * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
@@ -35,7 +35,7 @@
 
 		public function __construct() {
 			//parent::_construct();
-			$this->pdo =_pdo::load('connect');
+			$this->pdo =PDO::load('connect');
 		}
 
 		public function select() {

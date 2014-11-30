@@ -24,7 +24,7 @@
 	 */
 
 	namespace core;
-	class error_reporter extends _pdo {
+	class error_reporter extends PDO {
 
 		protected static $instance = null;
 
@@ -96,7 +96,7 @@
 
 			if($this->method === 'database') {
 				/**
-				 * construct the _pdo class and create prepared
+				 * construct the PDO class and create prepared
 				 * statement here. Since we will be using the static
 				 * method to load this class, we will avoid
 				 * both of these steps in subsequent calls.

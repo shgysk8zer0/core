@@ -28,7 +28,7 @@
 		/**
 		 * Static load function avoids creating multiple instances/connections
 		 * It stores an array of instances in the static instances array.
-		 * It uses $ini as the key to the array, and the _pdo instance as
+		 * It uses $ini as the key to the array, and the PDO instance as
 		 * the value.
 		 *
 		 * @params string $ini (.ini file to use for database credentials)
