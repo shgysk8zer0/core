@@ -33,7 +33,7 @@
 		protected $response = [];
 		private static $instance = null;
 
-		public static function load($arr = null) {
+		public static function load(array $arr = null) {
 			if(is_null(self::$instance)) {
 				self::$instance = new self($arr);
 			}
