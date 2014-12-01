@@ -260,6 +260,21 @@
 		}
 
 		/**
+		 * Increment $attribute of $selector by $by
+		 * @param  string  $selector  [CSS selector for element]
+		 * @param  string  $attribute [Attribute to increment]
+		 * @param  integer $by        [Ammount to increment by]
+		 * @return \core\json_response
+		 * @example $resp->increment('#progress', 'value', 1)
+		 * @example $resp->increment('#progress')
+		 */
+
+		public function increment($selector, $attribute = 'value', $by = 1) {
+			$this->response['increment'][(string)$selector][(string)$attribute] = (float)$by;
+			return $this;
+		}
+
+		/**
 		 * handleJSON in functions.js will eval() $js
 		 * Requires 'unsafe-eval' be set on script-src in csp.ini
 		 * which is generally a BAD idea.
