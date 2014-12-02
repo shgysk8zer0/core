@@ -31,12 +31,12 @@
 		 *
 		 * Most information about it ($line, $file, $trace) is set automatically
 		 * @param string $message       [Message given for the exception]
-		 * @param [int] $code           [Error code for the Exception]
-		 * @param [\Exception] $prev    [Previous Exception thrown]
+		 * @param int $code             [Error code for the Exception]
+		 * @param \Exception $prev      [Previous Exception thrown]
 		 */
 
-		public function __construct($message, $code = null, $prev) {
-			$this->message = $message;
+		public function __construct($message, $code = null, \Exception $prev = null) {
+			parent::__construct($message, $code, $prev);
 			$this->trace = $this->getTrace();
 		}
 	}
