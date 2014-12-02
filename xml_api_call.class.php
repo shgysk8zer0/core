@@ -169,12 +169,12 @@
 			$ch_result = simplexml_load_string(curl_exec($ch));
 			curl_close($ch);
 			if(isset($output) and is_string($output)) {
-				$this->out($output . '_' . date('Y-m-d\TH:i') . '_request.xml');
+				$this->out($output . '_' . date('Y-m-d\TH:i:s') . '_request.xml');
 				$response = new \DOMDocument('1.0', 'UTF-8');
 				$response->preserveWhiteSpace = false;
 				$response->formatOutput = true;
 				$response->loadXML($ch_result->asXML());
-				$response->save($output . '_' . date('Y-m-d\TH:i') . '_response.xml');
+				$response->save($output . '_' . date('Y-m-d\TH:i:s') . '_response.xml');
 			}
 			return $ch_result;
 		}
