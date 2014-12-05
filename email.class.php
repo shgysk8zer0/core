@@ -58,7 +58,8 @@
 			NL = "\r\n",
 			CHARSET = 'UTF-8',
 			CONTENT_TYPE = 'text/plain',
-			MIME_VERSION = '1.0';
+			MIME_VERSION = '1.0',
+			HTML_DOCTYPE = '<!doctype html>';
 
 		/**
 		 * Initialize the class and set its default variable from arguments
@@ -88,7 +89,7 @@
 					$this::CONTENT_TYPE,
 					'charset' => $this::CHARSET
 				],
-				'To' => $this->recepients(),
+				//'To' => $this->recepients(),
 				'From' => array_key_exists('SERVER_ADMIN', $_SERVER) ? $_SERVER['SERVER_ADMIN'] : null,
 				'X-Mailer' => 'PHP/' . PHP_VERSION
 			];
@@ -244,7 +245,7 @@
 				$this::NL,
 				($html) ?
 					wordwrap(
-						$this->message,
+						$this->asHTML(),
 						$this::MAX_LENGTH,
 						$this::NL
 					) : wordwrap(
@@ -268,6 +269,30 @@
 				$this::WRAP_AT,
 				$this::NL
 			);
+		}
+
+		/**
+		 * Build an entire HTML document for message using \DOMDocuemnt
+		 *
+		 * @param void
+		 * @return string
+		 */
+
+		protected function asHTML() {
+			$dom = new \DOMDocument('1.0', $this::CHARSET);
+			$dom->loadHTML($this::HTML_DOCTYPE . $this->message);
+			$html = $dom->getElementsByTagName('html')->item(0);
+			$body = $dom->getElementsByTagName('body')->item(0);
+			$head = $dom->createElement('head');
+			$html->insertBefore($head, $body);
+			$meta = $dom->createElement('meta');
+			$head->appendChild($meta);
+			$charset = $dom->createAttribute('charset');
+			$charset->value = $this::CHARSET;
+			$meta->appendChild($charset);
+			$title = $dom->createElement('title', $this->trim_subject());
+			$head->appendChild($title);
+			return $dom->saveHTML();
 		}
 
 		/**
