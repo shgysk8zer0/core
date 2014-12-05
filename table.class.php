@@ -178,8 +178,8 @@
 		 * @return mixed (HTML formatted <table> string from $data if $echo is false)
 		 */
 
-		public function out($echo = false) {
-			$this->build_table();
+		public function out($echo = false, $border = false) {
+			$this->build_table($border);
 			if($echo) {
 				echo $this->table;
 			}
@@ -199,13 +199,13 @@
 		 * @return void
 		 */
 
-		private function build_table() {
+		private function build_table($border = false) {
 			if(is_null($this->table)) {
-				if($this->data[$this->row] !== $this->empty_row) {
+				if(array_key_exists($this->row, $this->data) and $this->data[$this->row] !== $this->empty_row) {
 					$this->tbody .= '<tr>' . html_join('td', $this->data[$this->row]) . '</tr>';
 				}
 				unset($this->data[$this->row]);
-				$this->table = '<table>';
+				$this->table = ($border) ? '<table border="1">' : '<table>';
 				if(isset($this->caption)) $this->table .= "<caption>{$this->caption}</caption>";
 				$this->table .= $this->thead;
 				$this->table .= $this->tfoot;
