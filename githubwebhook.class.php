@@ -42,8 +42,8 @@
 
 		public function __construct($config = null) {
 			$this->headers = getallheaders();
-			if(array_key_exists('X-Github-Event', $this->headers)) {
-				$this->event = $this->headers['X-Github-Event'];
+			if(array_key_exists('X-GitHub-Event', $this->headers)) {
+				$this->event = $this->headers['X-GitHub-Event'];
 			}
 
 			if(isset($config)) {
