@@ -151,5 +151,23 @@
 				}
 			}
 		}
+
+		/**
+		 * Do a Git Pull from a remote
+		 *
+		 * Will only work on public repositories and using protocals which do
+		 * not require authentication (No SSH addresses).
+		 * 
+		 * @param  string $remote [Remote to pull from. Default is the git:// addr]
+		 * @param  string $branch [Optional branch.]
+		 * @return mixed          [Direct return from git command. May be null]
+		 */
+
+		public function pull($remote = null, $branch = null) {
+			if(is_null($remote)) $remote = $config->repository->git_url;
+			if(is_string($branch)) $branch = ' ' . trim($branch);
+			$cmd = escapeshellcmd('git pull ' . $remote . $branch);
+			return `{$cmd}`;
+		}
 	}
 ?>
