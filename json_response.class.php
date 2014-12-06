@@ -331,6 +331,18 @@
 			return $this;
 		}
 
+		public function table() {
+			$args = func_get_args();
+			$this->response['table'] = (count($args) == 1) ? $args[0] : $args;
+			return $this;
+		}
+
+		public function dir() {
+			$args = func_get_args();
+			$this->response['dir'] = (count($args) == 1) ? $args[0] : $args;
+			return $this;
+		}
+
 		/**
 		 * handleJSON in functions.js will console.info functions arguments
 		 *
