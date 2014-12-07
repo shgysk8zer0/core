@@ -31,8 +31,7 @@
 
 	namespace core;
 	class GitHubWebhook {
-		public $headers = [], $payload = null, $event = null, $parsed = null;
-		protected $config = null;
+		public $headers = [], $payload = null, $event = null, $parsed = null,  $config = null;
 
 		/**
 		 * Construct the class & set its variables
@@ -157,7 +156,7 @@
 		 *
 		 * Will only work on public repositories and using protocals which do
 		 * not require authentication (No SSH addresses).
-		 * 
+		 *
 		 * @param  string $remote [Remote to pull from. Default is the git:// addr]
 		 * @param  string $branch [Optional branch.]
 		 * @return mixed          [Direct return from git command. May be null]
