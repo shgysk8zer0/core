@@ -45,7 +45,7 @@
 		 * @return
 		 */
 
-		public static function load($con = 'connect.ini') {
+		public static function load($con = 'connect') {
 			if(!array_key_exists($con, self::$instances)) {
 				self::$instances[$con] = new self($con);
 			}
@@ -66,7 +66,7 @@
 		 * @example parent::__construct($con)
 		 */
 
-		public function __construct($con = 'connect.ini') {
+		public function __construct($con = 'connect') {
 			try{
 				if(is_string($con)) {
 					$ext = strtolower(pathinfo($con, PATHINFO_EXTENSION));

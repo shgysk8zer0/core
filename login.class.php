@@ -40,7 +40,7 @@
 		 * @example $login = _login::load
 		 */
 
-		public static function load($ini = 'connect.ini') {
+		public static function load($ini = 'connect') {
 			if(is_null(self::$instance)) {
 				self::$instance = new self($ini);
 			}
@@ -57,7 +57,7 @@
 		 * @todo Use static parent::load() instead, but this causes errors
 		 */
 
-		public function __construct($ini = 'connect.ini') {
+		public function __construct($ini = 'connect') {
 			parent::__construct($ini);	//login extends PDO, so create new instance of parent.
 
 			$this->data = array(
