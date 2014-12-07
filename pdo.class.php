@@ -39,10 +39,10 @@
 		 * @method load
 		 * @param  string $con [.ini file to use for database credentials]
 		 * @return PDO
-		 * @example $pdo = PDO::load or $pdo = PDO::load('connect')
+		 * @example $pdo = PDO::load or $pdo = PDO::load('connect.ini')
 		 */
 
-		public static function load($con = 'connect') {
+		public static function load($con = 'connect.ini') {
 			if(!array_key_exists($con, self::$instances)) {
 				self::$instances[$con] = new self($con);
 			}
@@ -61,7 +61,7 @@
 		 * @example $pdo = new PDO()
 		 */
 
-		public function __construct($con = 'connect') {
+		public function __construct($con = 'connect.ini') {
 			parent::__construct($con);
 		}
 

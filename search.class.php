@@ -35,7 +35,7 @@
 
 		public function __construct() {
 			//parent::_construct();
-			$this->pdo =PDO::load('connect');
+			$this->pdo =PDO::load('connect.ini');
 		}
 
 		public function select() {

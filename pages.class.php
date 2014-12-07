@@ -37,7 +37,7 @@
 
 		public function __construct($url = null) {
 			$this->status = (array_key_exists('REDIRECT_STATUS', $_SERVER)) ? $_SERVER['REDIRECT_STATUS'] : http_response_code();
-			$pdo =PDO::load('connect');
+			$pdo =PDO::load('connect.ini');
 			if(is_string($url)) {
 				$this->url = $url;
 			}
@@ -123,7 +123,7 @@
 
 		private function get_content() {
 			$login = login::load();
-			$DB =PDO::load('connect');
+			$DB =PDO::load('connect.ini');
 
 			switch($this->type) {
 				case 'posts': {
