@@ -30,6 +30,7 @@
 		protected $connect;
 		protected static $instances = [];
 		public $connected = false;
+		public static $ext = 'ini';
 
 		const DEFAULT_SERVER = 'localhost';
 
@@ -70,8 +71,8 @@
 				if(is_string($con)) {
 					$ext = strtolower(pathinfo($con, PATHINFO_EXTENSION));
 					if(empty($ext)) {
-						$ext = 'ini';
-						$con = $con . 'ini';
+						$ext = static::$ext;
+						$con = "{$con}.{$ext}";
 					}
 					$con = stream_resolve_include_path($con);
 					if(is_string($con) and is_readable($con)) {
@@ -86,12 +87,12 @@
 								$this->connect = simplexml_load_file($con);
 							}
 							default: {
-								throw new \Exception('Unsupported format for credentials');
+								throw new \Exception('Unsupported format for credentials' . $ext);
 							}
 						}
 					}
 					else {
-						throw new \Exception('Unable to find or read credentials file' . print_r($con, true));
+						throw new \Exception("Unable to find or read credentials file");
 					}
 				}
 				elseif(is_object($con)) {
@@ -167,7 +168,7 @@
 
 		private function log($method = null, $line = null, $message = '') {
 			file_put_contents(
-				BASE . DIRECTORY_SEPERATOR . __CLASS__ . '.log',
+				BASE . DIRECTORY_SEPARATOR . __CLASS__ . '.log',
 				"Error in $method in line $line: $message" . PHP_EOL,
 				FILE_APPEND | LOCK_EX
 			);
