@@ -26,6 +26,7 @@
 	*/
 
 	namespace core\resources;
+	use \core\resources\Parser as Parser;
 	class pdo_connect extends \PDO {
 		protected $connect;
 		protected static $instances = [];
@@ -63,37 +64,18 @@
 		 *
 		 * @param mixed $con (.ini file to use for database credentials)
 		 * @return void
+		 * @uses \core\resources\Parser
 		 * @example parent::__construct($con)
 		 */
 
 		public function __construct($con = 'connect') {
 			try{
 				if(is_string($con)) {
-					$ext = strtolower(pathinfo($con, PATHINFO_EXTENSION));
-					if(empty($ext)) {
-						$ext = static::$ext;
-						$con = "{$con}.{$ext}";
-					}
-					$con = stream_resolve_include_path($con);
-					if(is_string($con) and is_readable($con)) {
-						switch($ext) {
-							case 'ini': {
-								$this->connect = (object)parse_ini_file($con);
-							} break;
-							case 'json': {
-								$this->connect = json_decode(file_get_contents($con));
-							} break;
-							case 'xml': {
-								$this->connect = simplexml_load_file($con);
-							}
-							default: {
-								throw new \Exception('Unsupported format for credentials' . $ext);
-							}
-						}
-					}
-					else {
-						throw new \Exception("Unable to find or read credentials file");
-					}
+					$tmp_ext = Parser::$DEFAULT_EXT;
+					Parser::$DEFAULT_EXT = $this::$ext;
+					$this->connect = Parser::parse($con);
+					Parser::$DEFAULT_EXT = $tmp_ext;
+					unset($tmp_ext);
 				}
 				elseif(is_object($con)) {
 					$this->connect = $con;
