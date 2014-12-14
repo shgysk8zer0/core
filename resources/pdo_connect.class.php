@@ -103,7 +103,7 @@
 				}
 
 				if(is_null($this->connect->database)) {
-					$this->conenct->database = $this->connect->user;
+					$this->connect->database = $this->connect->user;
 				}
 
 				if(
