@@ -102,6 +102,10 @@
 					unset($this->connect->server);
 				}
 
+				if(is_null($this->connect->database)) {
+					$this->conenct->database = $this->connect->user;
+				}
+
 				if(
 					isset($this->connect->port)
 					and (
@@ -112,7 +116,7 @@
 					unset($this->connect->port);
 				}
 				$connect_string = (isset($this->connect->type)) ? "{$this->connect->type}:" : 'mysql:';
-				$connect_string .= (isset($this->connect->database)) ?  "dbname={$this->connect->database}" : "dbname={$this->connect->user}";
+				$connect_string .= "dbname={$this->connect->database}";
 
 				if(isset($this->connect->server)) {
 					$connect_string .= ";host={$this->connect->server}";
@@ -192,28 +196,36 @@
 
 		public function dump($filename = null) {
 			if(is_null($filename)) {
-				$filename = BASE . DIRECTORY_SEPARATOR . $this->connect->database;
+				$filename = BASE . DIRECTORY_SEPARATOR . $this->connect->database . '.sql';
 			}
 
 			if(
 				(
-					file_exists("{$filename}.sql")
-					and is_writable("{$filename}.sql")
+					file_exists($filename)
+					and is_writable($filename)
 				) or (
-					!file_exists("{$filename}.sql")
+					!file_exists($filename)
 					and is_writable(BASE)
 				)
 			) {
-				$command = "mysqldump -u {$this->connect->user} -p" . escapeshellcmd($this->connect->password);
+				$command = 'mysqldump -u ' . escapeshellarg($this->connect->user);
 
 				if(isset($this->connect->server) and $this->connect->server !== $this::DEFAULT_SERVER) {
-					$command .= " -h {$this->connect->server}";
+					$command .= ' -h ' . escapeshellarg($this->connect->server);
 				}
 
-				$command .= " {$this->connect->database} > {$filename}.sql";
+				$command .= ' -p' . escapeshellarg($this->connect->password);
 
-				exec(escapeshellcmd($command));
-				return true;
+				$command .=  ' ' . escapeshellarg($this->connect->database);
+
+				exec($command, $output, $return_var);
+				if($return_var === 0 and is_array($output) and !empty($output)) {
+					file_put_contents($filename, join(PHP_EOL, $output));
+					return true;
+				}
+				else {
+					return false;
+				}
 			}
 			else {
 				return false;
