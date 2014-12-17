@@ -26,6 +26,7 @@
 	*/
 
 	namespace core\resources;
+	use \core\resources\Parser as Parser;
 	class pdo_connect extends \PDO {
 		protected $connect;
 		protected static $instances = [];
@@ -63,37 +64,18 @@
 		 *
 		 * @param mixed $con (.ini file to use for database credentials)
 		 * @return void
+		 * @uses \core\resources\Parser
 		 * @example parent::__construct($con)
 		 */
 
 		public function __construct($con = 'connect') {
 			try{
 				if(is_string($con)) {
-					$ext = strtolower(pathinfo($con, PATHINFO_EXTENSION));
-					if(empty($ext)) {
-						$ext = static::$ext;
-						$con = "{$con}.{$ext}";
-					}
-					$con = stream_resolve_include_path($con);
-					if(is_string($con) and is_readable($con)) {
-						switch($ext) {
-							case 'ini': {
-								$this->connect = (object)parse_ini_file($con);
-							} break;
-							case 'json': {
-								$this->connect = json_decode(file_get_contents($con));
-							} break;
-							case 'xml': {
-								$this->connect = simplexml_load_file($con);
-							}
-							default: {
-								throw new \Exception('Unsupported format for credentials' . $ext);
-							}
-						}
-					}
-					else {
-						throw new \Exception("Unable to find or read credentials file");
-					}
+					$tmp_ext = Parser::$DEFAULT_EXT;
+					Parser::$DEFAULT_EXT = $this::$ext;
+					$this->connect = Parser::parse($con);
+					Parser::$DEFAULT_EXT = $tmp_ext;
+					unset($tmp_ext);
 				}
 				elseif(is_object($con)) {
 					$this->connect = $con;
@@ -120,6 +102,10 @@
 					unset($this->connect->server);
 				}
 
+				if(is_null($this->connect->database)) {
+					$this->connect->database = $this->connect->user;
+				}
+
 				if(
 					isset($this->connect->port)
 					and (
@@ -130,7 +116,7 @@
 					unset($this->connect->port);
 				}
 				$connect_string = (isset($this->connect->type)) ? "{$this->connect->type}:" : 'mysql:';
-				$connect_string .= (isset($this->connect->database)) ?  "dbname={$this->connect->database}" : "dbname={$this->connect->user}";
+				$connect_string .= "dbname={$this->connect->database}";
 
 				if(isset($this->connect->server)) {
 					$connect_string .= ";host={$this->connect->server}";
@@ -210,28 +196,36 @@
 
 		public function dump($filename = null) {
 			if(is_null($filename)) {
-				$filename = BASE . DIRECTORY_SEPARATOR . $this->connect->database;
+				$filename = BASE . DIRECTORY_SEPARATOR . $this->connect->database . '.sql';
 			}
 
 			if(
 				(
-					file_exists("{$filename}.sql")
-					and is_writable("{$filename}.sql")
+					file_exists($filename)
+					and is_writable($filename)
 				) or (
-					!file_exists("{$filename}.sql")
+					!file_exists($filename)
 					and is_writable(BASE)
 				)
 			) {
-				$command = "mysqldump -u {$this->connect->user} -p" . escapeshellcmd($this->connect->password);
+				$command = 'mysqldump -u ' . escapeshellarg($this->connect->user);
 
 				if(isset($this->connect->server) and $this->connect->server !== $this::DEFAULT_SERVER) {
-					$command .= " -h {$this->connect->server}";
+					$command .= ' -h ' . escapeshellarg($this->connect->server);
 				}
 
-				$command .= " {$this->connect->database} > {$filename}.sql";
+				$command .= ' -p' . escapeshellarg($this->connect->password);
 
-				exec(escapeshellcmd($command));
-				return true;
+				$command .=  ' ' . escapeshellarg($this->connect->database);
+
+				exec($command, $output, $return_var);
+				if($return_var === 0 and is_array($output) and !empty($output)) {
+					file_put_contents($filename, join(PHP_EOL, $output));
+					return true;
+				}
+				else {
+					return false;
+				}
 			}
 			else {
 				return false;

@@ -80,7 +80,7 @@
 		 * @example "isset({$resp->key})"
 		 */
 
-		public function __isset($key) {
+		final public function __isset($key) {
 			return array_key_exists($key, $this->data);
 		}
 
@@ -92,7 +92,7 @@
 		 * @example "unset($resp->key)"
 		 */
 
-		public function __unset($key) {
+		final public function __unset($key) {
 			unset($this->response[$key]);
 		}
 
@@ -102,7 +102,7 @@
 		 * @example "$resp->[getName|setName]($value)"
 		 */
 
-		public function __call($name, array $arguments) {
+		final public function __call($name, array $arguments) {
 			$name = strtolower($name);
 			$act = substr($name, 0, 3);
 			$key = substr($name, 3);
@@ -130,7 +130,7 @@
 		 *
 		 */
 
-		public function text($selector = null, $content = null) {
+		final public function text($selector = null, $content = null) {
 			$this->response['text'][(string)$selector] = (string)$content;
 			return $this;
 		}
@@ -144,7 +144,7 @@
 		 * @example $resp->notify('Title', 'Body', 'path/to/icon.png');
 		 */
 
-		public function notify($title = null, $body = null, $icon = null) {
+		final public function notify($title = null, $body = null, $icon = null) {
 			$this->response['notify'] = [];
 			if(isset($title)) $this->response['notify']['title'] = (string)$title;
 			if(isset($body)) $this->response['notify']['body'] = (string)$body;
@@ -158,7 +158,7 @@
 		 * @example $resp->html('.cssSelector', '<p>Some HTML content</p>');
 		 */
 
-		public function html($selector = null, $content = null) {
+		final public function html($selector = null, $content = null) {
 			if(!array_key_exists('html', $this->response)) $this->response['html'] = [];
 			$this->response['html'][(string)$selector] = (string)$content;
 			return $this;
@@ -170,7 +170,7 @@
 		 * @example $resp->append('.cssSelector', '<p>Some HTML content</p>');
 		 */
 
-		public function append($selector = null, $content = null) {
+		final public function append($selector = null, $content = null) {
 			if(!array_key_exists('append', $this->response)) $this->response['append'] = [];
 			$this->response['append'][(string)$selector] = (string)$content;
 			return $this;
@@ -182,7 +182,7 @@
 		 * @example $resp->prepend('.cssSelector', '<p>Some HTML content</p>');
 		 */
 
-		public function prepend($selector = null, $content = null) {
+		final public function prepend($selector = null, $content = null) {
 			if(!array_key_exists('prepend', $this->response)) $this->response['prepend'] = [];
 			$this->response['prepend'][(string)$selector] = (string)$content;
 			return $this;
@@ -194,7 +194,7 @@
 		 * @example $resp->before('.cssSelector', '<p>Some HTML content</p>');
 		 */
 
-		public function before($selector = null, $content = null) {
+		final public function before($selector = null, $content = null) {
 			if(!array_key_exists('before', $this->response)) $this->response['before'] = [];
 			$this->response['before'][(string)$selector] = (string)$content;
 			return $this;
@@ -206,7 +206,7 @@
 		 * @example $resp->after('.cssSelector', '<p>Some HTML content</p>');
 		 */
 
-		public function after($selector = null, $content = null) {
+		final public function after($selector = null, $content = null) {
 			$this->response['after'][(string)$selector] = (string)$content;
 			return $this;
 		}
@@ -217,7 +217,7 @@
 		 * @example $resp->addClass('.cssSelector', 'newClass, otherClass');
 		 */
 
-		public function addClass($selector = null, $classes = null) {
+		final public function addClass($selector = null, $classes = null) {
 			$this->response['addClass'][(string)$selector] = (string)$classes;
 			return $this;
 		}
@@ -228,7 +228,7 @@
 		 * @example $resp->removeClass('.cssSelector', 'someClass, someOtherClass');
 		 */
 
-		public function removeClass($selector = null, $classes = null) {
+		final public function removeClass($selector = null, $classes = null) {
 			$this->response['removeClass'][(string)$selector] = (string)$classes;
 			return $this;
 		}
@@ -238,7 +238,7 @@
 		 * @example $resp->remove('html .class > #id');
 		 */
 
-		public function remove($selector = null) {
+		final public function remove($selector = null) {
 			(array_key_exists('remove', $this->response)) ? $this->response['remove'] .= ',' . (string)$selector : $this->response['remove'] = (string)$selector;
 			return $this;
 		}
@@ -254,7 +254,7 @@
 		 * );
 		 */
 
-		public function attributes($selector = null, $attribute = null, $value = true) {
+		final public function attributes($selector = null, $attribute = null, $value = true) {
 			$this->response['attributes'][(string)$selector][(string)$attribute] = $value;
 			return $this;
 		}
@@ -269,9 +269,31 @@
 		 * @example $resp->increment('#progress')
 		 */
 
-		public function increment($selector, $attribute = 'value', $by = 1) {
+		final public function increment($selector, $attribute = 'value', $by = 1) {
 			$this->response['increment'][(string)$selector][(string)$attribute] = (float)$by;
 			return $this;
+		}
+
+		/**
+		 * Increase value of $selector by $by using .stepUp() method
+		 *
+		 * @param string  $selector [Any valid CSS selector]
+		 * @param integer $by       [Amount to increase by]
+		 */
+
+		final public function stepUp($selector, $by = 1) {
+			$this->response['stepUp'][(string)$selector] = $by;
+		}
+
+		/**
+		 * Decrease value of $selector by $by using .stepDown() method
+		 *
+		 * @param string  $selector [Any valid CSS selector]
+		 * @param integer $by       [Amount to decrease by]
+		 */
+
+		final public function stepDown($selector, $by = 1) {
+			$this->response['stepDown'][(string)$selector] = $by;
 		}
 
 		/**
@@ -285,7 +307,7 @@
 		 * @example $resp->script("alert('Hello world')");
 		 */
 
-		public function script($js = null) {
+		final public function script($js = null) {
 			(array_key_exists('script', $this->response)) ? $this->response['script'] .= ';' . (string)$js : $this->response['script'] = (string)$js;
 			return $this;
 		}
@@ -299,7 +321,7 @@
 		 * @example $resp->sessionStorage('nonce', $session->nonce)
 		 */
 
-		public function sessionStorage($key = null, $value = null) {
+		final public function sessionStorage($key = null, $value = null) {
 			$this->response['sessionStorage'][(string)$key] = $value;
 			return $this;
 		}
@@ -313,7 +335,7 @@
 		 * @example $resp->localStorage('greeting', 'Hello World!')
 		 */
 
-		public function localStorage($key = null, $value = null) {
+		final public function localStorage($key = null, $value = null) {
 			$this->response['localStorage'][(string)$key] = $value;
 			return $this;
 		}
@@ -325,19 +347,19 @@
 		 * @example $resp->log($session->nonce, $_SERVER['SERVER_NAME']);
 		 */
 
-		public function log() {
+		final public function log() {
 			$args = func_get_args();
 			$this->response['log'] = (count($args) == 1) ? $args[0] : $args;
 			return $this;
 		}
 
-		public function table() {
+		final public function table() {
 			$args = func_get_args();
 			$this->response['table'] = (count($args) == 1) ? $args[0] : $args;
 			return $this;
 		}
 
-		public function dir() {
+		final public function dir() {
 			$args = func_get_args();
 			$this->response['dir'] = (count($args) == 1) ? $args[0] : $args;
 			return $this;
@@ -350,7 +372,7 @@
 		 * @example $resp->info($session->nonce, $_SERVER['SERVER_NAME']);
 		 */
 
-		public function info() {
+		final public function info() {
 			$args = func_get_args();
 			$this->response['info'] = (count($args) == 1) ? $args[0] : $args;
 			return $this;
@@ -363,7 +385,7 @@
 		 * @example $resp->warn($session->nonce, $_SERVER['SERVER_NAME']);
 		 */
 
-		public function warn() {
+		final public function warn() {
 			$args = func_get_args();
 			$this->response['warn'] = (count($args) == 1) ? $args[0] : $args;
 			return $this;
@@ -376,7 +398,7 @@
 		 * @example $resp->error($error);
 		 */
 
-		public function error() {
+		final public function error() {
 			$args = func_get_args();
 			$this->response['error'] = (count($args) == 1) ? $args[0] : $args;
 			return $this;
@@ -392,7 +414,7 @@
 		 * @example $resp->scrollTo('ul.myList li', 3)
 		 */
 
-		public function scrollTo($sel = 'body', $nth = 0) {
+		final public function scrollTo($sel = 'body', $nth = 0) {
 			$this->response['scrollTo'] = [
 				'sel' => (string)$sel,
 				'nth' => (int)$nth
@@ -407,7 +429,7 @@
 		 * @example $resp->focus('input[name="password"]')
 		 */
 
-		public function focus($sel = 'input') {
+		final public function focus($sel = 'input') {
 			$this->response['focus'] = (string)$sel;
 			return $this;
 		}
@@ -419,7 +441,7 @@
 		 * @example $resp->select('input[name="password"]')
 		 */
 
-		public function select($sel = 'input') {
+		final public function select($sel = 'input') {
 			$this->response['focus'] = (string)$sel;
 			return $this;
 		}
@@ -431,7 +453,7 @@
 		 * @example $resp->reload()
 		 */
 
-		public function reload() {
+		final public function reload() {
 			$this->response['reload'] = null;
 		}
 
@@ -442,7 +464,7 @@
 		 * @example $resp->clear('login')
 		 */
 
-		public function clear($form = null) {
+		final public function clear($form = null) {
 			$this->response['clear'] = (string)$form;
 			return $this;
 		}
@@ -458,7 +480,7 @@
 		 * @example $resp->triggerEvent('button[type=submit]', 'click')
 		 */
 
-		public function triggerEvent($selector = null, $event = null) {
+		final public function triggerEvent($selector = null, $event = null) {
 			if(!array_key_exists('triggerEvent', $this->response)) {
 				$this->response['triggerEvent'] = [];
 			}
@@ -483,7 +505,7 @@
 		 * )
 		 */
 
-		public function open($url = null, array $paramaters = null, $replace = false, $name = '_blank') {
+		final public function open($url = null, array $paramaters = null, $replace = false, $name = '_blank') {
 			$specs = [
 				'height' => 500,
 				'width' => 500,
@@ -523,7 +545,7 @@
 		 * @example $resp->show('dialog')
 		 */
 
-		public function show($sel = null) {
+		final public function show($sel = null) {
 			$this->response['show'] = (string)$sel;
 			return $this;
 		}
@@ -539,7 +561,7 @@
 		 * @example $resp->show('dialog')
 		 */
 
-		public function showModal($sel = null) {
+		final public function showModal($sel = null) {
 			$this->response['showModal'] = (string)$sel;
 			return $this;
 		}
@@ -553,7 +575,7 @@
 		 * @example $resp->close('dialog,details')
 		 */
 
-		public function close($sel = null) {
+		final public function close($sel = null) {
 			$this->response['close'] = (string)$sel;
 			return $this;
 		}
@@ -565,7 +587,7 @@
 		 * @example $resp->enable(:disabled)
 		 */
 
-		public function enable($sel = null) {
+		final public function enable($sel = null) {
 			return $this->attributes(
 				$sel,
 				'disabled',
@@ -582,7 +604,7 @@
 		 * @example $resp->disable('button, menuitem, fieldset')
 		 */
 
-		public function disable($sel = null) {
+		final public function disable($sel = null) {
 			return $this->attributes(
 				$sel,
 				'disabled',
@@ -598,7 +620,7 @@
 		 * @example $resp->hidden('[hidden]', false)
 		 */
 
-		public function hidden($sel = null, $hide = true) {
+		final public function hidden($sel = null, $hide = true) {
 			return $this->attributes(
 				$sel,
 				'hidden',
@@ -619,20 +641,20 @@
 		 * @link https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement.dataset
 		 */
 
-		public function dataset($sel = null, $name = null, $value = null) {
+		final public function dataset($sel = null, $name = null, $value = null) {
 			if(!is_array($this->response['dataset'])) $this->response['dataset'] = [];
 			$this->response['dataset'][(string)$sel][(string)$name] = (string)$value;
 
 			return $this;
 		}
 
-		public function style($sel = null, $property = null, $value = null) {
+		final public function style($sel = null, $property = null, $value = null) {
 			if(!is_array($this->response['style'])) $this->response['style'] = [];
 			$this->response['style'][(string)$sel][(string)$property] = (string)$value;
 			return $this;
 		}
 
-		public function id($sel = null, $id = false) {
+		final public function id($sel = null, $id = false) {
 			if(is_string($id)) $id = preg_replace(['/\s/', '/[\W]/'], ['_', null], trim($id));
 			return $this->attributes(
 				(string)$sel,
@@ -652,7 +674,7 @@
 		 * @example $resp->serverEvent('event_source.php')
 		 */
 
-		public function serverEvent($uri = null) {
+		final public function serverEvent($uri = null) {
 			$this->response['serverEvent'] = (string)$uri;
 			return $this;
 		}
