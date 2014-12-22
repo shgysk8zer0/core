@@ -23,8 +23,9 @@
 	 */
 
 	namespace core\resources;
-	class Exception extends \Exception{
+	class Exception extends \Exception {
 		public $line, $file, $message, $code, $trace;
+		const LOG_DIR = 'exception_logs';
 
 		/**
 		 * Create the Exception
@@ -38,6 +39,21 @@
 		public function __construct($message, $code = null, \Exception $prev = null) {
 			parent::__construct($message, $code, $prev);
 			$this->trace = $this->getTrace();
+		}
+
+		/**
+		 * Save Exceptions including stack trace to a log file
+		 * 
+		 * @param  string $fname [filename (no extension) to write to]
+		 * @return void
+		 */
+
+		public function log($fname) {
+			file_put_contents(
+				BASE . DIRECTORY_SEPARATOR . $this::LOG_DIR . DIRECTORY_SEPARATOR . $fname . '.log',
+				"{$this}" . PHP_EOL,
+				FILE_APPEND | LOCK_EX
+			);
 		}
 	}
 ?>
