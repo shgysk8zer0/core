@@ -34,6 +34,7 @@
 		public static $ext = 'ini';
 
 		const DEFAULT_SERVER = 'localhost';
+		const LOG_DIR = 'logs';
 
 
 		/**
@@ -47,10 +48,13 @@
 		 */
 
 		public static function load($con = 'connect') {
-			if(!array_key_exists($con, self::$instances)) {
-				self::$instances[$con] = new self($con);
+			if(is_string($con)) {
+				if(!array_key_exists($con, self::$instances)) {
+					self::$instances[$con] = new self($con);
+				}
+				return self::$instances[$con];
 			}
-			return self::$instances[$con];
+			else return new self($con);
 		}
 
 		/**
@@ -139,7 +143,11 @@
 			}
 
 			catch(\Exception $e) {
-				$this->log(__METHOD__, $e->getLine(),$e->getMessage());
+				file_put_contents(
+					self::LOG_DIR . DIRECTORY_SEPARATOR . __CLASS__ . '.log',
+					"{$e}" . PHP_EOL,
+					FILE_APPEND | LOCK_EX
+				);
 			}
 		}
 
@@ -152,7 +160,7 @@
 		 * @return void
 		 */
 
-		private function log($method = null, $line = null, $message = '') {
+		protected function log($method = null, $line = null, $message = '') {
 			file_put_contents(
 				BASE . DIRECTORY_SEPARATOR . __CLASS__ . '.log',
 				"Error in $method in line $line: $message" . PHP_EOL,
