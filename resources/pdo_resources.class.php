@@ -47,7 +47,7 @@
 
 		protected function __construct($con = 'connect') {
 			$this->pdo = (is_string($con)) ? pdo_connect::load($con) : new pdo_connect($con);
-			$this->connected = $this->pdo->connected;
+			$this->connected = is_object($this->pdo) and $this->pdo->connected;
 		}
 
 		/**
