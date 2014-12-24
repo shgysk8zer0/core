@@ -455,6 +455,7 @@
 
 		final public function reload() {
 			$this->response['reload'] = null;
+			return $this;
 		}
 
 		/**
