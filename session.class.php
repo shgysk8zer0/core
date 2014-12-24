@@ -72,7 +72,8 @@
 					$this->httponly = true;
 
 					if(is_null($name)) {
-						$name = end(explode('/', trim(BASE, '/')));
+						$path = explode(DIRECTORY_SEPARATOR, BASE);
+						$name = end($path);
 					}
 					$this->name = preg_replace('/[^\w]/', null, strtolower($name));
 					session_name($this->name);
