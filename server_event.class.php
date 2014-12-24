@@ -141,7 +141,7 @@
 		 * @example $event->close() or $event->close('notify')
 		 */
 
-		public function close($key = null) {
+		public function end($key = null) {
 			echo 'event: close' . PHP_EOL;
 
 			if(!empty($this->response)) {
