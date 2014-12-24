@@ -143,7 +143,7 @@
 			}
 
 			catch(\Exception $e) {
-				file_put_contents(
+				@file_put_contents(
 					self::LOG_DIR . DIRECTORY_SEPARATOR . __CLASS__ . '.log',
 					"{$e}" . PHP_EOL,
 					FILE_APPEND | LOCK_EX
