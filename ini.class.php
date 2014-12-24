@@ -22,6 +22,7 @@
 
 	 * @todo: Make work when $multi evaluates as true. Will read the file,
 	 * but __set, __get, __unset, __isset, and __call will be ineffective
+     * @depreciated
 	 */
 
 	namespace core;
