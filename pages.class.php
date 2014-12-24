@@ -53,7 +53,7 @@
 
 			$this->parsed = (object)parse_url(strtolower(urldecode($this->url)));
 			$this->path = explode('/', trim($this->parsed->path, '/'));
-			if(trim(BASE, '/') !== trim($_SERVER['DOCUMENT_ROOT'], '/')) {
+			if(str_replace('/', DIRECTORY_SEPARATOR, rtrim($_SERVER['DOCUMENT_ROOT'], '/')) !== BASE) {
 				unset($this->path[0]);
 				$this->path = array_values($this->path);
 				if(empty($this->path)) {
