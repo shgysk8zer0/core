@@ -29,7 +29,7 @@ Super User Core classes are designed to be easy to use with PHP's built-in auto-
 * Make sure that the parent directory is in your `include_path`
  * `set_include_path({core_parent_directory} . PATH_SEPARATOR . get_include_path());`
 * Configure file extensions to use
- * `spl_autoload_extensions('.php');`
+ * `spl_autoload_extensions('.class.php');`
 * Set the auto-loader
  * `spl_autoload_register();`
 * Create a new instance of a class including path/namespace
