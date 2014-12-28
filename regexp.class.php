@@ -23,6 +23,7 @@
 	 * @example:
 	 * 		$reg = new regexp([$string]);
 	 * 		$some_var = $reg->replace('foo')->with('bar')[->in($string)]->execute()
+	 * @depreciated
 	 */
 
 	namespace core;

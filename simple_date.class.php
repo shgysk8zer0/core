@@ -26,6 +26,7 @@
 	 * @var sttring $src (What the date was created from)
 	 * @var array $months (for converting January <=> 1)
 	 * @var array $days (for converting Sunday <=> 1)
+	 * @depreciated
 	 */
 
 	namespace core;
