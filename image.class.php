@@ -33,11 +33,12 @@
 
 	class Image {
 		const JPG = IMAGETYPE_JPEG, PNG = IMAGETYPE_PNG, GIF = IMAGETYPE_GIF;
-		protected $image, $fname, $type, $extension;
-		public $mime_type;
+		protected $image, $fname, $type, $extension, $width, $height;
+		public $mime_type, $alt='';
+		public static $DEFAULT_TYPE = IMAGETYPE_JPEG;
 
 		/**
-		 * [Create a new instace of class from file]
+		 * Create a new instace of class from file
 		 *
 		 * @param string $fname [path/to/image]
 		 */
@@ -47,6 +48,57 @@
 				$this->img_data();
 				$this->read_img();
 			}
+		}
+
+		/**
+		 * Get value of protected variables (read-only)
+		 *
+		 * @param  string $prop  [Name of variable]
+		 * @return [mixed]       [Value or null]
+		 */
+		public function __get($prop) {
+			return (isset($this->$prop)) ? $this->$prop : null;
+		}
+
+		/**
+		 * Check if a given protected variable is set
+		 *
+		 * @param  string  $prop [Name of variable]
+		 * @return boolean       [Whether or not it is set]
+		 */
+		public function __isset($prop) {
+			return isset($this->$prop);
+		}
+
+		/**
+		 * Called whenever class is used as a string. Returns a full HTML <img/>
+		 *
+		 * @param void
+		 * @return string [HTML <img/> complete with alt, width, & height]
+		 */
+		public function __toString() {
+			return "<img src=\"{$this->as_data_uri($this::$DEFAULT_TYPE)}\" alt=\"{$this->alt}\" width=\"{$this->width}\" height=\"{$this->height}\" />";
+		}
+
+		/**
+		 * Called whenever class is called as a function. Returns full HTML <figure>
+		 * along with <img /> & optional <figcaption>.
+		 *
+		 * @param  string $caption [Optional <figcaption> content]
+		 * @return string          [HTML <figure> with <img /> & <figcaption>]
+		 */
+		public function __invoke($caption = null) {
+			$html = '<figure>' . "{$this}";
+			if(is_string($caption)) $html .="<figcaption>{$caption}</figcaption>";
+			$html .= '</figure>';
+			return $html;
+		}
+
+		public static function create($src, $alt = '', $scale = null) {
+			$img = new self($src);
+			$img->alt = $alt;
+			if(is_float($scale)) $img->scale($scale);
+			return "{$img}";
 		}
 
 		/**
@@ -69,18 +121,20 @@
 		 */
 		final protected function read_img() {
 			switch($this->type) {
-				case IMAGETYPE_JPEG: {
+				case self::JPG: {
 					$this->image = imagecreatefromjpeg($this->fname);
 				} break;
 
-				case IMAGETYPE_GIF: {
+				case self::GIF: {
 					$this->image = imagecreatefromgif($this->fname);
 				} break;
 
-				case IMAGETYPE_PNG: {
+				case self::PNG: {
 					$this->image = imagecreatefrompng($this->fname);
 				} break;
 			}
+			$this->width = $this->get_width();
+			$this->height = $this->get_height();
 		}
 
 
@@ -150,6 +204,8 @@
 				$this->get_height()
 			);
 			$this->image = $new_image;
+			$this->width = $width;
+			$this->height = $height;
 			return $this;
 		}
 
@@ -171,6 +227,8 @@
 				'width' => $width,
 				'height' => $height
 			]);
+			$this->width = $width;
+			$this->height = $height;
 			return $this;
 		}
 
@@ -184,6 +242,7 @@
 		 */
 		final public function as_binary($type = IMAGETYPE_JPEG,  $quality = 100, $output = null) {
 			$this->type = $type;
+			$this->extension = image_type_to_extension($this->type);
 			ob_start();
 			switch($type) {
 				case IMAGETYPE_JPEG: {
@@ -207,8 +266,12 @@
 		 * @param void
 		 * @return string [Base64 encoded data-URI of image data]
 		 */
-		final public function as_data_uri() {
-			return "data:{$this->mime_type};base64," . base64_encode($this->as_binary($this->type));
+		final public function as_data_uri($type = null) {
+			if(!is_int($type)) {
+				$type = $this->type;
+			}
+			$mime = image_type_to_mime_type($type);
+			return "data:{$mime};base64," . base64_encode($this->as_binary($type));
 		}
 
 		/**
