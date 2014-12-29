@@ -4,7 +4,7 @@
 	 * append text, etc.
 	 *
 	 * @author Chris Zuber <shgysk8zer0@gmail.com>
-	 * @package shgysk8zer0\core
+	 * @package shgysk8zer0\Core
 	 * @link http://php.net/manual/en/ref.image.php
 	 * @version 1.0.0
 	 * @copyright 2014, Chris Zuber
@@ -29,7 +29,7 @@
 	 * @var string   $mime_type  [image/jpeg|gif|png]
 	 */
 
-	namespace shgysk8zer0\core;
+	namespace shgysk8zer0\Core;
 
 	class Image {
 		const JPG = IMAGETYPE_JPEG, PNG = IMAGETYPE_PNG, GIF = IMAGETYPE_GIF;

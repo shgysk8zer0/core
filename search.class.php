@@ -4,7 +4,7 @@
 	 * Optimized for searching databases
 	 *
 	 * @author Chris Zuber <shgysk8zer0@gmail.com>
-	 * @package shgysk8zer0\core
+	 * @package shgysk8zer0\Core
 	 * @uses PDO
 	 * @version 0.9.0
 	 * @copyright 2014, Chris Zuber
@@ -24,7 +24,7 @@
 	 * @depreciated
 	 */
 
-	namespace shgysk8zer0\core;
+	namespace shgysk8zer0\Core;
 	class search {
 		private $select = '*',
 				$from = '',

@@ -1,7 +1,7 @@
 <?php
 	/**
 	 * @author Chris Zuber
-	 * @package shgysk8zer0\core
+	 * @package shgysk8zer0\Core
 	 * @version 0.9.0
 	 * @copyright 2014, Chris Zuber
 	 * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
@@ -19,7 +19,7 @@
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
 
-	namespace shgysk8zer0\core;
+	namespace shgysk8zer0\Core;
 	use core\resources as resources;
 	class XML_API_Call extends resources\XML_Document {
 		const API_LOG_DIR = 'api_log',

@@ -12,7 +12,7 @@
 	 * include_path, you can find and parse it just by knowing its filename
 	 *
 	 * @author Chris Zuber <shgysk8zer0@gmail.com>
-	 * @package shgysk8zer0\core
+	 * @package shgysk8zer0\Core
 	 * @version 1.0.0
 	 * @copyright 2014, Chris Zuber
 	 * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
@@ -39,13 +39,13 @@
 	 * @var array  $files    [Static array of loaded files]
 	 * @var array  $exts     [Static array of supported file extensions]
 	 *
-	 * @example $parsed = \shgysk8zer0\core\resources\Parser::parse('file')
-	 * @example $parsed = \shgysk8zer0\core\resources\Parser::parse('file.ext')
-	 * @example $parsed = \shgysk8zer0\core\resources\Parser::parse('path/to/file.ext')
-	 * @example $parsed = new \shgysk8zer0\core\resorources\Parser(*)
+	 * @example $parsed = \shgysk8zer0\Core\resources\Parser::parse('file')
+	 * @example $parsed = \shgysk8zer0\Core\resources\Parser::parse('file.ext')
+	 * @example $parsed = \shgysk8zer0\Core\resources\Parser::parse('path/to/file.ext')
+	 * @example $parsed = new \shgysk8zer0\Core\resorources\Parser(*)
 	 */
 
-	namespace shgysk8zer0\core\resources;
+	namespace shgysk8zer0\Core\resources;
 	final class Parser {
 		private $filename, $path, $subpath, $ext, $data;
 		public $file, $found = false;

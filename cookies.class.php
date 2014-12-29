@@ -3,7 +3,7 @@
 	 * Quick and easy way of setting/getting cookies
 	 *
 	 * @author Chris Zuber <shgysk8zer0@gmail.com>
-	 * @package shgysk8zer0\core
+	 * @package shgysk8zer0\Core
 	 * @version 1.0.0
 	 * @copyright 2014, Chris Zuber
 	 * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
@@ -27,12 +27,12 @@
 	 * @var boolean $httponly
 	 *
 	 * @example
-	 * $cookies = new \shgysk8zer0\core\cookies();
+	 * $cookies = new \shgysk8zer0\Core\cookies();
 	 * $cookies->cookie_name = 'Value';
 	 * $cookie->existing_cookie //Returns value of $_COOKIES['existing-cookie']
 	 */
 
-	namespace shgysk8zer0\core;
+	namespace shgysk8zer0\Core;
 	class cookies implements magic_methods {
 		public $expires, $path, $domain, $secure, $httponly;
 		private static $instance = null;

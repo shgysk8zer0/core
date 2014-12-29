@@ -4,7 +4,7 @@
 	 * Optimized to be handled by handleJSON in functions.js
 	 *
 	 * @author Chris Zuber <shgysk8zer0@gmail.com>
-	 * @package shgysk8zer0\core
+	 * @package shgysk8zer0\Core
 	 * @version 1.0.0
 	 * @copyright 2014, Chris Zuber
 	 * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
@@ -28,7 +28,7 @@
 	 * $resp->notify(...)->html(...)->append(...)->prepend(...)->before(...)->after(...)->attributes(...)->remove(...)->send();
 	 */
 
-	namespace shgysk8zer0\core;
+	namespace shgysk8zer0\Core;
 	class json_response implements magic_methods {
 		protected $response = [];
 		private static $instance = null;
@@ -264,7 +264,7 @@
 		 * @param  string  $selector  [CSS selector for element]
 		 * @param  string  $attribute [Attribute to increment]
 		 * @param  integer $by        [Ammount to increment by]
-		 * @return \shgysk8zer0\core\json_response
+		 * @return \shgysk8zer0\Core\json_response
 		 * @example $resp->increment('#progress', 'value', 1)
 		 * @example $resp->increment('#progress')
 		 */

@@ -3,7 +3,7 @@
 	 * Class to allow continuous updates from server using Server Sent Events
 	 *
 	 * @author Chris Zuber <shgysk8zer0@gmail.com>
-	 * @package shgysk8zer0\core
+	 * @package shgysk8zer0\Core
 	 * @uses json_response
 	 * @version 1.0.0
 	 * @link https://developer.mozilla.org/en-US/docs/Server-sent_events/Using_server-sent_events
@@ -37,7 +37,7 @@
 	 * $event->close();
 	 */
 
-	namespace shgysk8zer0\core;
+	namespace shgysk8zer0\Core;
 	class server_event extends json_response {
 		private static $instance = null;
 

@@ -3,7 +3,7 @@
 	 * Reads an ini file and stores as an object
 	 *
 	 * @author Chris Zuber <shgysk8zer0@gmail.com>
-	 * @package shgysk8zer0\core
+	 * @package shgysk8zer0\Core
 	 * @version 2014-06-01
 	 * @copyright 2014, Chris Zuber
 	 * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
@@ -25,7 +25,7 @@
 	 * @depreciated
 	 */
 
-	namespace shgysk8zer0\core;
+	namespace shgysk8zer0\Core;
 	class ini implements magic_methods {
 		private static $instance = [];
 		private $data = [];

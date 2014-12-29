@@ -1,7 +1,7 @@
 <?php
 	/**
 	 * @author Chris Zuber
-	 * @package shgysk8zer0\core
+	 * @package shgysk8zer0\Core
 	 * @version 1.0.0
 	 * @link http://php.net/manual/en/class.domdocument.php
 	 * @copyright 2014, Chris Zuber
@@ -20,7 +20,7 @@
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-	namespace shgysk8zer0\core\resources;
+	namespace shgysk8zer0\Core\resources;
 	class XML_Document extends \DOMDocument {
 		protected $charset;
 

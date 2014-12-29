@@ -5,7 +5,7 @@
 	 * As $_SESSION is used for all storage, there is no pro or con to using __construct vs ::load()
 	 *
 	 * @author Chris Zuber <shgysk8zer0@gmail.com>
-	 * @package shgysk8zer0\core
+	 * @package shgysk8zer0\Core
 	 * @version 1.0.0
 	 * @copyright 2014, Chris Zuber
 	 * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
@@ -31,7 +31,7 @@
 	 * @var session $instance
 	*/
 
-	namespace shgysk8zer0\core;
+	namespace shgysk8zer0\Core;
 	class session implements magic_methods {
 		private $name, $expires, $path, $domain, $secure, $httponly;
 		private static $instance = null;

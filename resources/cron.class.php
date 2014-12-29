@@ -10,7 +10,7 @@
 	 * finishing.
 	 *
 	 * @author Chris Zuber <shgysk8zer0@gmail.com>
-	 * @package shgysk8zer0\core
+	 * @package shgysk8zer0\Core
 	 * @version 1.0.0
 	 * @copyright 2014, Chris Zuber
 	 * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
@@ -27,13 +27,13 @@
 	 * You should have received a copy of the GNU General Public License
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 *
-	 * @uses \shgysk8zer0\core\PDO
+	 * @uses \shgysk8zer0\Core\PDO
 	 * @param int $time
 	 * @param array $jobs
 	 * @param array $funcs
 	 */
 
-	namespace shgysk8zer0\core\resources;
+	namespace shgysk8zer0\Core\resources;
 
 	class cron {
 		private $time, $jobs, $funcs;
@@ -50,7 +50,7 @@
 		 */
 
 		public function __construct($con = 'connect') {
-			$pdo = \shgysk8zer0\core\PDO::load($con);
+			$pdo = \shgysk8zer0\Core\PDO::load($con);
 			if($pdo->connected) {
 				$this->time = time();
 				$this->jobs = array_filter(
@@ -120,7 +120,7 @@
 		 * @return void
 		 */
 
-		private function all_jobs(\shgysk8zer0\core\PDO &$pdo) {
+		private function all_jobs(\shgysk8zer0\Core\PDO &$pdo) {
 			return $pdo->fetch_array("
 				SELECT
 					`function`,
@@ -201,7 +201,7 @@
 		 * @return void
 		 */
 
-		private function update_last_ran(\shgysk8zer0\core\PDO &$pdo) {
+		private function update_last_ran(\shgysk8zer0\Core\PDO &$pdo) {
 			$pdo->prepare("
 				UPDATE `cron`
 				SET `last_ran` = :time

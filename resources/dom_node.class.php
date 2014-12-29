@@ -15,10 +15,10 @@
 	* You should have received a copy of the GNU General Public License
 	* along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	* @version 0.9.0
-	* @package shgysk8zer0\core
+	* @package shgysk8zer0\Core
 	*/
 
-	namespace \shgysk8zer0\core\resources;
+	namespace \shgysk8zer0\Core\resources;
 	abstract class dom_node extends \DOMDocument {
 
 		private $node, $attributes, $content, $charset;

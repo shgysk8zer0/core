@@ -4,7 +4,7 @@
 	 * Can check login role as well (new, user, admin, etc)
 	 *
 	 * @author Chris Zuber <shgysk8zer0@gmail.com>
-	 * @package shgysk8zer0\core
+	 * @package shgysk8zer0\Core
 	 * @version 1.0.0
 	 * @uses /classes/PDO.php
 	 * @copyright 2014, Chris Zuber
@@ -26,7 +26,7 @@
 	 * @var login $instance
 	 */
 
-	namespace shgysk8zer0\core;
+	namespace shgysk8zer0\Core;
 	class login extends PDO {
 		public $data = [];
 		protected static $instance = null;

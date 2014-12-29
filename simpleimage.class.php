@@ -21,7 +21,7 @@
 	* @var string $fname   [filename]
 	*/
 
-	namespace shgysk8zer0\core;
+	namespace shgysk8zer0\Core;
 	class SimpleImage {
 
 		public $image;

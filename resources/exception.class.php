@@ -3,7 +3,7 @@
 	 * Extend \Exception to make its protected vars public
 	 *
 	 * @author Chris Zuber <shgysk8zer0@gmail.com>
-	 * @package shgysk8zer0\core
+	 * @package shgysk8zer0\Core
 	 * @version 1.0.0
 	 * @copyright 2014, Chris Zuber
 	 * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
@@ -22,7 +22,7 @@
 	 * @link http://php.net/manual/en/class.exception.php
 	 */
 
-	namespace shgysk8zer0\core\resources;
+	namespace shgysk8zer0\Core\resources;
 	class Exception extends \Exception {
 		public $line, $file, $message, $code, $trace;
 		const LOG_DIR = 'exception_logs';

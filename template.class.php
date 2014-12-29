@@ -7,7 +7,7 @@
 	 * to be used again.
 	 *
 	 * @author Chris Zuber <shgysk8zer0@gmail.com>
-	 * @package shgysk8zer0\core
+	 * @package shgysk8zer0\Core
 	 * @version 1.0.0
 	 * @copyright 2014, Chris Zuber
 	 * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
@@ -38,7 +38,7 @@
 	 * 	$table .= $template->old('Newer')->replace('Updated Again')->out();
 	 */
 
-	namespace shgysk8zer0\core;
+	namespace shgysk8zer0\Core;
 	class template implements magic_methods {
 		private static $instance = [];
 		private $path, $source = '', $replacements = [], $seperator, $minify_results;

@@ -9,7 +9,7 @@
 	 * On Ubuntu, I use ssmtp (see link for manpage)
 	 *
 	 * @author Chris Zuber <shgysk8zer0@gmail.com>
-	 * @package shgysk8zer0\core
+	 * @package shgysk8zer0\Core
 	 * @link http://php.net/manual/en/function.mail.php
 	 * @link http://manpages.ubuntu.com/manpages/intrepid/man5/ssmtp.conf.5.html
 	 * @version 1.0.0
@@ -26,7 +26,7 @@
 	 * 		]
 	 * 	];
 	 *
-	 * $mail = new \shgysk8zer0\core\email($to, $subject, $message, $additional_headers);
+	 * $mail = new \shgysk8zer0\Core\email($to, $subject, $message, $additional_headers);
 	 *
 	 * $success = $mail->send(true);
 	 *
@@ -46,7 +46,7 @@
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
 
-	namespace shgysk8zer0\core;
+	namespace shgysk8zer0\Core;
 	class email {
 		public $to = null, $from = null, $subject = null, $message = null;
 		protected $additional_headers = [], $additional_paramaters = [],

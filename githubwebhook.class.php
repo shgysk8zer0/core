@@ -3,7 +3,7 @@
 	 * Handle Webhooks from GitHub with ease!
 	 *
 	 * @author Chris Zuber <shgysk8zer0@gmail.com>
-	 * @package shgysk8zer0\core
+	 * @package shgysk8zer0\Core
 	 * @version 1.0.0
 	 * @link https://developer.github.com/webhooks/
 	 * @copyright 2014, Chris Zuber
@@ -29,7 +29,7 @@
 	 */
 
 
-	namespace shgysk8zer0\core;
+	namespace shgysk8zer0\Core;
 	class GitHubWebhook {
 		public $headers = [], $payload = null, $event = null, $parsed = null,  $config = null;
 

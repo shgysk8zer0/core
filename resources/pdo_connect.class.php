@@ -7,7 +7,7 @@
 	 * __construct method and a public escape.
 	 *
 	 * @author Chris Zuber <shgysk8zer0@gmail.com>
-	 * @package shgysk8zer0\core
+	 * @package shgysk8zer0\Core
 	 * @version 0.9.0
 	 * @copyright 2014, Chris Zuber
 	 * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
@@ -25,8 +25,8 @@
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-	namespace shgysk8zer0\core\resources;
-	use \shgysk8zer0\core\resources\Parser as Parser;
+	namespace shgysk8zer0\Core\resources;
+	use \shgysk8zer0\Core\resources\Parser as Parser;
 	class pdo_connect extends \PDO {
 		protected $connect;
 		protected static $instances = [];
@@ -68,7 +68,7 @@
 		 *
 		 * @param mixed $con (.ini file to use for database credentials)
 		 * @return void
-		 * @uses \shgysk8zer0\core\resources\Parser
+		 * @uses \shgysk8zer0\Core\resources\Parser
 		 * @example parent::__construct($con)
 		 */
 
