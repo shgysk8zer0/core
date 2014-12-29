@@ -5,10 +5,18 @@
 	"require": {
 		"shgysk8zer0/core": "master"
 	},
+	"author": {
+		"name": "Chris Zuber",
+		"email": "shgysk8zer0@gmail.com"
+	},
+	"license": "GPL3",
 	"repositories": [
 		{
 			"type": "vcs",
 			"url": "git@github.com:shgysk8zer0/core.git"
 		}
-	]
+	],
+	"autoload": {
+		"psr-4": {}
+	}
 }
