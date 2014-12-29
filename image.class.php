@@ -1,5 +1,8 @@
 <?php
 	/**
+	 * Class to load image, resize/scale/rotate it, convert to other types,
+	 * append text, etc.
+	 *
 	 * @author Chris Zuber <shgysk8zer0@gmail.com>
 	 * @package core
 	 * @link http://php.net/manual/en/ref.image.php
@@ -18,6 +21,12 @@
 	 *
 	 * You should have received a copy of the GNU General Public License
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+	 *
+	 * @var resource $image      [Image data]
+	 * @var string   $fname      [/path/to/image]
+	 * @var int      $type       [Type from image constants]
+	 * @var string   $extension  [Extension with leading "."]
+	 * @var string   $mime_type  [image/jpeg|gif|png]
 	 */
 
 	namespace core;
@@ -26,6 +35,11 @@
 		protected $image, $fname, $type, $extension;
 		public $mime_type;
 
+		/**
+		 * [Create a new instace of class from file]
+		 *
+		 * @param string $fname [path/to/image]
+		 */
 		public function __construct($fname) {
 			$this->fname = $fname;
 			if(@file_exists($this->fname)) {
@@ -34,6 +48,12 @@
 			}
 		}
 
+		/**
+		 * Get image type(IMAGETYPE_*), mime type (image/*) and extension (.*)
+		 *
+		 * @param void
+		 * @return void
+		 */
 		final protected function img_data() {
 			$img_data = getimagesize($this->fname);
 			$this->type = $img_data[2];
@@ -41,6 +61,12 @@
 			$this->extension = image_type_to_extension($this->type);
 		}
 
+		/**
+		 * Reads an image and save as class variable/resource
+		 *
+		 * @param void
+		 * @return void
+		 */
 		final protected function read_img() {
 			switch($this->type) {
 				case IMAGETYPE_JPEG: {
@@ -58,19 +84,104 @@
 		}
 
 
+		/**
+		 * Get current width of $this->image
+		 *
+		 * @param void
+		 * @return int [Image width in pixels]
+		 */
 		final public function get_width() {
 			return imagesx($this->image);
 		}
 
+		/**
+		 * Get current height of $this->image
+		 *
+		 * @param void
+		 * @return int [Image height in pixels]
+		 */
 		final public function get_height() {
 			return imagesy($this->image);
 		}
 
+		/**
+		 * Scale $this->image by a factor of $scalar
+		 *
+		 * @param  float $scalar [Factor to scale by, E.G. 0.5 for half]
+		 * @return self
+		 */
+		final public function scale($scalar) {
+			$this->resize($this->get_width() * $scalar, $this->get_height() * $scalar);
+			return $this;
+		}
+
+		/**
+		 * Rotate an image. Must update background.
+		 *
+		 * @param  float  $degrees             [Angle in degrees]
+		 * @param  integer $bgd_color          [From any imagecolor*() function]
+		 * @param  integer $ignore_transparent [> 0 means true]
+		 * @return self
+		 */
 		final public function rotate($degrees, $bgd_color = 0, $ignore_transparent = 0) {
 			$this->image = imagerotate($this->image, $degrees, $bgd_color, $ignore_transparent);
 			return $this;
 		}
 
+		/**
+		 * Resize an image to an exact width and height
+		 *
+		 * @param  int $width  [Width in pixels]
+		 * @param  int $height [Height in pixels]
+		 * @return self        [With $this->image as resized iamge]
+		 */
+		final public function resize($width, $height) {
+			$new_image = imagecreatetruecolor($width, $height);
+			imagecopyresampled(
+				$new_image,
+				$this->image,
+				0,
+				0,
+				0,
+				0,
+				$width,
+				$height,
+				$this->get_width(),
+				$this->get_height()
+			);
+			$this->image = $new_image;
+			return $this;
+		}
+
+		/**
+		 * Crop an image from $x, $y to $width & $height
+		 *
+		 * @param  int $x       [Starting x coordinate]
+		 * @param  int $y       [Starting y coordinate]
+		 * @param  int  $width  [Ending width in pixels]
+		 * @param  int  $height [Ending height in pixels]
+		 * @return self
+		 */
+		final public function crop($x = 0, $y = 0, $width = null, $height = null) {
+			if(is_null($width)) $width = $this->get_width();
+			if(is_null($height)) $height = $this->get_height();
+			imagecrop($this->image, [
+				'x' => $x,
+				'y' => $y,
+				'width' => $width,
+				'height' => $height
+			]);
+			return $this;
+		}
+
+		/**
+		 * Get image data as binary string
+		 *
+		 * @param  int     $type    [From image constants]
+		 * @param  int     $quality [Quality or compression level]
+		 * @param  string  $output  [Optional output file instead of return]
+		 * @return string           [If no $output, returns binary data as string]
+		 */
 		final public function as_binary($type = IMAGETYPE_JPEG,  $quality = 100, $output = null) {
 			$this->type = $type;
 			ob_start();
@@ -90,81 +201,38 @@
 			return ob_get_clean();
 		}
 
+		/**
+		 * Get base64 encoded data-uri from $this->image
+		 *
+		 * @param void
+		 * @return string [Base64 encoded data-URI of image data]
+		 */
 		final public function as_data_uri() {
 			return "data:{$this->mime_type};base64," . base64_encode($this->as_binary($this->type));
 		}
 
-		final public function scale($scalar) {
-
-			//$this->image = imagescale($this->image, $scalar * $this->get_width(), $scalar * $this->get_height());
-			$this->resize($this->get_width() * $scalar, $this->get_height() * $scalar);
-			return $this;
-		}
-
-		final public function resize($width, $height) {
-			$new_image = imagecreatetruecolor($width, $height);
-			imagecopyresampled(
-				$new_image,
-				$this->image,
-				0,
-				0,
-				0,
-				0,
-				$width,
-				$height,
-				$this->get_width(),
-				$this->get_height()
-			);
-			$this->image = $new_image;
-			return $this;
-		}
-
-		final public function crop($x = 0, $y = 0, $width = null, $height = null) {
-			if(is_null($width)) $width = $this->get_width();
-			if(is_null($height)) $height = $this->get_height();
-			imagecrop($this->image, [
-				'x' => $x,
-				'y' => $y,
-				'width' => $width,
-				'height' => $height
-			]);
-		}
-
-		final public function color($r, $g, $b, $a = 255) {
-			return imageColorAllocateAlpha($this->image, $r, $g, $b, $a);
-		}
-
-		final public function font($font) {
-			return imageloadfont($font);
-		}
-
-		final public function text($string, $x = 0, $y = 0, $color = 0, $font = 5) {
-			imagestring ($this->image , $font, $x, $y, $string, $color);
-			return $this;
-		}
-
-		final public function alpha_blending($bool = false) {
-			imagealphablending($this->image, $bool);
-			return $this;
-		}
-
-		final public function save_alpha($bool = true) {
-			imagesavealpha($this->image, $bool);
-		}
-
+		/**
+		 * Save an image to file, automatically setting correct extension
+		 *
+		 * @param  string  $fname   [Filename to save to. Extension not needed]
+		 * @param  int     $type    [From image constants]
+		 * @param  int     $quality [Quality or cmpression level]
+		 * @return self
+		 */
 		final public function save($fname, $type = IMAGETYPE_JPEG, $quality = 90) {
-			//file_put_contents($this->as_binary($type), $fname);
 			$fname = pathinfo($fname, PATHINFO_FILENAME);
 			$extension = image_type_to_mime_type($type);
 			$this->as_binary($type, $fname . $extension, $quality);
 			return $this;
 		}
 
-		final public function set_headers() {
-			header('Content-Type: ' . $this->mime_type);
-			return $this;
-		}
-
+		/**
+		 * Download copy of $this->image, with optional filename & type conversion
+		 *
+		 * @param  string $fname [Optional name for file]
+		 * @param  int    $type  [From image constants]
+		 * @return self
+		 */
 		final public function download($fname = null, $type = null) {
 			if(is_null($fname)) $fname = $this->fname;
 			if(is_null($type)) $type = $this->type;
@@ -176,6 +244,86 @@
 			header("Content-Type: {$mime_type}");
 			header('Content-Length:' . strlen($img));
 			echo $img;
+			return $this;
+		}
+
+		/**
+		 * Set headers for image output (currently only Content-Type)
+		 *
+		 * @param void
+		 * @return self
+		 */
+		final public function set_headers() {
+			header('Content-Type: ' . $this->mime_type);
+			return $this;
+		}
+
+		/**
+		 * Create a color for working with image (lines, text, etc)
+		 *
+		 * @param  int     $r [Red]
+		 * @param  int     $g [Green]
+		 * @param  int     $b [Blue]
+		 * @param  int     $a [Alpha/transparency]
+		 * @return int
+		 */
+		final public function color($r, $g, $b, $a = 255) {
+			return imageColorAllocateAlpha($this->image, $r, $g, $b, $a);
+		}
+
+		/**
+		 * Loads a user-defined bitmap and returns its identifier.
+		 * @param  string $font [path/to/font.gdf]
+		 * @return int
+		 */
+		final public function font($font) {
+			return imageloadfont($font);
+		}
+
+		/**
+		 * Write text to an image
+		 *
+		 * @param  string  $string [Text content to write]
+		 * @param  int     $x      [X coordinate to start at]
+		 * @param  int     $y      [Y coordinate to start at]
+		 * @param  int     $color  [From an imageColor*() function]
+		 * @param  int     $font   [From imageloadfont() or built-in font]
+		 * @return self
+		 */
+		final public function text($string, $x = 0, $y = 0, $color = 0, $font = 5) {
+			imagestring ($this->image , $font, $x, $y, $string, $color);
+			return $this;
+		}
+
+		/**
+		 * Enable/disable alpha blending mode
+		 *
+		 * @param  bool   $bool [True to enable, false to disable]
+		 * @return self
+		 */
+		final public function alpha_blending($bool = false) {
+			imagealphablending($this->image, $bool);
+			return $this;
+		}
+
+		/**
+		 * Enable/disable alhpa transparency (must disable blending to enable)
+		 *
+		 * @param  bool   $bool [True to enable, false to disable]
+		 * @return self
+		 */
+		final public function save_alpha($bool = true) {
+			imagesavealpha($this->image, $bool);
+		}
+
+		/**
+		 * Single method to enable/disable transparency. Sets save_alpha & alpha_blending
+		 * @param  bool   $bool [True to enable, false to disable]
+		 * @return self
+		 */
+		final public function enable_transparency($bool = true) {
+			imagealphablending($this->image, !$bool);
+			imagesavealpha($this->image, $bool);
 			return $this;
 		}
 	}
