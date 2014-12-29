@@ -1,0 +1,11 @@
+
+{
+	"name": "shgysk8zer0/core",
+	"version": "0.9.0",
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "git@github.com:shgysk8zer0/core.git"
+		}
+	]
+}
