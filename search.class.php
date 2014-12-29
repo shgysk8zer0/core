@@ -3,11 +3,10 @@
 	 * Uses PDO, but does not extend it.
 	 * Optimized for searching databases
 	 *
-	 * @depreciated (should modify PDO to simplify this anyways)
 	 * @author Chris Zuber <shgysk8zer0@gmail.com>
-	 * @package core_shared
+	 * @package shgysk8zer0\core
 	 * @uses PDO
-	 * @version 2014-08-21
+	 * @version 0.9.0
 	 * @copyright 2014, Chris Zuber
 	 * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
 	 * This program is free software; you can redistribute it and/or

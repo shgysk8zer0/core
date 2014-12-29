@@ -6,8 +6,8 @@
 	 * to work with
 	 *
 	 * @author Chris Zuber
-	 * @package core
-	 * @version 2014-11-11
+	 * @package shgysk8zer0\core
+	 * @version 1.0.0
 	 * @link http://php.net/manual/en/class.domelement.php
 	 * @copyright 2014, Chris Zuber
 	 * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)

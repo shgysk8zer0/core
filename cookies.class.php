@@ -3,8 +3,8 @@
 	 * Quick and easy way of setting/getting cookies
 	 *
 	 * @author Chris Zuber <shgysk8zer0@gmail.com>
-	 * @package core_shared
-	 * @version 2014-05-21
+	 * @package shgysk8zer0\core
+	 * @version 1.0.0
 	 * @copyright 2014, Chris Zuber
 	 * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
 	 * This program is free software; you can redistribute it and/or
@@ -27,7 +27,7 @@
 	 * @var boolean $httponly
 	 *
 	 * @example
-	 * $cookies = new cookies();
+	 * $cookies = new \shgysk8zer0\core\cookies();
 	 * $cookies->cookie_name = 'Value';
 	 * $cookie->existing_cookie //Returns value of $_COOKIES['existing-cookie']
 	 */

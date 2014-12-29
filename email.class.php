@@ -9,10 +9,10 @@
 	 * On Ubuntu, I use ssmtp (see link for manpage)
 	 *
 	 * @author Chris Zuber <shgysk8zer0@gmail.com>
-	 * @package core_shared
+	 * @package shgysk8zer0\core
 	 * @link http://php.net/manual/en/function.mail.php
 	 * @link http://manpages.ubuntu.com/manpages/intrepid/man5/ssmtp.conf.5.html
-	 * @version 2014-06-05
+	 * @version 1.0.0
 	 *
 	 * @example
 	 * //Can be either a comma separated string or an array

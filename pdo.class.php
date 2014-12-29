@@ -5,8 +5,8 @@
 	 * of chained prepare->bind->execute...
 	 *
 	 * @author Chris Zuber <shgysk8zer0@gmail.com>
-	 * @package core_shared
-	 * @version 2014-04-19
+	 * @package shgysk8zer0\core
+	 * @version 0.9.0
 	 * @copyright 2014, Chris Zuber
 	 * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
 	 * This program is free software; you can redistribute it and/or

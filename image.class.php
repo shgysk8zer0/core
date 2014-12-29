@@ -4,7 +4,7 @@
 	 * append text, etc.
 	 *
 	 * @author Chris Zuber <shgysk8zer0@gmail.com>
-	 * @package core
+	 * @package shgysk8zer0\core
 	 * @link http://php.net/manual/en/ref.image.php
 	 * @version 1.0.0
 	 * @copyright 2014, Chris Zuber

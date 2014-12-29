@@ -3,8 +3,8 @@
 	 * Extend \Exception to make its protected vars public
 	 *
 	 * @author Chris Zuber <shgysk8zer0@gmail.com>
-	 * @package core_shared
-	 * @version 2014-12-01
+	 * @package shgysk8zer0\core
+	 * @version 1.0.0
 	 * @copyright 2014, Chris Zuber
 	 * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
 	 * This program is free software; you can redistribute it and/or
@@ -43,7 +43,7 @@
 
 		/**
 		 * Save Exceptions including stack trace to a log file
-		 * 
+		 *
 		 * @param  string $fname [filename (no extension) to write to]
 		 * @return void
 		 */

@@ -3,7 +3,7 @@
 	 * Reads an ini file and stores as an object
 	 *
 	 * @author Chris Zuber <shgysk8zer0@gmail.com>
-	 * @package core_shared
+	 * @package shgysk8zer0\core
 	 * @version 2014-06-01
 	 * @copyright 2014, Chris Zuber
 	 * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
@@ -22,7 +22,7 @@
 
 	 * @todo: Make work when $multi evaluates as true. Will read the file,
 	 * but __set, __get, __unset, __isset, and __call will be ineffective
-     * @depreciated
+	 * @depreciated
 	 */
 
 	namespace shgysk8zer0\core;

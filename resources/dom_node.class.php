@@ -14,8 +14,8 @@
 	*
 	* You should have received a copy of the GNU General Public License
 	* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-	* @version 2014-11-10
-	* @package core
+	* @version 0.9.0
+	* @package shgysk8zer0\core
 	*/
 
 	namespace \shgysk8zer0\core\resources;

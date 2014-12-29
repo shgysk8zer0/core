@@ -4,8 +4,8 @@
 	 * Can check login role as well (new, user, admin, etc)
 	 *
 	 * @author Chris Zuber <shgysk8zer0@gmail.com>
-	 * @package core_shared
-	 * @version 2014-04-19
+	 * @package shgysk8zer0\core
+	 * @version 1.0.0
 	 * @uses /classes/PDO.php
 	 * @copyright 2014, Chris Zuber
 	 * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)

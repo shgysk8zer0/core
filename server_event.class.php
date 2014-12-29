@@ -3,9 +3,9 @@
 	 * Class to allow continuous updates from server using Server Sent Events
 	 *
 	 * @author Chris Zuber <shgysk8zer0@gmail.com>
-	 * @package core_shared
+	 * @package shgysk8zer0\core
 	 * @uses json_response
-	 * @version 2014-08-18
+	 * @version 1.0.0
 	 * @link https://developer.mozilla.org/en-US/docs/Server-sent_events/Using_server-sent_events
 	 * @copyright 2014, Chris Zuber
 	 * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)

@@ -3,16 +3,10 @@
 	 * Handle Webhooks from GitHub with ease!
 	 *
 	 * @author Chris Zuber <shgysk8zer0@gmail.com>
-	 * @copyright 2014, Chris Zuber
-	 *
-	 * @var array     $headers   [The headers sent]
-	 * @var string    $payload   [The body]
-	 * @var string    $event     [Event declared in X-Github-Event header]
-	 * @var \stdClass $parsed    [$payload parsed as an Object]
-	 * @var \stdClass $config    [Configuration data parsed as an Object]
-	 *
+	 * @package shgysk8zer0\core
+	 * @version 1.0.0
 	 * @link https://developer.github.com/webhooks/
-	 *
+	 * @copyright 2014, Chris Zuber
 	 * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
 	 * This program is free software; you can redistribute it and/or
 	 * modify it under the terms of the GNU General Public License
@@ -26,6 +20,12 @@
 	 *
 	 * You should have received a copy of the GNU General Public License
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+	 *
+	 * @var array     $headers   [The headers sent]
+	 * @var string    $payload   [The body]
+	 * @var string    $event     [Event declared in X-Github-Event header]
+	 * @var \stdClass $parsed    [$payload parsed as an Object]
+	 * @var \stdClass $config    [Configuration data parsed as an Object]
 	 */
 
 

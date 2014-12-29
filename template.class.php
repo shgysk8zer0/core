@@ -7,8 +7,8 @@
 	 * to be used again.
 	 *
 	 * @author Chris Zuber <shgysk8zer0@gmail.com>
-	 * @package core_shared
-	 * @version 2014-06-01
+	 * @package shgysk8zer0\core
+	 * @version 1.0.0
 	 * @copyright 2014, Chris Zuber
 	 * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
 	 * This program is free software; you can redistribute it and/or
@@ -42,6 +42,7 @@
 	class template implements magic_methods {
 		private static $instance = [];
 		private $path, $source = '', $replacements = [], $seperator, $minify_results;
+		const MINIFY_EXPRESSION = '/<!--(?!\s*(?:\[if [^\]]+]|<!|>))(?:(?!-->).)*-->/';
 
 		/**
 		 * Static load function avoids creating multiple instances
@@ -105,7 +106,7 @@
 
 		private function minify(&$string = null) {
 			$string = str_replace(["\r", "\n", "\t"], [], (string)$string);
-			$string = preg_replace('/<!--(?!\s*(?:\[if [^\]]+]|<!|>))(?:(?!-->).)*-->/', null, $string);
+			$string = preg_replace($this::MINIFY_EXPRESSION, null, $string);
 			return $this;
 		}
 
