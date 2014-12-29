@@ -32,6 +32,7 @@
 	namespace core;
 
 	class Image {
+		const JPG = IMAGETYPE_JPEG, PNG = IMAGETYPE_PNG, GIF = IMAGETYPE_GIF;
 		protected $image, $fname, $type, $extension;
 		public $mime_type;
 
@@ -55,8 +56,7 @@
 		 * @return void
 		 */
 		final protected function img_data() {
-			$img_data = getimagesize($this->fname);
-			$this->type = $img_data[2];
+			$this->type = getimagesize($this->fname)[2];
 			$this->mime_type = image_type_to_mime_type($this->type);
 			$this->extension = image_type_to_extension($this->type);
 		}
