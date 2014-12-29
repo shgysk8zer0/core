@@ -25,8 +25,8 @@
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-	namespace core\resources;
-	use \core\magic_methods as magic_methods;
+	namespace shgysk8zer0\core\resources;
+	use \shgysk8zer0\core\magic_methods as magic_methods;
 	abstract class pdo_resources implements magic_methods {
 		public $connected;
 		protected $pdo, $data = [];

@@ -23,7 +23,7 @@
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
 
-	namespace core;
+	namespace shgysk8zer0\core;
 	class error_reporter extends PDO {
 
 		protected static $instance = null;

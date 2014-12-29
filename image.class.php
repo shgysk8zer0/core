@@ -29,7 +29,7 @@
 	 * @var string   $mime_type  [image/jpeg|gif|png]
 	 */
 
-	namespace core;
+	namespace shgysk8zer0\core;
 
 	class Image {
 		const JPG = IMAGETYPE_JPEG, PNG = IMAGETYPE_PNG, GIF = IMAGETYPE_GIF;

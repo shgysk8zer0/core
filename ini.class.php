@@ -25,7 +25,7 @@
      * @depreciated
 	 */
 
-	namespace core;
+	namespace shgysk8zer0\core;
 	class ini implements magic_methods {
 		private static $instance = [];
 		private $data = [];

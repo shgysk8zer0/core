@@ -29,7 +29,7 @@
 	 * @depreciated
 	 */
 
-	namespace core;
+	namespace shgysk8zer0\core;
 	class simple_date {
 		public $obj, $data = [], $src, $months = [
 			'January',

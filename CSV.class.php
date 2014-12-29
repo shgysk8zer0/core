@@ -53,7 +53,7 @@
 	 * )->next_row();
 	 */
 
-	namespace core;
+	namespace shgysk8zer0\core;
 	class CSV implements magic_methods {
 		private $data, $fields, $row, $empty_row, $csv;
 		public $delimiter, $enclosure, $print_headers;

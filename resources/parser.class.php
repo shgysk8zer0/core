@@ -39,13 +39,13 @@
 	 * @var array  $files    [Static array of loaded files]
 	 * @var array  $exts     [Static array of supported file extensions]
 	 *
-	 * @example $parsed = \core\resources\Parser::parse('file')
-	 * @example $parsed = \core\resources\Parser::parse('file.ext')
-	 * @example $parsed = \core\resources\Parser::parse('path/to/file.ext')
-	 * @example $parsed = new \core\resorources\Parser(*)
+	 * @example $parsed = \shgysk8zer0\core\resources\Parser::parse('file')
+	 * @example $parsed = \shgysk8zer0\core\resources\Parser::parse('file.ext')
+	 * @example $parsed = \shgysk8zer0\core\resources\Parser::parse('path/to/file.ext')
+	 * @example $parsed = new \shgysk8zer0\core\resorources\Parser(*)
 	 */
 
-	namespace core\resources;
+	namespace shgysk8zer0\core\resources;
 	final class Parser {
 		private $filename, $path, $subpath, $ext, $data;
 		public $file, $found = false;

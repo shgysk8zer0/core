@@ -33,8 +33,8 @@ Super User Core classes are designed to be easy to use with PHP's built-in auto-
 * Set the auto-loader
  * `spl_autoload_register();`
 * Create a new instance of a class including path/namespace
- * `$my_class = new \core\my_class($args)`
- * Or `$my_class = \core\my_class::static_method($args)`
+ * `$my_class = new \shgysk8zer0\core\my_class($args)`
+ * Or `$my_class = \shgysk8zer0\core\my_class::static_method($args)`
 
 # Updating
 If installed as a submodule in Git, updating is relatively easy

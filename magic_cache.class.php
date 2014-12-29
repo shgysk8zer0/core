@@ -35,7 +35,7 @@
 	 * @var int $status [HTTP status]
 	 */
 
-	namespace core;
+	namespace shgysk8zer0\core;
 	class magic_cache {
 		private $file, $ext, $type, $size, $etag, $mod_time, $gz, $status;
 

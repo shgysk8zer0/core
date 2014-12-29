@@ -25,7 +25,7 @@
 	 * @depreciated
 	 */
 
-	namespace core;
+	namespace shgysk8zer0\core;
 	class search {
 		private $select = '*',
 				$from = '',

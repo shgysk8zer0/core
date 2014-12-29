@@ -22,7 +22,7 @@
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
 
-	namespace core;
+	namespace shgysk8zer0\core;
 	class pages {
 		private static $instance = null;
 		private $data, $path, $url, $status, $parsed;

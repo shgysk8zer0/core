@@ -38,7 +38,7 @@
 	 * 	$table .= $template->old('Newer')->replace('Updated Again')->out();
 	 */
 
-	namespace core;
+	namespace shgysk8zer0\core;
 	class template implements magic_methods {
 		private static $instance = [];
 		private $path, $source = '', $replacements = [], $seperator, $minify_results;

@@ -23,8 +23,8 @@
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-	namespace core;
-	use \core\resources\pdo_resources as pdo_resources;
+	namespace shgysk8zer0\core;
+	use \shgysk8zer0\core\resources\pdo_resources as pdo_resources;
 	class PDO extends pdo_resources {
 		protected $pdo, $prepared, $connect;
 		private $query;

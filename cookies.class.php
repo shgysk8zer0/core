@@ -32,7 +32,7 @@
 	 * $cookie->existing_cookie //Returns value of $_COOKIES['existing-cookie']
 	 */
 
-	namespace core;
+	namespace shgysk8zer0\core;
 	class cookies implements magic_methods {
 		public $expires, $path, $domain, $secure, $httponly;
 		private static $instance = null;

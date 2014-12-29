@@ -28,7 +28,7 @@
 	 * $resp->notify(...)->html(...)->append(...)->prepend(...)->before(...)->after(...)->attributes(...)->remove(...)->send();
 	 */
 
-	namespace core;
+	namespace shgysk8zer0\core;
 	class json_response implements magic_methods {
 		protected $response = [];
 		private static $instance = null;
@@ -264,7 +264,7 @@
 		 * @param  string  $selector  [CSS selector for element]
 		 * @param  string  $attribute [Attribute to increment]
 		 * @param  integer $by        [Ammount to increment by]
-		 * @return \core\json_response
+		 * @return \shgysk8zer0\core\json_response
 		 * @example $resp->increment('#progress', 'value', 1)
 		 * @example $resp->increment('#progress')
 		 */

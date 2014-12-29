@@ -19,7 +19,7 @@
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
 
-	namespace core;
+	namespace shgysk8zer0\core;
 	use core\resources as resources;
 	class XML_API_Call extends resources\XML_Document {
 		const API_LOG_DIR = 'api_log',

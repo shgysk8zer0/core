@@ -37,7 +37,7 @@
 	 * $event->close();
 	 */
 
-	namespace core;
+	namespace shgysk8zer0\core;
 	class server_event extends json_response {
 		private static $instance = null;
 

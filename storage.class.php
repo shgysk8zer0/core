@@ -28,7 +28,7 @@
 	 * @depreciated
 	 */
 
-	namespace core;
+	namespace shgysk8zer0\core;
 	class storage {
 
 		private static $instance = null;

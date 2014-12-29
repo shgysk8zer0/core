@@ -20,7 +20,7 @@
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-	namespace core\resources;
+	namespace shgysk8zer0\core\resources;
 	class XML_Document extends \DOMDocument {
 		protected $charset;
 

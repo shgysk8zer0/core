@@ -29,7 +29,7 @@
 	 */
 
 
-	namespace core;
+	namespace shgysk8zer0\core;
 	class GitHubWebhook {
 		public $headers = [], $payload = null, $event = null, $parsed = null,  $config = null;
 

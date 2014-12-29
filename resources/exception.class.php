@@ -22,7 +22,7 @@
 	 * @link http://php.net/manual/en/class.exception.php
 	 */
 
-	namespace core\resources;
+	namespace shgysk8zer0\core\resources;
 	class Exception extends \Exception {
 		public $line, $file, $message, $code, $trace;
 		const LOG_DIR = 'exception_logs';

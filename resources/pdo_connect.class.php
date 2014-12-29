@@ -25,8 +25,8 @@
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-	namespace core\resources;
-	use \core\resources\Parser as Parser;
+	namespace shgysk8zer0\core\resources;
+	use \shgysk8zer0\core\resources\Parser as Parser;
 	class pdo_connect extends \PDO {
 		protected $connect;
 		protected static $instances = [];
@@ -68,7 +68,7 @@
 		 *
 		 * @param mixed $con (.ini file to use for database credentials)
 		 * @return void
-		 * @uses \core\resources\Parser
+		 * @uses \shgysk8zer0\core\resources\Parser
 		 * @example parent::__construct($con)
 		 */
 

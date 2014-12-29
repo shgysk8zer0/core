@@ -19,7 +19,7 @@
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
 
-	namespace core;
+	namespace shgysk8zer0\core;
 	class prepared extends pdo_resources {
 		private static $instances = [];
 

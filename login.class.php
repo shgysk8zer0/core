@@ -26,7 +26,7 @@
 	 * @var login $instance
 	 */
 
-	namespace core;
+	namespace shgysk8zer0\core;
 	class login extends PDO {
 		public $data = [];
 		protected static $instance = null;

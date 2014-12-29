@@ -25,7 +25,7 @@
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-	namespace core\resources;
+	namespace shgysk8zer0\core\resources;
 	use core\resources as resources;
 
 	class XML_Node extends \DOMElement {

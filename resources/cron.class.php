@@ -27,13 +27,13 @@
 	 * You should have received a copy of the GNU General Public License
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 *
-	 * @uses \core\PDO
+	 * @uses \shgysk8zer0\core\PDO
 	 * @param int $time
 	 * @param array $jobs
 	 * @param array $funcs
 	 */
 
-	namespace core\resources;
+	namespace shgysk8zer0\core\resources;
 
 	class cron {
 		private $time, $jobs, $funcs;
@@ -50,7 +50,7 @@
 		 */
 
 		public function __construct($con = 'connect') {
-			$pdo = \core\PDO::load($con);
+			$pdo = \shgysk8zer0\core\PDO::load($con);
 			if($pdo->connected) {
 				$this->time = time();
 				$this->jobs = array_filter(
@@ -120,7 +120,7 @@
 		 * @return void
 		 */
 
-		private function all_jobs(\core\PDO &$pdo) {
+		private function all_jobs(\shgysk8zer0\core\PDO &$pdo) {
 			return $pdo->fetch_array("
 				SELECT
 					`function`,
@@ -201,7 +201,7 @@
 		 * @return void
 		 */
 
-		private function update_last_ran(\core\PDO &$pdo) {
+		private function update_last_ran(\shgysk8zer0\core\PDO &$pdo) {
 			$pdo->prepare("
 				UPDATE `cron`
 				SET `last_ran` = :time

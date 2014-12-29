@@ -54,7 +54,7 @@
 	 * )->next_row();
 	 */
 
-	namespace core;
+	namespace shgysk8zer0\core;
 	class table implements magic_methods {
 		private $data, $headers, $row, $empty_row, $table, $thead, $tfoot, $tbody;
 		public $caption;

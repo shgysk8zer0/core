@@ -31,7 +31,7 @@
 	 * @var session $instance
 	*/
 
-	namespace core;
+	namespace shgysk8zer0\core;
 	class session implements magic_methods {
 		private $name, $expires, $path, $domain, $secure, $httponly;
 		private static $instance = null;

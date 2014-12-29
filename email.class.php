@@ -26,7 +26,7 @@
 	 * 		]
 	 * 	];
 	 *
-	 * $mail = new \core\email($to, $subject, $message, $additional_headers);
+	 * $mail = new \shgysk8zer0\core\email($to, $subject, $message, $additional_headers);
 	 *
 	 * $success = $mail->send(true);
 	 *
@@ -46,7 +46,7 @@
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
 
-	namespace core;
+	namespace shgysk8zer0\core;
 	class email {
 		public $to = null, $from = null, $subject = null, $message = null;
 		protected $additional_headers = [], $additional_paramaters = [],

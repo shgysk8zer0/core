@@ -18,7 +18,7 @@
 	* @package core
 	*/
 
-	namespace \core\resources;
+	namespace \shgysk8zer0\core\resources;
 	abstract class dom_node extends \DOMDocument {
 
 		private $node, $attributes, $content, $charset;
