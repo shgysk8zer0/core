@@ -1,6 +1,6 @@
 
 {
-	"name": "shgysk8zer0/Core",
+	"name": "shgysk8zer0/core",
 	"description": "Core Super User classes",
 	"require": {
 		"php": ">=5.5.0"
@@ -22,5 +22,5 @@
 	],
 	"autoload": {
 		"psr-4": {}
-	},
+	}
 }
