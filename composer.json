@@ -3,7 +3,7 @@
 	"name": "shgysk8zer0/core",
 	"version": "0.9.0",
 	"require": {
-		"shgysk8zer0/core": "master"
+		"php" ">=5.5.0"
 	},
 	"author": {
 		"name": "Chris Zuber",
