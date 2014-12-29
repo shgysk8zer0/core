@@ -1,15 +1,18 @@
 
 {
 	"name": "shgysk8zer0/core",
+	"description": "Core Super User classes",
 	"version": "0.9.0",
 	"require": {
-		"php" ">=5.5.0"
+		"php": ">=5.5.0"
 	},
-	"author": {
-		"name": "Chris Zuber",
-		"email": "shgysk8zer0@gmail.com"
-	},
-	"license": "GPL3",
+	"authors": [
+		{
+			"name": "Chris Zuber",
+			"email": "shgysk8zer0@gmail.com"
+		}
+	],
+	"license": "GPL-3.0+",
 	"repositories": [
 		{
 			"type": "vcs",
