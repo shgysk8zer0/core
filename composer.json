@@ -1,15 +1,16 @@
 
 {
-	"name": "shgysk8zer0/core",
+	"name": "shgysk8zer0/Core",
 	"description": "Core Super User classes",
-	"version": "0.9.0",
 	"require": {
 		"php": ">=5.5.0"
 	},
 	"authors": [
 		{
 			"name": "Chris Zuber",
-			"email": "shgysk8zer0@gmail.com"
+			"role" : "developer",
+			"email": "shgysk8zer0@gmail.com",
+			"homepage": "http://chriszuber.com"
 		}
 	],
 	"license": "GPL-3.0+",
@@ -21,5 +22,5 @@
 	],
 	"autoload": {
 		"psr-4": {}
-	}
+	},
 }
