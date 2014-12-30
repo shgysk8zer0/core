@@ -26,7 +26,7 @@
 	*/
 
 	namespace shgysk8zer0\Core\resources;
-	use core\resources as resources;
+	use shgysk8zer0\Core\resources as resources;
 
 	class XML_Node extends \DOMElement {
 		/**

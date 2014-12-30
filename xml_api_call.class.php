@@ -20,7 +20,7 @@
 	 */
 
 	namespace shgysk8zer0\Core;
-	use core\resources as resources;
+	use shgysk8zer0\Core\resources as resources;
 	class XML_API_Call extends resources\XML_Document {
 		const API_LOG_DIR = 'api_log',
 			OUTPUT_DATE_FORMAT = 'Y-m-d\TH:i:s';
