@@ -1,4 +1,6 @@
 <?php
+
+	namespace shgysk8zer0\Core;
 	/**
 	 * Wrapper for standard PDO class. Allows
 	 * standard MySQL to be used, while giving benefits
@@ -22,8 +24,6 @@
 	 * You should have received a copy of the GNU General Public License
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	*/
-
-	namespace shgysk8zer0\Core;
 	use \shgysk8zer0\Core\resources\pdo_resources as pdo_resources;
 	class PDO extends pdo_resources {
 		protected $pdo, $prepared, $connect;
