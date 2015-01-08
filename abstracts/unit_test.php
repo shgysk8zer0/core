@@ -5,11 +5,13 @@
 	 * @see http://php.net/manual/en/class.reflectionclass.php
 	 */
 
-	abstract class Unit_Test
-	extends \ReflectionClass
-	implements \shgysk8zer0\Core\Interfaces\Unit_Test
+	use \shgysk8zer0\Core\Abstracts as Abstrcts;
+	use \shgysk8zer0\Core\Interfaces as Interfaces;
+	use \shgysk8zer0\Core\Traits as Traits;
+
+	abstract class Unit_Test extends \ReflectionClass implements Interfaces\Unit_Test
 	{
-		use \shgysk8zer0\Core\Traits\Asserts;
+		use Traits\Asserts;
 
 		public $methods, $child_class, $output;
 
