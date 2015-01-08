@@ -12,68 +12,57 @@ Trait Asserts {
 
 	public function assertEquals($test1, $test2, $desc = null)
 	{
-		$this->total_asserts++;
-		assert($test1 === $test2, $desc) ? $this->passed_asserts++ : $this->failed_asserts++;
+		assert($test1 === $test2, $desc);
 	}
 
 	public function assertInt($test, $desc = null)
 	{
-		$this->total_asserts++;
-		assert(is_int($test), $desc) ? $this->passed_asserts++ : $this->failed_asserts++;
+		assert(is_int($test), $desc);
 	}
 
 	public function assertFloat($test, $desc = null)
 	{
-		$this->total_asserts++;
-		assert(is_float($test), $desc) ? $this->passed_asserts++ : $this->failed_asserts++;
+		assert(is_float($test), $desc);
 	}
 
 	public function assertNumeric($test, $desc = null)
 	{
-		$this->total_asserts++;
-		assert(is_numeric($test), $desc) ? $this->passed_asserts++ : $this->failed_asserts++;
+		assert(is_numeric($test), $desc);
 	}
 
 	public function assertString($test, $desc = null)
 	{
-		$this->total_asserts++;
-		assert(is_string($test), $desc) ? $this->passed_asserts++ : $this->failed_asserts++;
+		assert(is_string($test), $desc);
 	}
 
 	public function assertObject($test, $desc = null)
 	{
-		$this->total_asserts++;
-		assert(is_object($test), $desc) ? $this->passed_asserts++ : $this->failed_asserts++;
+		assert(is_object($test), $desc);
 	}
 
 	public function assertArray($test, $desc = null)
 	{
-		$this->total_asserts++;
-		assert(is_array($test), $desc) ? $this->passed_asserts++ : $this->failed_asserts++;
+		assert(is_array($test), $desc);
 	}
 
 	public function assertEmpty($test, $desc = null)
 	{
-		$this->total_asserts++;
-		assert(empty($test), $desc) ? $this->passed_asserts++ : $this->failed_asserts++;
+		assert(empty($test), $desc);
 	}
 
 	public function assertNotEmpty($test, $desc)
 	{
-		$this->total_asserts++;
-		assert(!empty($test), $desc) ? $this->passed_asserts++ : $this->failed_asserts++;
+		assert(!empty($test), $desc);
 	}
 
 	public function assertBool($test, $desc = null)
 	{
-		$this->total_asserts++;
-		assert(is_bool($test), $desc) ? $this->passed_asserts++ : $this->failed_asserts++;
+		assert(is_bool($test), $desc);
 	}
 
 	public function assertTrue($test, $desc = null)
 	{
-		$this->total_asserts++;
-		assert($test, $desc) ? $this->passed_asserts++ : $this->failed_asserts++;
+		assert($test, $desc);
 	}
 
 	public function assertFalse($test, $desc = null)
@@ -84,31 +73,27 @@ Trait Asserts {
 
 	public function assertType($test, $type, $desc = null)
 	{
-		$this->total_asserts++;
-		assert(gettype($test) === $type, $desc) ? $this->passed_asserts++ : $this->failed_asserts++;
+		assert(gettype($test) === $type, $desc);
 	}
 
 	public function assertClass($test, $className, $desc = null)
 	{
-		$this->total_asserts++;
-		assert(get_class($test) === $className, $desc) ? $this->passed_asserts++ : $this->failed_asserts++;
+		assert(get_class($test) === $className, $desc);
 	}
 
 	public function assertFunctionExists($test, $desc = null)
 	{
-		$this->total_asserts++;
-		assert(function_exists($test), $desc) ? $this->passed_asserts++ : $this->failed_asserts++;
+
+		assert(function_exists($test), $desc);
 	}
 
 	public function assertMethodExists($class, $method, $desc = null)
 	{
-		$this->total_asserts++;
-		assert(method_exists($class, $method), $desc) ? $this->passed_asserts++ : $this->failed_asserts++;
+		assert(method_exists($class, $method), $desc);
 	}
 
 	public function assertThrows(Callable $callback, array $args = null, $desc = null)
 	{
-		$this->total_asserts++;
 		try {
 			$callback($args);
 		} catch(\Exception $e) {
@@ -117,6 +102,11 @@ Trait Asserts {
 		}
 		assert(false, $desc);
 		$this->failed_asserts++;
+	}
+
+	public function getFailedAsserts()
+	{
+		return $this->failed_asserts;
 	}
 
 	/**
@@ -128,12 +118,7 @@ Trait Asserts {
 	*/
 	final protected function assertFailed($file, $line, $code, $desc = null)
 	{
-		/*print_r([
-		'file' => $file,
-		'line' => $line,
-		'code' => $code,
-		'desc' => $desc
-		]);*/
+		$this->failed_asserts++;
 		static::setCLIColors($file, 'yellow');
 		static::setCLIColors($line, 'blue');
 		static::setCLIColors($desc, 'red');
