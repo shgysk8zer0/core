@@ -1,4 +1,4 @@
-[Super User Core](<https://github.com/shgysk8zer0/core>)
+[Super User Core](<https://github.com/shgysk8zer0/core>) ![Build Status](https://travis-ci.org/shgysk8zer0/core.svg?branch=master)
 ====
 
 Core classes for Super User and others (for use as submodule)
