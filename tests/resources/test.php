@@ -42,28 +42,5 @@ class Test extends \shgysk8zer0\Core\Abstracts\Unit_Test
 			get_class($this->set_pattern('%TEST%')) === get_class($this->reflected_class),
 			'Chainable test'
 		);
-		assert(false, 'This assert should fail');
-		assert('5 > 6', '5 > 6');
-
-		echo 'Done!' . PHP_EOL;
-		//print_r($this->getCaller());
-		/*$this->assertEquals(1, 1, 'One equals one');
-		$this->assertString('', 'String Test');
-		$this->assertInt(1, 'Int Test');
-		$this->assertFloat(3.14, 'Float Test');
-		$this->assertNumeric('2.1858', 'Numeric Test');
-		$this->assertBool(true, 'Bool test');
-		$this->assertTrue(true, 'True test');
-		$this->assertFalse(false, 'False test');
-		$this->assertArray([], 'Array test');
-		$this->assertObject(new \stdClass, 'Object Test');
-		$this->assertEmpty([], 'Empty test');
-		$this->assertNotEmpty('Hello World', 'NotEmpty Test');
-		$this->assertClass(
-			$this->set_pattern('title'),
-			$this->getName(),
-			'Chain returns class'
-		);*/
-		//print_r(['included files' => get_included_files()]);
 	}
 }
