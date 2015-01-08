@@ -1,26 +1,96 @@
 <?php
+	namespace shgysk8zer0\Core\Abstracts;
 	/**
 	 *
+	 * @see http://php.net/manual/en/class.reflectionclass.php
 	 */
-	namespace shgysk8zer0\Core\resources;
 
 	abstract class Unit_Test
+	extends \ReflectionClass
+	implements \shgysk8zer0\Core\Interfaces\Unit_Test
 	{
-		protected $methods = [], $child_class;
+		use \shgysk8zer0\Core\Traits\Asserts;
+
+		public $methods, $child_class, $output;
+
+		protected $reflected_class = null;
+
+		private $constructor_args = null;
+
 		protected static $defined_levels = [];
-		public static $exceptions = [];
-		protected static $CLIs = ['cli'];
+
+		public static $exceptions = [],
+			$ASSERT_ACTIVE = true,
+			$ASSERT_WARNING = false,
+			$ASSERT_BAIL = false,
+			$ASSERT_QUIET_EVAL = false,
+			$ASSERT_CALLBACK = 'assertFailed',
+			$CLIs = ['cli'],
+			$ECHO_EXCEPTIONS = true;
 
 		const ERROR_HANDLER_LEVEL = E_ALL;
 		const DEFAULT_ERROR_LEVEL = E_ALL;
 		const ERROR_HANDLER_METHOD = 'errorHandler';
 		const EXCEPTION_HANDLER_METHOD = 'exceptionHandler';
-		public static $ECHO_EXCEPTIONS = true;
+		const ASSERT_FAILED_METHOD = 'assertFailed';
 
-		public function __construct()
+		/**
+		 * [__construct description]
+		 * @param [type] $testsClass [description]
+		 */
+		public function __construct($testsClass, array $constructor_args = null)
 		{
 			$this->forceCLI();
+			parent::__construct($testsClass);
+			$this->constructor_args = $constructor_args;
+			assert_options(ASSERT_ACTIVE, static::$ASSERT_ACTIVE);
+			assert_options(ASSERT_WARNING, static::$ASSERT_WARNING);
+			assert_options(ASSERT_BAIL, static::$ASSERT_BAIL);
+			assert_options(ASSERT_QUIET_EVAL, static::$ASSERT_QUIET_EVAL);
+			assert_options(ASSERT_CALLBACK, [$this, $this::ASSERT_FAILED_METHOD]);
 			$this->init();
+		}
+
+		/**
+		 * [__get description]
+		 * @param  [type] $prop [description]
+		 * @return [type]       [description]
+		 */
+		final public function __get($prop)
+		{
+			if(method_exists($this, "get{$prop}")) {
+				return \call_user_func([$this, "get{$prop}"]);
+			}
+		}
+
+		/**
+		 * [__call description]
+		 * @param  [type] $method [description]
+		 * @param  [type] $args   [description]
+		 * @return [type]         [description]
+		 */
+		final public function __call($method, array $args = null)
+		{
+			if (is_null($this->reflected_class)) {
+				if ($this->getConstructor()) {
+					$this->reflected_class = (is_array($args))
+						? $this->newInstanceArgs($this->constructor_args)
+						: $this->newInstance();
+				} else {
+					$this->reflected_class = $this->newInstanceWithoutConstructor();
+				}
+			}
+
+			if ($this->hasMethod($method)) {
+				return $this->getMethod(
+					$method
+				)->invokeArgs(
+					$this->reflected_class,
+					$args
+				);
+			} else {
+				echo 'No method: ' . $method . PHP_EOL;
+			}
 		}
 
 		/**
@@ -32,7 +102,10 @@
 			$this->child_class = get_class();
 			set_exception_handler([__CLASS__, $this::EXCEPTION_HANDLER_METHOD]);
 			set_error_handler(
-				[__CLASS__, $this::ERROR_HANDLER_METHOD],
+				[
+					__CLASS__,
+					$this::ERROR_HANDLER_METHOD
+				],
 				self::ERROR_HANDLER_LEVEL
 			);
 
@@ -121,7 +194,11 @@
 			$scope = null
 		)
 		{
-			$error_message = array_search($error_level, static::$defined_levels) . ": {$error_message}";
+			$error_message = array_search(
+				$error_level,
+				static::$defined_levels
+			) . ": {$error_message}";
+
 			throw new \ErrorException($error_message, 0, $error_level, $file, $line);
 			return true;
 		}
@@ -133,5 +210,12 @@
 		final public function results()
 		{
 			echo join(PHP_EOL, static::$exceptions);
+		}
+
+		final protected function getCaller($level = 0)
+		{
+			return debug_backtrace()[$level];
+			$backtrace = debug_backtrace();
+			return array_shift($backtrace);
 		}
 	}
