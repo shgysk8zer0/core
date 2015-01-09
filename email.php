@@ -1,4 +1,6 @@
 <?php
+	namespace shgysk8zer0\Core;
+
 	/**
 	 * Simple PHP mail class using mail()
 	 *
@@ -45,9 +47,8 @@
 	 * You should have received a copy of the GNU General Public License
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
-
-	namespace shgysk8zer0\Core;
-	class email {
+	class email
+	{
 		public $to = null, $from = null, $subject = null, $message = null;
 		protected $additional_headers = [], $additional_paramaters = [],
 		$default_headers = null;
@@ -72,14 +73,14 @@
 		 * @param array  $additional_headers    [Things like 'From', 'To', etc]
 		 * @param array  $additional_paramaters [Additional command line arguments]
 		 */
-
 		public function __construct(
 			$to = null,
 			$subject = null,
 			$message = null,
 			array $additional_headers = null,
 			array $additional_paramaters = null
-		) {
+		)
+		{
 			$this->to = $to;
 			$this->subject = $subject;
 			$this->message = $message;
@@ -93,10 +94,11 @@
 				'From' => array_key_exists('SERVER_ADMIN', $_SERVER) ? $_SERVER['SERVER_ADMIN'] : null,
 				'X-Mailer' => 'PHP/' . PHP_VERSION
 			];
-			if(is_array($additional_headers)) {
+			if (is_array($additional_headers)) {
 				$this->additional_headers = $additional_headers;
 			}
-			if(is_array($additional_paramaters)) {
+
+			if (is_array($additional_paramaters)) {
 				$this->additional_paramaters = $additional_paramaters;
 			}
 		}
@@ -110,8 +112,8 @@
 		 *
 		 * @example $mail->From = 'user@domain.com';
 		 */
-
-		public function __set($key, $value) {
+		public function __set($key, $value)
+		{
 			$this->additional_headers[str_replace('_', '-', $key)] = $value;
 		}
 
@@ -123,9 +125,11 @@
 		 *
 		 * @example echo $mail->From;
 		 */
-
-		public function __get($key) {
-			return ($this->__isset($key)) ? $this->additional_headers[str_replace('_', '-', $key)] : null;
+		public function __get($key)
+		{
+			return ($this->__isset($key))
+				? $this->additional_headers[str_replace('_', '-', $key)]
+				: null;
 		}
 
 		/**
@@ -136,8 +140,8 @@
 		 *
 		 * @example isset($mail->From)
 		 */
-
-		public function __isset($key) {
+		public function __isset($key)
+		{
 			return (array_key_exists(str_replace('_', '-', $key), $this->additional_headers));
 		}
 
@@ -149,9 +153,11 @@
 		 *
 		 * @example unset($mail->From)
 		 */
-
-		public function __unset($key) {
-			if($this->__isset($key)) unset($this->additional_headers[str_replace('_', '-', $key)]);
+		public function __unset($key)
+		{
+			if ($this->__isset($key)) {
+				unset($this->additional_headers[str_replace('_', '-', $key)]);
+			}
 		}
 
 		/**
@@ -163,18 +169,19 @@
 		 * @param void
 		 * @return string
 		 */
-
-		protected function convert_headers() {
-			$headers = array_filter(array_merge($this->default_headers, $this->additional_headers));
+		protected function convert_headers()
+		{
+			$headers = array_filter(array_merge(
+				$this->default_headers, $this->additional_headers
+			));
 
 			return join($this::NL, array_map(function($key, $value) {
 				$key = preg_replace('/[' . $this::HEADER_FILTER . ']/', '-', strtoupper($key));
-				if(is_array($value)) {
+				if (is_array($value)) {
 					return "{$key}:" .  join('; ', array_map(function($sub_key, $sub_value) {
 						return (is_string($sub_key)) ? "{$sub_key}={$sub_value}" : "{$sub_value}";
 					}, array_keys($value), array_values($value)));
-				}
-				elseif(is_string($value)) {
+				} elseif (is_string($value)) {
 					return "{$key}: $value";
 				}
 			}, array_keys($headers), array_values($headers)));
@@ -186,8 +193,8 @@
 		 *
 		 * @return string
 		 */
-
-		protected function convert_paramaters() {
+		protected function convert_paramaters()
+		{
 			return join(PHP_EOL, $this->additional_paramaters);
 		}
 
@@ -199,15 +206,13 @@
 		 * @param void
 		 * @return string [user1@domain.com, user2@domain.com]
 		 */
-
-		protected function recepients() {
-			if(is_string($this->to)) {
+		protected function recepients()
+		{
+			if (is_string($this->to)) {
 				return join(', ', array_filter(explode(', ', $this->to), [$this ,'is_email']));
-			}
-			elseif(is_array($this->to)) {
+			} elseif (is_array($this->to)) {
 				return join(', ', array_filter($this->to, [$this, 'is_email']));
-			}
-			elseif(is_object($this->to)) {
+			} elseif (is_object($this->to)) {
 				return join(', ', array_filter(get_object_vars($this->to), [$this, 'is_email']));
 			}
 		}
@@ -218,8 +223,8 @@
 		 * @param  string  $address [Text which should be an email address]
 		 * @return boolean          [Whether or not it matches the specification]
 		 */
-
-		public function is_email($address) {
+		public function is_email($address)
+		{
 			return filter_var($address, FILTER_VALIDATE_EMAIL);
 		}
 
@@ -238,8 +243,8 @@
 		 * @param  bool $html   [Whether or not HTML output is desired]
 		 * @return string
 		 */
-
-		protected function convert_message($html = false) {
+		protected function convert_message($html = false)
+		{
 			return str_replace(
 				PHP_EOL,
 				$this::NL,
@@ -262,8 +267,8 @@
 		 * @param void
 		 * @return string
 		 */
-
-		protected function trim_subject() {
+		protected function trim_subject()
+		{
 			return wordwrap(
 				strip_tags($this->subject),
 				$this::WRAP_AT,
@@ -277,8 +282,8 @@
 		 * @param void
 		 * @return string
 		 */
-
-		protected function asHTML() {
+		protected function asHTML()
+		{
 			$dom = new \DOMDocument('1.0', $this::CHARSET);
 			$dom->loadHTML($this::HTML_DOCTYPE . $this->message);
 			$html = $dom->getElementsByTagName('html')->item(0);
@@ -305,14 +310,15 @@
 		 * @param  boolean $html [Is this an HTML email?]
 		 * @return boolean       [Success of mail()]
 		 */
-
-		public function send($html = false) {
-			if($html) {
+		public function send($html = false)
+		{
+			if ($html) {
 				$this->additional_headers['Content-Type'] = [
 					'text/html',
 					'charset' => $this::CHARSET
 				];
 			}
+
 			return mail(
 				$this->recepients(),
 				$this->trim_subject(),
@@ -322,4 +328,3 @@
 			);
 		}
 	}
-?>

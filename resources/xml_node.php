@@ -1,4 +1,7 @@
 <?php
+	namespace shgysk8zer0\Core\resources;
+	use shgysk8zer0\Core\resources as resources;
+
 	/**
 	 * Wrapper for DOMElement
 	 *
@@ -24,11 +27,8 @@
 	 * You should have received a copy of the GNU General Public License
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	*/
-
-	namespace shgysk8zer0\Core\resources;
-	use shgysk8zer0\Core\resources as resources;
-
-	class XML_Node extends \DOMElement {
+	class XML_Node extends \DOMElement
+	{
 		/**
 		 * Class constructor | Creates a new DOMElement
 		 *
@@ -36,20 +36,18 @@
 		 * @param string $value        [nodeValue/textContent for new element]
 		 * @param string $namespaceURI [Namespace for new element]
 		 */
-
-		public function __construct($name, $content = null, $namespaceURI = null) {
-			if(is_string($content) or is_numeric($content)) {
+		public function __construct($name, $content = null, $namespaceURI = null)
+		{
+			if (is_string($content) or is_numeric($content)) {
 				parent::__construct($name, "{$content}", $namespaceURI);
-			}
-			elseif(isset($content) and is_object($content) and in_array(get_class($content), [
+			} elseif (isset($content) and is_object($content) and in_array(get_class($content), [
 				'DOMElement',
 				'DOMNode',
 				'core\resources\XML_Node'
 			])) {
 				parent::__construct($name, null, $namespaceURI);
 				$this->append($content);
-			}
-			else {
+			} else {
 				parent::__construct($name, null, $namespaceURI);
 			}
 		}
@@ -61,8 +59,8 @@
 		 * @param string $value     [Value to set the attribute to]
 		 * @return void
 		 */
-
-		public function __set($attribute, $value) {
+		public function __set($attribute, $value)
+		{
 			$this->setAttribute($attribute, $value);
 		}
 
@@ -72,8 +70,8 @@
 		 * @param  string $attribute [Property/attribute name]
 		 * @return string            [Value to set the attribute to]
 		 */
-
-		public function __get($attribute) {
+		public function __get($attribute)
+		{
 			return $this->getAttribute($attribute);
 		}
 
@@ -84,8 +82,8 @@
 		 * @param  array  $args [array of values to be setting]
 		 * @return XML_Node
 		 */
-
-		public function __call($key, array $args) {
+		public function __call($key, array $args)
+		{
 			$this->setAttribute($key, join(',', $args));
 			return $this;
 		}
@@ -96,8 +94,8 @@
 		 * @param  string  $attribute [Property/attribute name]
 		 * @return boolean            [Whether or not the attribute is set]
 		 */
-
-		public function __isset($attribute) {
+		public function __isset($attribute)
+		{
 			return $this->hasAttribute($attribute);
 		}
 
@@ -106,8 +104,8 @@
 		 *
 		 * @param string $attribute [Property/attribute name]
 		 */
-
-		public function __unset($attribute) {
+		public function __unset($attribute)
+		{
 			return $this->removeAttribute($attribute);
 		}
 
@@ -118,8 +116,8 @@
 		 * @param  string $value [nodeValue/textContent]
 		 * @return XML_Node
 		 */
-
-		public function __invoke($value) {
+		public function __invoke($value)
+		{
 			return $this->value($value);
 		}
 
@@ -129,13 +127,11 @@
 		 * @param  string $value [nodeValue/textContent]
 		 * @return XML_Node
 		 */
-
-
-		public function value($content) {
-			if(is_string($content)) {
+		public function value($content)
+		{
+			if (is_string($content)) {
 				$this->nodeValue = $this->trim($content);
-			}
-			elseif(in_array(get_class($content), [
+			} elseif (in_array(get_class($content), [
 				'DOMElement',
 				'DOMNode',
 				'core\resources\XML_Node',
@@ -158,8 +154,8 @@
 		 * @param  XML_Node $node [Node to be appended]
 		 * @return XML_Node         [Parent node/Self]
 		 */
-
-		public function append(XML_Node $node) {
+		public function append(XML_Node $node)
+		{
 			$this->appendChild($node);
 			return $this;
 		}
@@ -169,20 +165,30 @@
 		 * @param  string $str [unencoded string]
 		 * @return string      [encoded string]
 		 */
-
-		private function encode($str) {
+		private function encode($str)
+		{
 			return htmlentities((string)$str, ENT_XML1, $this->charset);
 		}
 
-		protected function trim(&$content) {
-			if(is_string($content) or is_numeric($content)) {
+		/**
+		 * Trims $content and alsoremoves any newlines or tabs.
+		 * Since $content is passed by reference, it both returns the trimmed
+		 * string, and trims the original
+		 * DO NOT call this method except by variables.
+		 * E.G. Do not "$this->trim('Hello World!')"
+		 * @param  string $content [The original string (by reference)]
+		 * @return string          [The minified string (also modifies original)]
+		 */
+		protected function trim(&$content)
+		{
+			if (is_string($content) or is_numeric($content)) {
 				$content = str_replace(["\r", "\r\n", "\n", "\t"], null, trim("{$content}"));
 				$content = $this->encode($str);
 			}
-			elseif(is_array($content)) {
+			elseif (is_array($content)) {
 				array_walk($content, [$this, 'trim']);
 			}
-			elseif(is_object($content)) {
+			elseif (is_object($content)) {
 				foreach(get_object_vars($content) as $key => $value) {
 					$content->$key = $this->trim($value);
 				}
@@ -192,4 +198,3 @@
 		}
 
 	}
-?>

@@ -1,4 +1,5 @@
 <?php
+	namespace shgysk8zer0\Core;
 	/**
 	* @author Simon Jarvis
 	* @copyright 2006 Simon Jarvis
@@ -19,27 +20,26 @@
 	* @var resource $image [handle for image]
 	* @var int $image_type [Constant representing image type - JPEG, etc]
 	* @var string $fname   [filename]
+	* @depreciated
 	*/
 
-	namespace shgysk8zer0\Core;
 	class SimpleImage {
 
 		public $image;
 		public $image_type;
 		public $fname;
 
-		public function __construct($filename) {
+		public function __construct($filename)
+		{
 			$this->fname = $filename;
 			$image_info = getimagesize($filename);
 			$this->image_type = $image_info[2];
 
-			if( $this->image_type == IMAGETYPE_JPEG ) {
+			if ( $this->image_type == IMAGETYPE_JPEG ) {
 				$this->image = imagecreatefromjpeg($filename);
-			}
-			elseif( $this->image_type == IMAGETYPE_GIF ) {
-				$this->image = imagecreatefromgif($filename);
-			}
-			elseif( $this->image_type == IMAGETYPE_PNG ) {
+			} elseif ( $this->image_type == IMAGETYPE_GIF ) {
+				$this->image = imagecreatefromgif ($filename);
+			} elseif ( $this->image_type == IMAGETYPE_PNG ) {
 				$this->image = imagecreatefrompng($filename);
 			}
 		}
@@ -47,24 +47,25 @@
 		/**
 		 * Convert $image to a base64 encoded data-uri
 		 *
+		 * @param void
 		 * @return string [base64 encoded data-uri]
 		 */
-
-		public function img_data_uri(){
+		public function img_data_uri()
+		{
 			ob_start();
-			switch($this->image_type){
-				case IMAGETYPE_PNG: {
+			switch($this->image_type) {
+				case IMAGETYPE_PNG:
 					$type = 'png';
 					imagepng($this->image);
-				} break;
-				case IMAGETYPE_GIF: {
+					break;
+				case IMAGETYPE_GIF:
 					$type = 'gif';
-					imagegif($this->image);
-				} break;
-				case IMAGETYPE_JPEG: {
+					imagegif ($this->image);
+					break;
+				case IMAGETYPE_JPEG:
 					$type = 'jpeg';
 					imagejpeg($this->image);
-				} break;
+					break;
 			}
 			$contents = ob_get_clean();
 			return "data:image/$type;base64," . base64_encode($contents);
@@ -77,21 +78,25 @@
 		 * @param  int  $image_type     [from PHP constant]
 		 * @param  int  $compression    [JPEG compression]
 		 * @param  int  $permissions    [Unix file permissions]
-		 *
 		 * @return void
 		 */
-
-		public function save($filename, $image_type = IMAGETYPE_JPEG, $compression = 90, $permissions=null) {
-			if( $image_type == IMAGETYPE_JPEG ) {
+		public function save(
+			$filename,
+			$image_type = IMAGETYPE_JPEG,
+			$compression = 90,
+			$permissions = null
+		)
+		{
+			if ( $image_type == IMAGETYPE_JPEG ) {
 				imagejpeg($this->image, $filename, $compression);
+			} elseif ( $image_type == IMAGETYPE_GIF ) {
+				imagegif ($this->image, $filename);
 			}
-			elseif( $image_type == IMAGETYPE_GIF ) {
-				imagegif($this->image, $filename);
-			}
-			elseif( $image_type == IMAGETYPE_PNG ) {
+			elseif ( $image_type == IMAGETYPE_PNG ) {
 				imagepng($this->image, $filename);
 			}
-			if(isset($permissions)) {
+
+			if (isset($permissions)) {
 				chmod($filename, $permissions);
 			}
 		}
@@ -100,33 +105,32 @@
 		 * Convert image to type given by $image_type and output
 		 *
 		 * @param  int $image_type [from PHP constant]
-		 *
 		 * @return void
 		 */
+		public function output($image_type = IMAGETYPE_JPEG, $return = false)
+		{
+			if ($return) ob_start();
 
-		public function output($image_type = IMAGETYPE_JPEG, $return = false) {
-			if($return) ob_start();
-			if( $image_type == IMAGETYPE_JPEG ) {
+			if ( $image_type == IMAGETYPE_JPEG ) {
 				imagejpeg($this->image);
-			}
-			elseif( $image_type == IMAGETYPE_GIF ) {
-				imagegif($this->image);
-				}
-			elseif( $image_type == IMAGETYPE_PNG ) {
+			} elseif ( $image_type == IMAGETYPE_GIF ) {
+				imagegif ($this->image);
+			} elseif ( $image_type == IMAGETYPE_PNG ) {
 				imagepng($this->image);
 			}
-			if($return) return ob_get_clean();
+
+			if ($return) return ob_get_clean();
 		}
 
 		/**
 		 * Returns the width of the image
 		 *
 		 * @param void
-		 *
 		 * @return int
 		 */
 
-		public function getWidth() {
+		public function getWidth()
+		{
 			return imagesx($this->image);
 		}
 
@@ -134,11 +138,11 @@
 		 * Returns the height of the image
 		 *
 		 * @param void
-		 *
 		 * @return int
 		 */
 
-		public function getHeight() {
+		public function getHeight()
+		{
 			return imagesy($this->image);
 		}
 
@@ -152,13 +156,16 @@
 		 *
 		 * @return void
 		 */
-
-		public function min_dim($min = 0, $overwrite = false){
+		public function min_dim($min = 0, $overwrite = false)
+		{
 			$width = $this->getWidth();
 			$height = $this->getHeight();
-			if(($width < $min) && ($height < $min)){
-				($width >= $height) ? $this->resizeToWidth($min) : $this->resizeToHeight($min);
-				if($overwrite){
+			if (($width < $min) && ($height < $min)) {
+				($width >= $height)
+					? $this->resizeToWidth($min)
+					: $this->resizeToHeight($min);
+
+				if ($overwrite) {
 					$this->save($this->fname);
 				}
 			}
@@ -171,16 +178,18 @@
 		 *
 		 * @param  integer $max       [Maximum dimension in pixels]
 		 * @param  boolean  $overwrite [overwrite the original file]
-		 *
 		 * @return void
 		 */
-
-		public function max_dim($max = 0, $overwrite = false){
+		public function max_dim($max = 0, $overwrite = false)
+		{
 			$width = $this->getWidth();
 			$height = $this->getHeight();
-			if(($width > $max) || ($height > $max)){
-				($width >= $height) ? $this->resizeToWidth($max) : $this->resizeToHeight($max);
-				if($overwrite){
+			if (($width > $max) || ($height > $max)) {
+				($width >= $height)
+					? $this->resizeToWidth($max)
+					: $this->resizeToHeight($max);
+
+				if ($overwrite) {
 					$this->save($this->fname);
 				}
 			}
@@ -190,11 +199,10 @@
 		 * Resize to a fixed height. width adjusts accordingly
 		 *
 		 * @param int $height [new height in pixels]
-		 *
 		 * @return void
 		 */
-
-		public function resizeToHeight($height) {
+		public function resizeToHeight($height)
+		{
 			$ratio = $height / $this->getHeight();
 			$width = $this->getWidth() * $ratio;
 			$this->resize($width,$height);
@@ -204,11 +212,10 @@
 		 * Resize to a fixed width. Height adjusts accordingly
 		 *
 		 * @param int $width [new width in pixels]
-		 *
 		 * @return void
 		 */
-
-		public function resizeToWidth($width) {
+		public function resizeToWidth($width)
+		{
 			$ratio = $width / $this->getWidth();
 			$height = $this->getheight() * $ratio;
 			$this->resize($width,$height);
@@ -218,11 +225,11 @@
 		 * Increase/Decrease size proportionally
 		 *
 		 * @param  int $scale [scale by this factor]
-		 *
 		 * @return void
 		 */
 
-		public function scale($scale) {
+		public function scale($scale)
+		{
 			$width = $this->getWidth() * $scale/100;
 			$height = $this->getheight() * $scale/100;
 			$this->resize($width,$height);
@@ -238,8 +245,8 @@
 		 *
 		 * @return void
 		 */
-
-		public function resize($width, $height) {
+		public function resize($width, $height)
+		{
 			$new_image = imagecreatetruecolor($width, $height);
 			imagecopyresampled(
 				$new_image,
@@ -256,4 +263,3 @@
 			$this->image = $new_image;
 		}
 	}
-?>

@@ -1,4 +1,6 @@
 <?php
+	namespace shgysk8zer0\Core\resources;
+
 	/**
 	 * Extend \Exception to make its protected vars public
 	 *
@@ -21,9 +23,8 @@
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 * @link http://php.net/manual/en/class.exception.php
 	 */
-
-	namespace shgysk8zer0\Core\resources;
-	class Exception extends \Exception {
+	class Exception extends \Exception
+	{
 		public $line, $file, $message, $code, $trace;
 		const LOG_DIR = 'exception_logs';
 
@@ -36,7 +37,8 @@
 		 * @param \Exception $prev      [Previous Exception thrown]
 		 */
 
-		public function __construct($message, $code = null, \Exception $prev = null) {
+		public function __construct($message, $code = null, \Exception $prev = null)
+		{
 			parent::__construct($message, $code, $prev);
 			$this->trace = $this->getTrace();
 		}
@@ -48,7 +50,8 @@
 		 * @return void
 		 */
 
-		public function log($fname) {
+		public function log($fname)
+		{
 			file_put_contents(
 				BASE . DIRECTORY_SEPARATOR . $this::LOG_DIR . DIRECTORY_SEPARATOR . $fname . '.log',
 				"{$this}" . PHP_EOL,
@@ -56,4 +59,3 @@
 			);
 		}
 	}
-?>

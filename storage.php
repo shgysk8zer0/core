@@ -1,4 +1,6 @@
 <?php
+	namespace shgysk8zer0\Core;
+
 	/**
 	 * Consists almost entirely of magic methods.
 	 * Functionality is similar to globals, except new entries may be made
@@ -27,9 +29,8 @@
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 * @depreciated
 	 */
-
-	namespace shgysk8zer0\Core;
-	class storage {
+	class Storage
+	{
 
 		private static $instance = null;
 		private $data;
@@ -39,12 +40,12 @@
 		 * It checks if an instance has been created and returns that or a new instance
 		 *
 		 * @params void
-		 * @return storage object/class
+		 * @return storage self
 		 * @example $storage = storage::load
 		 */
-
-		public static function load() {
-			if(is_null(self::$instance)) {
+		public static function load()
+		{
+			if (is_null(self::$instance)) {
 				self::$instance = new self;
 			}
 			return self::$instance;
@@ -53,24 +54,24 @@
 		/**
 		 * Creates new instance of storage.
 		 *
-		 * @params void
-		 * @return void
+		 * @param void
 		 * @example $storage = new storage
 		 */
-
-		public function __construct() {
+		public function __construct()
+		{
 			$this->data = array();
 		}
 
 		/**
 		 * Setter method for the class.
 		 *
-		 * @param string $key, mixed $value
+		 * @param string $key
+		 * @param mixed $value
 		 * @return void
 		 * @example "$storage->key = $value"
 		 */
-
-		public function __set($key, $value) {
+		public function __set($key, $value)
+		{
 			$key = str_replace('_', '-', $key);
 			$this->data[$key] = $value;
 		}
@@ -82,10 +83,10 @@
 		 * @return mixed
 		 * @example "$storage->key" Returns $value
 		 */
-
-		public function __get($key) {
+		public function __get($key)
+		{
 			$key = str_replace('_', '-', $key);
-			if(array_key_exists($key, $this->data)) {
+			if (array_key_exists($key, $this->data)) {
 				return $this->data[$key];
 			}
 			return false;
@@ -96,8 +97,8 @@
 		 * @return boolean
 		 * @example "isset({$storage->key})"
 		 */
-
-		public function __isset($key) {
+		public function __isset($key)
+		{
 			return array_key_exists(str_replace('_', '-', $key), $this->data);
 		}
 
@@ -108,8 +109,8 @@
 		 * @return void
 		 * @example "unset($storage->key)"
 		 */
-
-		public function __unset($key) {
+		public function __unset($key)
+		{
 			unset($this->data[str_replace('_', '-', $key)]);
 		}
 
@@ -118,21 +119,21 @@
 		 * @param string $name, array $arguments
 		 * @example "$storage->[getName|setName]($value)"
 		 */
-
-		public function __call($name, array $arguments) {
+		public function __call($name, array $arguments)
+		{
 			$name = strtolower($name);
 			$act = substr($name, 0, 3);
 			$key = str_replace('_', '-', substr($name, 3));
 			switch($act) {
-				case 'get': {
-					if(array_key_exists($key, $this->data)) {
+				case 'get':
+					if (array_key_exists($key, $this->data)) {
 						return $this->data[$key];
 					}
-				} break;
-				case 'set': {
+					break;
+				case 'set':
 					$this->data[$key] = $arguments[0];
 					return $this;
-				} break;
+					break;
 			}
 		}
 
@@ -142,8 +143,8 @@
 		 * @param void
 		 * @return array
 		 */
-
-		public function keys() {
+		public function keys()
+		{
 			return array_keys($this->data);
 		}
 
@@ -154,8 +155,8 @@
 		 * @return void
 		 * @todo Make work with more types of data
 		 */
-
-		public function save() {
+		public function save()
+		{
 			$_SESSION['storage'] = $this->data;
 		}
 
@@ -166,9 +167,9 @@
 		 * @return void
 		 * @todo Make work with more types of data
 		 */
-
-		public function restore() {
-			if(array_key_exists('storage', $_SESSION)) {
+		public function restore()
+		{
+			if (array_key_exists('storage', $_SESSION)) {
 				$this->data = $_SESSION['storage'];
 			}
 		}
@@ -180,22 +181,9 @@
 		 * @param void
 		 * @return void
 		 */
-
-		public function clear() {
+		public function clear()
+		{
 			unset($this->data);
 			unset($this);
 		}
-
-		/**
-		 * Prints out class information using print_r
-		 * wrapped in <pre> and <code>
-		 *
-		 * @param void
-		 * @return void
-		 */
-
-		public function debug() {
-			debug($this);
-		}
 	}
-?>

@@ -1,4 +1,6 @@
 <?php
+	namespace shgysk8zer0\Core\Resources;
+
 	/**
 	 * Manage cron jobs though PHP & MySQL
 	 *
@@ -32,10 +34,8 @@
 	 * @param array $jobs
 	 * @param array $funcs
 	 */
-
-	namespace shgysk8zer0\Core\resources;
-
-	class cron {
+	class cron
+	{
 		private $time, $jobs, $funcs;
 
 		/**
@@ -48,16 +48,17 @@
 		 *
 		 * @param mixed $con [Variable containing database connection info]
 		 */
-
-		public function __construct($con = 'connect') {
+		public function __construct($con = 'connect')
+		{
 			$pdo = \shgysk8zer0\Core\PDO::load($con);
-			if($pdo->connected) {
+			if ($pdo->connected) {
 				$this->time = time();
 				$this->jobs = array_filter(
 					$this->all_jobs($pdo),
 					[$this, 'check_scheduled']
 				);
-				if(is_array($this->jobs) and !empty($this->jobs)) {
+
+				if (is_array($this->jobs) and !empty($this->jobs)) {
 					$this->get_functions();
 					$this->call_cron();
 					$this->update_last_ran($pdo);
@@ -78,16 +79,19 @@
 		 * @return array    [Array of all function names in cron/ directory]
 		 * @todo Consider skipping this and just using function_exists()
 		 */
-
-		public static function functions() {
+		public static function functions()
+		{
 			static $funcs = null;
-			if(is_null($funcs)) {
+			if (is_null($funcs)) {
 				ob_start();
 				$funcs = get_defined_functions()['user'];
 
 				//Load all scripts from the cron/ directory
 				array_map(
-					function($file) {require_once($file);},
+					function($file)
+					{
+						require_once($file);
+					},
 					glob(BASE . DIRECTORY_SEPARATOR . 'cron' . DIRECTORY_SEPARATOR . '*.php')
 				);
 
@@ -108,8 +112,8 @@
 		 *
 		 * @return void
 		 */
-
-		private function get_functions() {
+		private function get_functions()
+		{
 			$this->funcs = static::functions();
 		}
 
@@ -119,10 +123,9 @@
 		 *
 		 * @return void
 		 */
-
-		private function all_jobs(\shgysk8zer0\Core\PDO &$pdo) {
-			return $pdo->fetch_array("
-				SELECT
+		private function all_jobs(\shgysk8zer0\Core\PDO &$pdo)
+		{
+			return $pdo->fetch_array("SELECT
 					`function`,
 					`arguments`,
 					`frequency`,
@@ -150,8 +153,8 @@
 		 * @param  stdClass $job [description]
 		 * @return boolean
 		 */
-
-		private function check_scheduled($job) {
+		private function check_scheduled($job)
+		{
 			return strtotime($job->frequency, strtotime($job->last_ran)) < $this->time;
 		}
 
@@ -164,8 +167,8 @@
 		 *
 		 * @return void
 		 */
-
-		private function call_cron() {
+		private function call_cron()
+		{
 			array_filter($this->jobs, [$this, 'cron_filter']);
 		}
 
@@ -185,9 +188,9 @@
 		 *
 		 * @return mixed
 		 */
-
-		private function cron_filter($job) {
-			if($this->has_function($job->function)) {
+		private function cron_filter($job)
+		{
+			if ($this->has_function($job->function)) {
 				$args = explode(',', $job->arguments);
 				array_walk($args, 'trim');
 				return call_user_func($job->function, $args);
@@ -200,10 +203,9 @@
 		 *
 		 * @return void
 		 */
-
-		private function update_last_ran(\shgysk8zer0\Core\PDO &$pdo) {
-			$pdo->prepare("
-				UPDATE `cron`
+		private function update_last_ran(\shgysk8zer0\Core\PDO &$pdo)
+		{
+			$pdo->prepare("UPDATE `cron`
 				SET `last_ran` = :time
 				WHERE `function` = :function
 			");
@@ -217,4 +219,3 @@
 			}
 		}
 	}
-?>

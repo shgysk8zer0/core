@@ -1,4 +1,6 @@
 <?php
+	namespace shgysk8zer0\Core;
+
 	/**
 	 * Reads an ini file and stores as an object
 	 *
@@ -24,9 +26,8 @@
 	 * but __set, __get, __unset, __isset, and __call will be ineffective
 	 * @depreciated
 	 */
-
-	namespace shgysk8zer0\Core;
-	class ini implements magic_methods {
+	class ini implements magic_methods
+	{
 		private static $instance = [];
 		private $data = [];
 
@@ -50,10 +51,10 @@
 		 * @param boolean $multi
 		 * @example $ini = ini::load('connect'[, false]);
 		 */
-
-		public static function load($file = null, $multi = false) {
+		public static function load($file = null, $multi = false)
+		{
 			$file = (string)$file;
-			if(!array_key_exists($file, self::$instance)) self::$instance[$file] = new self($file, $multi);
+			if (!array_key_exists($file, self::$instance)) self::$instance[$file] = new self($file, $multi);
 			return self::$instance[$file];
 		}
 
@@ -63,8 +64,8 @@
 		 * @param string $file
 		 * @param boolean $multi
 		 */
-
-		public function __construct($file, $multi = false) {
+		public function __construct($file, $multi = false)
+		{
 			$file = (string)$file;
 			$this->data = parse_ini_file("{$file}.ini", $multi);
 		}
@@ -77,7 +78,8 @@
 		 * @example "$ini->key = $value"
 		 */
 
-		public function __set($key, $value) {
+		public function __set($key, $value)
+		{
 			$key = str_replace('_', '-', $key);
 			$this->data[$key] = (string)$value;
 		}
@@ -89,10 +91,10 @@
 		 * @return mixed
 		 * @example "$ini->key" Returns $value
 		 */
-
-		public function __get($key) {
+		public function __get($key)
+		{
 			$key = str_replace('_', '-', $key);
-			if(array_key_exists($key, $this->data)) {
+			if (array_key_exists($key, $this->data)) {
 				return $this->data[$key];
 			}
 			return false;
@@ -103,8 +105,8 @@
 		 * @return boolean
 		 * @example "isset({$ini->key})"
 		 */
-
-		public function __isset($key) {
+		public function __isset($key)
+		{
 			return array_key_exists(str_replace('_', '-', $key), $this->data);
 		}
 
@@ -115,8 +117,8 @@
 		 * @return void
 		 * @example "unset($ini->key)"
 		 */
-
-		public function __unset($key) {
+		public function __unset($key)
+		{
 			unset($this->data[str_replace('_', '-', $key)]);
 		}
 
@@ -126,27 +128,26 @@
 		 * @param mixed $arguments
 		 * @example "$ini->[getName|setName]($value)"
 		 */
-
-		public function __call($name, array $arguments) {
+		public function __call($name, array $arguments)
+		{
 			$name = strtolower($name);
 			$act = substr($name, 0, 3);
 			$key = preg_replace('/_/', '-', substr($name, 3));
 			switch($act) {
-				case 'get': {
-					if(array_key_exists($key, $this->data)) {
+				case 'get':
+					if (array_key_exists($key, $this->data)) {
 						return $this->data[$key];
 					}
 					else{
 						return false;
 					}
-				} break;
-				case 'set': {
+					break;
+				case 'set':
 					$this->data[$key] = $arguments[0];
 					return $this;
-				} break;
-				default: {
+					break;
+				default:
 					die('Unknown method.');
-				}
 			}
 		}
 
@@ -156,9 +157,8 @@
 		 * @param void
 		 * @return array
 		 */
-
-		public function keys() {
+		public function keys()
+		{
 			return array_keys($this->data);
 		}
 	}
-?>

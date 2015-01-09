@@ -1,4 +1,6 @@
 <?php
+	namespace shgysk8zer0\Core;
+
 	/**
 	 * PHP based caching
 	 *
@@ -34,8 +36,6 @@
 	 * @var boolean $gz [File is gzipped]
 	 * @var int $status [HTTP status]
 	 */
-
-	namespace shgysk8zer0\Core;
 	class magic_cache {
 		private $file, $ext, $type, $size, $etag, $mod_time, $gz, $status;
 
@@ -49,10 +49,10 @@
 		 *
 		 * @param string $file [Name of requested file]
 		 */
-
-		public function __construct($file) {
+		public function __construct($file)
+		{
 			$this->file = realpath($file);
-			if(@file_exists($this->file)){
+			if (@file_exists($this->file)) {
 				$this->etag = md5_file($this->file);
 				$this->mod_time = filemtime($this->file);
 				$this->size = filesize($this->file);
@@ -63,8 +63,7 @@
 				$this->make_headers();
 				readfile($this->file);
 				exit();
-			}
-			else{
+			} else{
 				$this->status = 404;
 				$this->http_status();
 			}
@@ -77,15 +76,16 @@
 		 * Sets Contet-Type, Content-Length,Content-Encoding, Last-Modified,
 		 * Etag, and Cache-Control
 		 *
+		 * @param void
 		 * @return void
 		 */
-
-		protected function make_headers(){
+		protected function make_headers()
+		{
 			$this->status = 200;
 			$this->http_status();
 			header("Content-Type: {$this->type}");
 			header("Content-Length: {$this->size}");
-			if(in_array($this->ext, ['svgz', 'cssz', 'jsz'])){
+			if (in_array($this->ext, ['svgz', 'cssz', 'jsz'])) {
 				header('Content-Encoding: gzip');
 			}
 			header("Last-Modified: " . gmdate("D, d M Y H:i:s T", $this->mod_time));
@@ -98,14 +98,21 @@
 		 *
 		 * Check and compare headers & respond appropriately
 		 *
+		 * @param void
 		 * @return void
 		 */
-
-		protected function cache_control(){
-			$etagHeader = (isset($_SERVER['HTTP_IF_NONE_MATCH']) ? trim($_SERVER['HTTP_IF_NONE_MATCH']) : false);
+		protected function cache_control()
+		{
+			$etagHeader = (isset($_SERVER['HTTP_IF_NONE_MATCH'])
+				? trim($_SERVER['HTTP_IF_NONE_MATCH'])
+				: false
+			);
 
 			//check if page has changed. If not, send 304 and exit
-			if (@strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $this->mod_time || $etagHeader == $this->etag){
+			if (
+				@strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $this->mod_time
+				|| $etagHeader == $this->etag
+			) {
 				$this->status = 304;
 				$this->http_status();
 			}
@@ -117,91 +124,91 @@
 		 * First, try go through a list of unrecognized extensions.
 		 * If not one of those, use the default finfo() method
 		 *
+		 * @param void
 		 * @return void
 		 */
-
-		protected function type_by_extension(){
+		protected function type_by_extension()
+		{
 			/*
 			 * PHP does a fairly poor job of getting MIME-type correct.
 			 * Switch on the extension to get MIME-type for unsupported
 			 * types. If not one of these, use finfo to guess.
 			 */
-			switch($this->ext){ //Start by matching file extensions
+			switch($this->ext) { //Start by matching file extensions
 				case 'svg':
-				case 'svgz': {
+				case 'svgz':
 					$this->type = 'image/svg+xml';
-				} break;
+					break;
 
-				case 'woff': {
+				case 'woff':
 					$this->type = 'application/font-woff';
-				} break;
+					break;
 
-				case 'otf': {
+				case 'otf':
 					$this->type = 'application/x-font-opentype';
-				} break;
+					break;
 
-				case 'sql': {
+				case 'sql':
 					$this->type = 'text/x-sql';
-				} break;
+					break;
 
-				case 'appcache': {
+				case 'appcache':
 					$this->type = 'text/cache-manifest';
-				} break;
+					break;
 
-				case 'mml': {
+				case 'mml':
 					$this->type = 'application/xhtml+xml';
-				} break;
+					break;
 
-				case 'ogv': {
+				case 'ogv':
 					$this->type = 'video/ogg';
-				} break;
+					break;
 
-				case 'webm': {
+				case 'webm':
 					$this->type = 'video/webm';
-				} break;
+					break;
 
 				case 'ogg':
 				case 'oga':
-				case 'opus': {
+				case 'opus':
 					$this->type = 'audio/ogg';
-				} break;
+					break;
 
-				case 'flac': {
+				case 'flac':
 					$this->type = 'audio/flac';
-				} break;
+					break;
 
-				case 'm4a': {
+				case 'm4a':
 					$this->type = 'audio/mp4';
-				} break;
+					break;
 
 				case 'css':
-				case 'cssz': {
+				case 'cssz':
 					$this->type = 'text/css';
-				} break;
+					break;
 
 				case 'js':
-				case 'jsz': {
+				case 'jsz':
 					$this->type = 'text/javascript';
-				} break;
+					break;
 
-				default: {		//If not found, try the file's default
+				default:		//If not found, try the file's default
 					$finfo = new \finfo(FILEINFO_MIME);
 					$this->type = preg_replace('/\;.*$/', null, (string)$finfo->file($this->file));
-				}
 			}
 		}
 
 		/**
 		 * Set HTTP status & exit if no 2##
 		 *
+		 * @param void
 		 * @return void
 		 */
-
-		protected function http_status(){
+		protected function http_status()
+		{
 			http_response_code($this->status);
-			if(!preg_match('/^2[\d]{2}$/', $this->status)) {
+			if (!preg_match('/^2[\d]{2}$/', $this->status)) {
 				exit();
 			}
 		}
 	}
-?>

@@ -1,4 +1,6 @@
 <?php
+	namespace shgysk8zer0\Core;
+
 	/**
 	 * Class to allow continuous updates from server using Server Sent Events
 	 *
@@ -6,7 +8,7 @@
 	 * @package shgysk8zer0\Core
 	 * @uses json_response
 	 * @version 1.0.0
-	 * @link https://developer.mozilla.org/en-US/docs/Server-sent_events/Using_server-sent_events
+	 * @see https://developer.mozilla.org/en-US/docs/Server-sent_events/Using_server-sent_events
 	 * @copyright 2014, Chris Zuber
 	 * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
 	 * This program is free software; you can redistribute it and/or
@@ -35,20 +37,21 @@
 	 * )->send()->wait(1)
 	 * }
 	 * $event->close();
+	 * @todo Move JSON_Response methods to a trait and use that isntead of
+	 * extending JSON_Response
 	 */
-
-	namespace shgysk8zer0\Core;
-	class server_event extends json_response {
+	class server_event extends JSON_Response
+	{
 		private static $instance = null;
 
-	/**
-	 * Static method to load class
-	 * @param array $data
-	 * @return NULL
-	 */
-
-		public static function load(array $data = null) {
-			if(is_null(self::$instance)) {
+		/**
+		 * Static method to load class
+		 * @param array $data
+		 * @return self
+		 */
+		public static function load(array $data = null)
+		{
+			if (is_null(self::$instance)) {
 				self::$instance = new self($data);
 			}
 			return self::$instance;
@@ -63,12 +66,12 @@
 		 * @param array $data (optional array of data to be initialized with)
 		 * @example $event = new server_event(['html' => ['main' => 'It Works!']]...)
 		 */
-
-		public function __construct(array $data = null) {
+		public function __construct(array $data = null)
+		{
 			$this->set_headers();
 			parent::__construct();
 
-			if(isset($data)) {
+			if (isset($data)) {
 				$this->response = $data;
 			}
 		}
@@ -80,19 +83,20 @@
 		 * send a subset of $this->response
 		 *
 		 * @param string $key
+		 * @return self
 		 * @example $event->send() or $event->send('notify')
 		 */
-
-		public function send($key = null) {
+		public function send($key = null)
+		{
 			echo 'event: ping' . PHP_EOL;
 
-			if(count($this->response)) {
-				if(is_string($key)) {
+			if (count($this->response)) {
+				if (is_string($key)) {
 					echo 'data: ' . json_encode([$key => $this->response[$key]]) . PHP_EOL . PHP_EOL;
-				}
-				else {
+				} else {
 					echo 'data: ' . json_encode($this->response) . PHP_EOL . PHP_EOL;
 				}
+
 				$this->response = [];
 			}
 
@@ -104,10 +108,11 @@
 		/**
 		 * Sets headers required to be handled as a server event.
 		 * @param void
-		 * @return server_event
+		 * @return self
+		 * @return self
 		 */
-
-		private function set_headers() {
+		private function set_headers()
+		{
 			header('Content-Type: text/event-stream');
 			header_remove('X-Powered-By');
 			header_remove('Expires');
@@ -122,9 +127,8 @@
 		 * previous response.
 		 *
 		 * @param int $delay
-		 * @return server_event
+		 * @return self
 		 */
-
 		public function wait($delay = 1) {
 			sleep((int)$delay);
 			return $this;
@@ -138,22 +142,21 @@
 		 * after receiving an event of type 'close'
 		 *
 		 * @param $key
+		 * @return self
 		 * @example $event->close() or $event->close('notify')
 		 */
-
-		public function end($key = null) {
+		public function end($key = null)
+		{
 			echo 'event: close' . PHP_EOL;
 
-			if(!empty($this->response)) {
-				if(is_string($key)) {
+			if (!empty($this->response)) {
+				if (is_string($key)) {
 					echo 'data: ' . json_encode([$key => $this->response[$key]]) . PHP_EOL . PHP_EOL;
-				}
-				else {
+				} else {
 					echo 'data: ' . json_encode($this->response) . PHP_EOL . PHP_EOL;
 				}
 				$this->response = [];
-			}
-			else {
+			} else {
 				echo 'data: "{}"' . PHP_EOL . PHP_EOL;
 			}
 

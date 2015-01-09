@@ -1,4 +1,6 @@
 <?php
+	namespace shgysk8zer0\Core;
+
 	/**
 	 * @author Chris Zuber <shgysk8zer0@gmail.com>
 	 * @package shgysk8zer0\Core
@@ -17,10 +19,16 @@
 	 *
 	 * You should have received a copy of the GNU General Public License
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+	 * @todo move methods into traits & extend \PDOStatement
+	 * @todo if extending PDOStatement, will not need to make a database connection,
+	 * but __construct should instead accept a query.
+	 *
+	 * All documentation is currently invalid. Currently not implemented in current
+	 * form.
+	 * @see http://php.net/manual/en/class.pdostatement.php
 	 */
-
-	namespace shgysk8zer0\Core;
-	class prepared extends pdo_resources {
+	class prepared extends PDO_Resources
+	{
 		private static $instances = [];
 
 		public $stm = null;
@@ -35,15 +43,20 @@
 		 * @return prepared Object
 		 * @example $prepared prepared::load($connect) or $prepared = prepared::load($connect)
 		 */
-
-		public static function load($ini = 'connect') {
-			if(!array_key_exists($ini, self::$instances)) {
+		public static function load($ini = 'connect')
+		{
+			if (!array_key_exists($ini, self::$instances)) {
 				self::$instances[$ini] = new self($ini);
 			}
 			return self::$instances[$ini];
 		}
 
-		public function __construct($ini = 'connect') {
+		/**
+		 * [__construct description]
+		 * @param mixed $ini [description]
+		 */
+		public function __construct($ini = 'connect')
+		{
 			/**
 			 * Do I need this? Will __construct not just be
 			 * inherited?
@@ -70,8 +83,8 @@
 		 * 	WHERE `name` = :name
 		 * ");
 		 */
-
-		public function prepare($query) {
+		public function prepare($query)
+		{
 			$this->stm = $this->pdo->prepare((string)$query);
 			return $this;
 		}
@@ -91,15 +104,16 @@
 		 * 	...
 		 * ])
 		 */
-
-		public function bind(array $binders) {
+		public function bind(array $binders)
+		{
 			foreach($binders as $name => $value) {
 				$this->stm->bindValue(':' . $name, (string)$value);
 			}
 			return $this;
 		}
 
-		public function execute() {
+		public function execute()
+		{
 			$this->stm->execute();
 			return $this;
 		}
@@ -110,10 +124,10 @@
 		 * @param [int $n]
 		 * @return mixed
 		 */
-
-		public function get_results($n = null) {
+		public function get_results($n = null)
+		{
 			$results = [];
-			foreach($this->stm->fetchAll(\PDO::FETCH_CLASS) as $data) {			//Convert from an associative array to a \stdClass object
+			foreach($this->stm->fetchAll(\PDO::FETCH_CLASS) as $data) {
 				/*$row = new \stdClass();
 				foreach($data as $key => $value) {
 					$row->$key = trim($value);
@@ -121,9 +135,15 @@
 				$results[] = $row;
 			}
 			//If $n is set, return $results[$n] (row $n of results) Else return all
-			if(!count($results)) return false;
-			if(is_int($n)) return $results[$n];
-			else return $results;
+			if (!count($results)) {
+				return false;
+			}
+
+			if (is_int($n)) {
+				return $results[$n];
+			} else {
+				return $results;
+			}
 		}
 	}
 ?>
