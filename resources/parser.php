@@ -1,4 +1,6 @@
 <?php
+	namespace shgysk8zer0\Core\resources;
+
 	/**
 	 * Easily parse any INI, JSON, or XML file
 	 *
@@ -44,9 +46,8 @@
 	 * @example $parsed = \shgysk8zer0\Core\resources\Parser::parse('path/to/file.ext')
 	 * @example $parsed = new \shgysk8zer0\Core\resorources\Parser(*)
 	 */
-
-	namespace shgysk8zer0\Core\resources;
-	final class Parser {
+	final class Parser
+	{
 		private $filename, $path, $subpath, $ext, $data;
 		public $file, $found = false;
 		public static $DEFAULT_EXT = 'ini', $logging = false;
@@ -62,12 +63,13 @@
 		 * @param  string $file [file, with or without ext & path]
 		 * @return mixed        [\stdClass Parsed data or null]
 		 */
-
-		public static function parse($file) {
-			if(!is_array(self::$files)) {
+		public static function parse($file)
+		{
+			if (!is_array(self::$files)) {
 				self::$files = [];
 			}
-			if(!in_array($file, self::$files)) {
+
+			if (!in_array($file, self::$files)) {
 				self::$files[$file] = new self($file);
 			}
 			return self::$files[$file]->data;
@@ -85,32 +87,31 @@
 		 *
 		 * @param string $file [File, with or without ext & path]
 		 */
-
-		public function __construct($file) {
+		public function __construct($file)
+		{
 			try {
 				$this->filename = pathinfo($file, PATHINFO_FILENAME);
 				$this->subpath = pathinfo($file, PATHINFO_DIRNAME);
 				$this->subpath =($this->subpath === '.') ? null :  $this->subpath . DIRECTORY_SEPARATOR;
 				$this->ext = pathinfo($file, PATHINFO_EXTENSION);
-				if(!$this->ext) {
+
+				if (!$this->ext) {
 					$this->ext = $this::$DEFAULT_EXT;
 				}
+
 				$this->ext = "{$this->ext}";
 				$this->path = dirname(stream_resolve_include_path("{$this->subpath}{$this->filename}.{$this->ext}"));
 				$this->file = $this->path . DIRECTORY_SEPARATOR . $this->filename . '.' . $this->ext;
 				$this->found = @file_exists($this->file);
 
-				if(!$this->found) {
+				if (!$this->found) {
 					throw new \Exception("File: {$file} was not found");
-				}
-				elseif(!is_readable($this->file)) {
+				} elseif (!is_readable($this->file)) {
 					throw new \Exception("{$this->file} was found but could not be read");
-				}
-				else {
+				} else {
 					$this->read();
 				}
-			}
-			catch(\Exception $e) {
+			} catch(\Exception $e) {
 				$this->log($e);
 			}
 		}
@@ -127,7 +128,6 @@
 		 * @param  Exception $e [The exception that was thrown]
 		 * @return void
 		 */
-
 		protected function log(\Exception $e) {
 			file_put_contents(
 				__DIR__ . DIRECTORY_SEPARATOR . $this::LOG_FILE,
@@ -146,33 +146,30 @@
 		 * @param void
 		 * @return void
 		 */
-
 		protected function read() {
-			if($this->found) {
+			if ($this->found) {
 				try {
 					switch(strtolower($this->ext)) {
-						case 'ini': {
+						case 'ini':
 							$this->data = (object)parse_ini_file($this->file);
-						} break;
+							break;
 
-						case 'json': {
+						case 'json':
 							$this->data = json_decode(file_get_contents($this->file));
-						} break;
+							break;
 
-						case 'xml': {
+						case 'xml':
 							$this->data = simplexml_load_file($this->file);
-						} break;
+							break;
 
-						default: {
+						default:
 							throw new \Exception("No not know how to parse files with extension {$this->ext}");
-						}
 					}
-					if(empty($this->data)) {
+					if (empty($this->data)) {
 						throw new \Exception("{$this->file} was found but could not be parsed");
 					}
-				}
-				catch(\Exception $e) {
-					if($this::$logging) {
+				} catch(\Exception $e) {
+					if ($this::$logging) {
 						$this->log($e);
 					}
 				}
@@ -189,8 +186,8 @@
 		 *
 		 * @example $parsed->$key = $value
 		 */
-
-		public function __set($key, $value) {
+		public function __set($key, $value)
+		{
 			$this->data{$key} = $value;
 		}
 
@@ -205,7 +202,8 @@
 		 * @example $test = $parsed->$key
 		 */
 
-		public function __get($key) {
+		public function __get($key)
+		{
 			return $this->data->{$key};
 		}
 
@@ -218,8 +216,8 @@
 		 *
 		 * @example isset($parsed->$key)
 		 */
-
-		public function __isset($key) {
+		public function __isset($key)
+		{
 			return isset($this->data->{$key});
 		}
 
@@ -233,8 +231,8 @@
 		 *
 		 * @example unset($parsed->$key)
 		 */
-
-		public function __unset($key) {
+		public function __unset($key)
+		{
 			unset($this->data->{$key});
 		}
 
@@ -245,31 +243,27 @@
 		 *
 		 * @todo Make work will all supported extensions (No INI support yet)
 		 */
-
-		public function save() {
+		public function save()
+		{
 			try {
-				if($this->found) {
+				if ($this->found) {
 					switch(strtolower($this->ext)) {
-						case 'json': {
+						case 'json':
 							file_put_contents($this->file, json_encode($this->data), JSON_PRETTY_PRINT);
-						} break;
+							break;
 
-						case 'xml': {
+						case 'xml':
 							$this->data->asXml($this->file);
-						} break;
+							break;
 
-						default: {
+						default:
 							throw new \Exception("Do not know how to write to a {$this->ext} file");
-						}
 					}
-				}
-				else {
+				} else {
 					throw new \Exception('Trying to save to a file which does not exist');
 				}
-			}
-			catch(\Exception $e) {
+			} catch(\Exception $e) {
 				$this->log($e);
 			}
 		}
 	}
-?>

@@ -1,4 +1,6 @@
 <?php
+	namespace shgysk8zer0\Core;
+
 	/**
 	 * Uses PDO, but does not extend it.
 	 * Optimized for searching databases
@@ -23,9 +25,8 @@
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 * @depreciated
 	 */
-
-	namespace shgysk8zer0\Core;
-	class search {
+	class Search
+	{
 		private $select = '*',
 				$from = '',
 				$where = null,
@@ -33,40 +34,50 @@
 		public $query,
 				$pdo;
 
-		public function __construct() {
-			//parent::_construct();
-			$this->pdo =PDO::load('connect');
+		public function __construct()
+		{
+			$this->pdo = PDO::load('connect');
 		}
 
-		public function select() {
+		public function select()
+		{
 			$cols = flatten(func_get_args());
 			$count = count($cols);
-			if(($count) and !($count === 1 and $cols[0] === '*')) {
-				foreach($cols as &$col) $col = "`{$this->pdo->escape($col)}`";
+			if (($count) and !($count === 1 and $cols[0] === '*')) {
+				foreach($cols as &$col) {
+					$col = "`{$this->pdo->escape($col)}`";
+				}
+
 				$this->select = $cols;
 			}
 			return $this;
 		}
 
-		public function from($table = null) {
+		public function from($table = null)
+		{
 			$this->from = "`{$this->pdo->escape($table)}`";
 			return $this;
 		}
 
-		public function where(array $arr) {
+		public function where(array $arr)
+		{
 			$this->where = $arr;
 			return $this;
 		}
 
-		public function limit($int = 0) {
+		public function limit($int = 0)
+		{
 			$this->limit = (int) $int;
 			return $this;
 		}
 
-		private function build() {
-			(is_array($this->select)) ? $this->query = 'SELECT ' . join(', ', $this->select): $this->query = "SELECT *";
+		private function build()
+		{
+			(is_array($this->select))
+				? $this->query = 'SELECT ' . join(', ', $this->select)
+				: $this->query = "SELECT *";
 			$this->query .= " FROM {$this->from}";
-			if(count($this->where) !== 0) {
+			if (count($this->where) !== 0) {
 				$this->query .= ' WHERE ';
 				$wheres = [];
 				foreach(array_keys($this->where) as $where) {
@@ -74,15 +85,16 @@
 				}
 				$this->query .= join (' AND ', $wheres);
 			}
-			if(isset($this->limit) and preg_match('/\d+/', $this->limit)) {
+			if (isset($this->limit) and preg_match('/\d+/', $this->limit)) {
 				$this->query .= " LIMIT {$this->limit}";
 			}
 			return $this->query;
 		}
 
-		public function execute($row = null) {
+		public function execute($row = null)
+		{
 			$this->pdo->prepare($this->build());
-			if(count($this->where) !== 0) {
+			if (count($this->where) !== 0) {
 				foreach($this->where as $key => $value) {
 					$this->pdo->bind([$key => "%{$value}%"]);
 				}
@@ -91,9 +103,9 @@
 			return (is_null($row)) ? $this->pdo->get_results() : $this->pdo->get_results($row);
 		}
 
-		public function debug() {
+		public function debug()
+		{
 			$this->pdo->prepare($this->build());
 			return print_r($this, true);
 		}
 	}
-?>

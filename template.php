@@ -1,4 +1,6 @@
 <?php
+	namespace shgysk8zer0\Core;
+
 	/**
 	 * Opens a template file, ready to be easily modified.
 	 * File contents are loaded and optionaly inified
@@ -37,9 +39,8 @@
 	 * 	$table .= $template->out();
 	 * 	$table .= $template->old('Newer')->replace('Updated Again')->out();
 	 */
-
-	namespace shgysk8zer0\Core;
-	class template implements magic_methods {
+	class Template implements Magic_Methods
+	{
 		private static $instance = [];
 		private $path, $source = '', $replacements = [], $seperator, $minify_results;
 		const MINIFY_EXPRESSION = '/<!--(?!\s*(?:\[if [^\]]+]|<!|>))(?:(?!-->).)*-->/';
@@ -58,9 +59,9 @@
 		 * @return template object/class
 		 * @example $template = template::load($template_file, '^', true)
 		 */
-
-		public static function load($tpl = null, $seperator = '%', $minify = true) {
-			if(!array_key_exists($tpl, self::$instance)) {
+		public static function load($tpl = null, $seperator = '%', $minify = true)
+		{
+			if (!array_key_exists($tpl, self::$instance)) {
 				self::$instance[$tpl] = new self($tpl, $seperator, $minify);
 			}
 			return self::$instance[$tpl];
@@ -78,18 +79,21 @@
 		 * @example $template = template::load($template_file, '^', true)
 		 * @example $template = new template($template_file)
 		 */
+		public function __construct($tpl = null, $seperator = '%', $minify = true)
+		{
+			$this->path = (defined('THEME'))
+				? BASE . '/components/' . THEME .'/templates/' . (string)$tpl . '.tpl'
+				: BASE . '/components/templates/' . (string)$tpl . '.tpl';
 
-		public function __construct($tpl = null, $seperator = '%', $minify = true) {
-			$this->path = (defined('THEME')) ? BASE . '/components/' . THEME .'/templates/' . (string)$tpl . '.tpl' : BASE . '/components/templates/' . (string)$tpl . '.tpl';
 			$this->seperator = (string)$seperator;
 			$this->minify_results = $minify;
-			if(file_exists($this->path)) {
+			if (file_exists($this->path)) {
 				$this->source = file_get_contents($this->path);
-			}
-			else {
+			} else {
 				exit("Attempted to load a template that cannot be read. {$tpl} cannot be read");
 			}
-			if($this->minify_results) {
+
+			if ($this->minify_results) {
 				$this->minify($this->source);
 			}
 		}
@@ -103,8 +107,8 @@
 		 * @return self
 		 * @example $this->minify()
 		 */
-
-		private function minify(&$string = null) {
+		private function minify(&$string = null)
+		{
 			$string = str_replace(["\r", "\n", "\t"], [], (string)$string);
 			$string = preg_replace($this::MINIFY_EXPRESSION, null, $string);
 			return $this;
@@ -122,9 +126,13 @@
 		 * @return self
 		 * @example $this->replace('old', 'new')
 		 */
-
-		private function replace($replace = null, $with = null, $join = null) {
-			$this->replacements[$this->seperator . strtoupper((string)$replace) . $this->seperator] = (is_array($with)) ? join($join, $with) : $with;
+		private function replace($replace = null, $with = null, $join = null)
+		{
+			$this->replacements[
+					$this->seperator . strtoupper((string)$replace) . $this->seperator
+				] = (is_array($with))
+					? join($join, $with)
+					: $with;
 
 			return $this;
 		}
@@ -137,9 +145,13 @@
 		 * @return string
 		 * @example $results = $this->get_results()
 		 */
-
-		private function get_results() {
-			return str_replace(array_keys($this->replacements), array_values($this->replacements), $this->source);
+		private function get_results()
+		{
+			return str_replace(
+				array_keys($this->replacements),
+				array_values($this->replacements),
+				$this->source
+			);
 		}
 
 		/**
@@ -149,8 +161,8 @@
 		 * @return self
 		 * @example $this->clear()
 		 */
-
-		private function clear() {
+		private function clear()
+		{
 			$this->replacements = [];
 			return $this;
 		}
@@ -169,8 +181,8 @@
 		 * @example $template->url = $url
 		 * @example $template->data = [...]
 		 */
-
-		public function __set($replace, $with) {
+		public function __set($replace, $with)
+		{
 			$this->replace($replace, $with);
 		}
 
@@ -184,17 +196,25 @@
 		 * @example $template->key //returns $this->replacements[$key]
 		 * @example $template->key .= 'More texty goodness' //Appends to current value
 		 */
-
-		public function __get($replace) {
-			if(array_key_exists($this->seperator . strtoupper((string)$replace) . $this->seperator, $this->replacements)) {
+		public function __get($replace)
+		{
+			if (array_key_exists(
+				$this->seperator . strtoupper((string)$replace) . $this->seperator,
+				$this->replacements)
+			) {
 				return $this->replacements[$this->seperator . strtoupper((string)$replace) . $this->seperator];
-			}
-			else {
+			} else {
 				return '';
 			}
 		}
 
-		public function __isset($key) {
+		/**
+		 * Checks if $key is set in $this->replacements
+		 * @param  string  $key [Replacement to test for]
+		 * @return bool         [Whether or not it is set]
+		 */
+		public function __isset($key)
+		{
 			return array_key_exists($key, $this->replace);
 		}
 
@@ -205,8 +225,8 @@
 		 * @return void
 		 * @example unset($template->$key)
 		 */
-
-		public function __unset($key) {
+		public function __unset($key)
+		{
 			unset($this->replace[$key]);
 		}
 
@@ -231,8 +251,8 @@
 		 * @return self
 		 * @example $template->testing('Works')->another_test('Still Works')
 		 */
-
-		public function __call($replace, array $arguments) {
+		public function __call($replace, array $arguments)
+		{
 			return $this->replace($replace, join(null, $arguments));
 		}
 
@@ -244,8 +264,8 @@
 		 * @return self
 		 * @example $template->set([$placeholder => $replacement][, ...])
 		 */
-
-		public function set(array $arr) {
+		public function set(array $arr)
+		{
 			foreach($arr as $replace => $with) {
 				$this->replace($replace, $with);
 			}
@@ -263,14 +283,13 @@
 		 * @return string or void
 		 * @example $conntent = $template->out([false[, true]]);
 		 */
-
-		public function out($print = false) {
-			if($print){
+		public function out($print = false)
+		{
+			if ($print) {
 				echo $this->get_results();
 				return $this->clear();
 				return $this;
-			}
-			else {
+			} else {
 				$result = $this->get_results();
 				$this->clear();
 				return $result;

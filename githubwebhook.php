@@ -1,4 +1,6 @@
 <?php
+	namespace shgysk8zer0\Core;
+
 	/**
 	 * Handle Webhooks from GitHub with ease!
 	 *
@@ -27,10 +29,8 @@
 	 * @var \stdClass $parsed    [$payload parsed as an Object]
 	 * @var \stdClass $config    [Configuration data parsed as an Object]
 	 */
-
-
-	namespace shgysk8zer0\Core;
-	class GitHubWebhook {
+	class GitHubWebhook
+	{
 		public $headers = [], $payload = null, $event = null, $parsed = null,  $config = null;
 
 		/**
@@ -38,14 +38,14 @@
 		 *
 		 * @param mixed $config [Configuration data, possibly an .ini or .json]
 		 */
-
-		public function __construct($config = null) {
+		public function __construct($config = null)
+		{
 			$this->headers = getallheaders();
-			if(array_key_exists('X-GitHub-Event', $this->headers)) {
+			if (array_key_exists('X-GitHub-Event', $this->headers)) {
 				$this->event = $this->headers['X-GitHub-Event'];
 			}
 
-			if(isset($config)) {
+			if (isset($config)) {
 				$this->parseConfig($config);
 			}
 
@@ -61,9 +61,9 @@
 		 * @param  string $secret [Secret key set when creating the Webhook]
 		 * @return bool
 		 */
-
-		public function validate($secret = null) {
-			if(
+		public function validate($secret = null)
+		{
+			if (
 				is_null($secret)
 				and is_object($this->config)
 				and @is_string($this->config->secret)
@@ -71,13 +71,13 @@
 				$secret = $this->config->secret;
 			}
 
-			if(
+			if (
 				array_key_exists('Content-Length', $this->headers)
 				and array_key_exists('User-Agent', $this->headers)
 				and preg_match('/^GitHub-Hookshot/', $this->headers['User-Agent'])
 				and array_key_exists('X-Hub-Signature', $this->headers)
 			) {
-				if(is_string($secret)) {
+				if (is_string($secret)) {
 					list($algo, $hash) = explode('=', $this->headers['X-Hub-Signature'], 2);
 
 					return $hash === hash_hmac(
@@ -85,14 +85,10 @@
 						$this->payload,
 						$secret
 					);
-				}
-
-				else {
+				} else {
 					return true;
 				}
-			}
-
-			else {
+			} else {
 				return false;
 			}
 		}
@@ -102,30 +98,25 @@
 		 *
 		 * @param mixed $config [Configuration data, possibly an .ini or .json]
 		 * @return void
+		 * @todo Use Parser class instead
 		 */
-
-		private function parseConfig($config) {
-			if(is_string($config) and @file_exists($config) and @is_readable($config)) {
+		private function parseConfig($config)
+		{
+			if (is_string($config) and @file_exists($config) and @is_readable($config)) {
 				switch(strtolower(pathinfo($config, PATHINFO_EXTENSION))) {
-					case 'json': {
+					case 'json':
 						$this->config = json_decode(file_get_contents($config));
-					} break;
-					case 'ini': {
+						break;
+					case 'ini':
 						$this->config = (object)parse_ini_file($config);
-					} break;
+						break;
 				}
-			}
-
-			elseif(is_string($config)) {
+			} elseif (is_string($config)) {
 				$this->config = new \stdClass();
 				$this->config->secret = $config;
-			}
-
-			elseif(is_array($config)) {
+			} elseif (is_array($config)) {
 				$this->config = (object)$config;
-			}
-
-			elseif(is_object($config)) {
+			} elseif (is_object($config)) {
 				$this->config = $config;
 			}
 		}
@@ -137,16 +128,16 @@
 		 * @param void
 		 * @return void
 		 */
-
-		private function parsePayload() {
-			if(array_key_exists('content-type', $this->headers)) {
+		private function parsePayload()
+		{
+			if (array_key_exists('content-type', $this->headers)) {
 				switch(strtolower($this->headers['content-type'])) {
-					case 'application/json': {
+					case 'application/json':
 						$this->payload = file_get_contents('php://input');
-						if(strlen($this->payload) === (int)$this->headers['Content-Length']) {
+						if (strlen($this->payload) === (int)$this->headers['Content-Length']) {
 							$this->parsed = json_decode($this->payload);
 						}
-					} break;
+						break;
 				}
 			}
 		}
@@ -161,12 +152,17 @@
 		 * @param  string $branch [Optional branch.]
 		 * @return mixed          [Direct return from git command. May be null]
 		 */
+		public function pull($remote = null, $branch = null)
+		{
+			if (is_null($remote)) {
+				$remote = $config->repository->git_url;
+			}
 
-		public function pull($remote = null, $branch = null) {
-			if(is_null($remote)) $remote = $config->repository->git_url;
-			if(is_string($branch)) $branch = ' ' . trim($branch);
+			if (is_string($branch)) {
+				$branch = ' ' . trim($branch);
+			}
+
 			$cmd = escapeshellcmd('git pull ' . $remote . $branch);
 			return `{$cmd}`;
 		}
 	}
-?>

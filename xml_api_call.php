@@ -1,4 +1,6 @@
 <?php
+	namespace shgysk8zer0\Core;
+
 	/**
 	 * @author Chris Zuber
 	 * @package shgysk8zer0\Core
@@ -19,9 +21,9 @@
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
 
-	namespace shgysk8zer0\Core;
 	use shgysk8zer0\Core\resources as resources;
-	class XML_API_Call extends resources\XML_Document {
+	class XML_API_Call extends resources\XML_Document
+	{
 		const API_LOG_DIR = 'api_log',
 			OUTPUT_DATE_FORMAT = 'Y-m-d\TH:i:s';
 		protected $url,
@@ -42,7 +44,6 @@
 		 * @param  string  $url         [URL for cURL]
 		 * @param  string  $charset     [character encoding]
 		 */
-
 		public function __construct(
 			$url,
 			array $headers = null,
@@ -50,9 +51,10 @@
 			$urn = null,
 			$charset = null,
 			$verbose = false
-		) {
+		)
+		{
 			parent::__construct($charset);
-			if(isset($headers)) {
+			if (isset($headers)) {
 				$this->set_headers($headers);
 			}
 			$this->url = $url;
@@ -70,15 +72,14 @@
 		 * @param  integer    $n      [for multiple instances of $parent, which one?]
 		 * @return XML_API_Call
 		 */
-
-		public function append(\DOMElement $node, $parent = null, $n = 0) {
-			if(is_null($parent)) {
+		public function append(\DOMElement $node, $parent = null, $n = 0)
+		{
+			if (is_null($parent)) {
 				$this->body->append($node);
-			}
-
-			else {
+			} else {
 				$this->body->getElementsByTagName($parent)->item($n)->appendChild($node);
 			}
+
 			return $this;
 		}
 
@@ -88,8 +89,8 @@
 		 * @param void
 		 * @return integer [Cotnent-Length]
 		 */
-
-		public function length() {
+		public function length()
+		{
 			return strlen($this->saveXML());
 		}
 
@@ -98,9 +99,10 @@
 		 *
 		 * @param  \DOMElement       $node       [Node to be setting attributes for]
 		 * @param  array         $attributes [key => value array of attributes]
+		 * @return void
 		 */
-
-		private function setAttributes(resources\XML_Node &$node, array $attributes) {
+		private function setAttributes(resources\XML_Node &$node, array $attributes)
+		{
 			foreach($attributes as $prop => $value) {
 				$attr = $this->createAttribute($prop);
 				$attr->value = $value;
@@ -120,17 +122,16 @@
 		 * @param  string $namespaceURI [Namespace URI for created node]
 		 * @return XML_Node
 		 */
-
-		public function create($name, $value = null, $namespaceURI = null) {
+		public function create($name, $value = null, $namespaceURI = null)
+		{
 			return new resources\XML_Node($name, $value, $namespaceURI);
 		}
 
 		/**
 		 * Sets headers for API call
 		 * @param array $headers [$key => $value set of headers]
-		 * @return XML_API_Call
+		 * @return self
 		 */
-
 		public function set_headers(array $headers) {
 			$this->headers = array_merge($this->headers, $headers);
 			return $this;
@@ -140,10 +141,11 @@
 		 * Returns $key => $value array of headers to
 		 * an $index => $key: $value array
 		 *
+		 * @param void
 		 * @return array [Converted headers array]
 		 */
-
-		private function get_headers() {
+		private function get_headers()
+		{
 			$headers = array_merge($this->headers, [
 				'Content-Length' => $this->length()
 			]);
@@ -158,27 +160,41 @@
 		 * @param string $output [Destination filename for requests and responses]
 		 * @return SimpleXMLElement
 		 */
-
-		public function send($output = null) {
+		public function send($output = null)
+		{
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $this->url);
 			curl_setopt($ch, CURLOPT_HTTPHEADER, $this->get_headers());
 			curl_setopt($ch, CURLOPT_POST, TRUE);
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $this->saveXML());
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-			if($this->verbose) curl_setopt($ch, CURLOPT_VERBOSE, TRUE);
+			if ($this->verbose) {
+				curl_setopt($ch, CURLOPT_VERBOSE, TRUE);
+			}
+
 			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 			$ch_result = simplexml_load_string(curl_exec($ch));
 			curl_close($ch);
-			if(isset($output) and is_string($output)) {
-				$this->out(BASE . DIRECTORY_SEPARATOR . $this::API_LOG_DIR . DIRECTORY_SEPARATOR . $output . '_' . date($this::OUTPUT_DATE_FORMAT) . '_request.xml');
+			if (isset($output) and is_string($output)) {
+				$this->out(
+					join(DIRECTORY_SEPARATOR, [
+						BASE,
+						$this::API_LOG_DIR,
+						$output . '_' . date($this::OUTPUT_DATE_FORMAT) . '_request.xml'
+					])
+				);
 				$response = new \DOMDocument('1.0', 'UTF-8');
 				$response->preserveWhiteSpace = false;
 				$response->formatOutput = true;
 				$response->loadXML($ch_result->asXML());
-				$response->save(BASE . DIRECTORY_SEPARATOR . $this::API_LOG_DIR . DIRECTORY_SEPARATOR . $output . '_' . date($this::OUTPUT_DATE_FORMAT) . '_response.xml');
+				$response->save(
+					join(DIRECTORY_SEPARATOR, [
+						BASE,
+						$this::API_LOG_DIR,
+						$output . '_' . date($this::OUTPUT_DATE_FORMAT) . '_response.xml'
+					])
+				);
 			}
 			return $ch_result;
 		}
 	}
-?>

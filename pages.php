@@ -1,4 +1,6 @@
 <?php
+	namespace shgysk8zer0\Core;
+
 	/**
 	 * Easily work with pages by getting just the content/meta unique to them
 	 * Works for either regular or AJAX requests
@@ -21,112 +23,149 @@
 	 * You should have received a copy of the GNU General Public License
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
-
-	namespace shgysk8zer0\Core;
-	class pages {
+	class Pages
+	{
 		private static $instance = null;
 		private $data, $path, $url, $status, $parsed;
 		public $content, $type;
 
-		public static function load($url = null) {
-			if(is_null(self::$instance)) {
+		/**
+		 * Static method for constructing Pages class
+		 * @param  string $url [Some URL... absolute or relative]
+		 * @return self        [New or existing instance of class]
+		 */
+		public static function load($url = null)
+		{
+			if (is_null(self::$instance)) {
 				self::$instance = new self($url);
 			}
 			return self::$instance;
 		}
 
-		public function __construct($url = null) {
-			$this->status = (array_key_exists('REDIRECT_STATUS', $_SERVER)) ? $_SERVER['REDIRECT_STATUS'] : http_response_code();
+		/**
+		 * Construct the class based on $url (defaulting to the current URL)
+		 * Aside from other magic methods, this is the only public method.
+		 * All else is handled during construction.
+		 * @param string $url [Any valid relative or absolute URL... Or null]
+		 */
+		public function __construct($url = null)
+		{
+			$this->status = (array_key_exists('REDIRECT_STATUS', $_SERVER))
+				? $_SERVER['REDIRECT_STATUS']
+				: http_response_code();
+
 			$pdo = PDO::load('connect');
-			if(is_string($url)) {
+
+			if (is_string($url)) {
 				$this->url = $url;
-			}
-			else {
+			} else {
 				$this->url = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'];
-				if(array_key_exists('REDIRECT_URL', $_SERVER)) {
+				if (array_key_exists('REDIRECT_URL', $_SERVER)) {
 					$this->url .= $_SERVER['REDIRECT_URL'];
-				}
-				elseif(array_key_exists('REQUEST_URI', $_SERVER)) {
+				} elseif (array_key_exists('REQUEST_URI', $_SERVER)) {
 					$this->url .= $_SERVER['REQUEST_URI'];
 				}
 			}
 
 			$this->parsed = (object)parse_url(strtolower(urldecode($this->url)));
 			$this->path = explode('/', trim($this->parsed->path, '/'));
-			if(str_replace('/', DIRECTORY_SEPARATOR, rtrim($_SERVER['DOCUMENT_ROOT'], '/')) !== BASE) {
+			if (str_replace('/', DIRECTORY_SEPARATOR, rtrim($_SERVER['DOCUMENT_ROOT'], '/')) !== BASE) {
 				unset($this->path[0]);
 				$this->path = array_values($this->path);
-				if(empty($this->path)) {
+
+				if (empty($this->path)) {
 					$this->path = [''];
 				}
 			}
-			if($pdo->connected) {
+
+			if ($pdo->connected) {
 				switch($this->path[0]) {
-					case 'tags': {
-						if(isset($this->path[1])) {
+					case 'tags':
+						if (isset($this->path[1])) {
 							$this->type = 'tags';
-							$this->data = $pdo->prepare("
-								SELECT `title`, `description`, `author`, `author_url`, `url`, `created`
+							$this->data = $pdo->prepare(
+								"SELECT
+									`title`,
+									`description`,
+									`author`,
+									`author_url`,
+									`url`,
+									`created`
 								FROM `posts`
 								WHERE `keywords` LIKE :tag
-								LIMIT 20
-							")->bind([
+								LIMIT 20"
+							)->bind([
 								'tag' => preg_replace('/\s*/', '%', " {$this->path[1]} ")
 							])->execute()->get_results();
 						}
-					} break;
+						break;
 
 					case 'posts':
 					case '/':
-					case '': {
+					case '':
 						$this->type = 'posts';
-						if(count($this->path) === 1 and $this->path[0] === '') {
-							$this->data = $pdo->fetch_array('
-								SELECT *
+						if (count($this->path) === 1 and $this->path[0] === '') {
+							$this->data = $pdo->fetch_array(
+								'SELECT *
 								FROM `posts`
 								WHERE `url` = ""
-								LIMIT 1
-							', 0);
-						}
-						elseif(count($this->path) >= 2) {
-							$this->data = $pdo->prepare('
-								SELECT *
+								LIMIT 1'
+							, 0);
+						} elseif (count($this->path) >= 2) {
+							$this->data = $pdo->prepare(
+								'SELECT *
 								FROM `posts`
 								WHERE `url` = :url
 								ORDER BY `created`
-								LIMIT 1
-							')->bind([
+								LIMIT 1'
+							)->bind([
 								'url' => urlencode($this->path[1])
 							])->execute()->get_results(0);
 						}
-					} break;
+						break;
 				}
-				if(isset($this->data) and !empty($this->data)) $this->get_content();
-
-				else{
+				if (isset($this->data) and !empty($this->data)) {
+					$this->get_content();
+				} else{
 					$this->error_page();
 				}
 			}
 		}
 
-		public function __get($key) {
+		/**
+		 * Magic getter method (retrieves private data)
+		 * @param  string $key [Property to get]
+		 * @return mixed       [Value of requested property]
+		 */
+		public function __get($key)
+		{
 			return isset($this->data->$key) ? $this->data->$key : false;
 		}
 
-		public function __isset($key) {
+		/**
+		 * Magic method to check if private property is set
+		 * @param  string  $key [Property to test if exists]
+		 * @return bool         [description]
+		 */
+		public function __isset($key)
+		{
 			return isset($this->data->$key);
 		}
 
-		public function debug() {
-			debug($this);
-		}
-
-		private function get_content() {
+		/**
+		 * Where all of the parsing and setting of data is handled.
+		 * Switches on type of page request, and sets various properties
+		 * accordingly.
+		 * @return void
+		 * @uses \shgsyk8zer0\Template
+		 */
+		private function get_content()
+		{
 			$login = login::load();
 			$DB =PDO::load('connect');
 
 			switch($this->type) {
-				case 'posts': {
+				case 'posts':
 					$post = template::load('posts');
 					$comments = template::load('comments');
 					$comments_section = template::load('comments_section');
@@ -140,19 +179,19 @@
 						null
 					);
 
-					$results = $DB->prepare("
-						SELECT
+					$results = $DB->prepare(
+						'SELECT
 							`comment`,
 							`author`,
 							`author_url`,
 							`time`
 						FROM `comments`
-						WHERE `post` = :post
-					")->bind([
+						WHERE `post` = :post'
+					)->bind([
 						'post' => $this->data->url
 					])->execute()->get_results();
 
-					if(is_array($results)) {
+					if (is_array($results)) {
 						foreach($results as $comment) {
 							$time = new simple_date($comment->time);
 							$comments_section->comments .= $comments->comment(
@@ -195,9 +234,9 @@
 						)->out()
 					)->out();
 
-				} break;
+					break;
 
-				case 'tags': {
+				case 'tags':
 					$this->title = 'Tags';
 					$this->description = "Tags search results for {$this->path[1]}";
 					$this->keywords = "Keywords, tags, search, {$this->path[1]}";
@@ -223,15 +262,23 @@
 						)->out();
 					}
 					$this->content .= '</div>';
-				} break;
+					break;
 			}
 		}
 
+		/**
+		 * Handler for invalid URLs
+		 * @param  int     $code         [HTTP Status Code]
+		 * @param  string  $title_prefix [Prefix <title> with this string]
+		 * @param  bool    $dump         [Whether or not to include a dump of parsed URL]
+		 * @return void
+		 */
 		private function error_page(
 			$code = 404,
 			$title_prefix = 'Woops! Not found',
 			$dump = true
-		) {
+		)
+		{
 			http_response_code($code);
 			$this->status = $code;
 			$this->description = 'No results for ' . $this->url;
@@ -242,13 +289,12 @@
 			$template->home = URL;
 			$template->message = "Nothing found for <wbr /><var>{$this->url}</var>";
 			$template->link = $this->url;
-			if($dump) {
+			if ($dump) {
 				$template->dump = print_r($this->parsed, true);
-			}
-			else {
+			} else {
 				$template->dump = null;
 			}
+
 			$this->content = $template->out();
 		}
 	}
-?>

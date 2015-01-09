@@ -1,4 +1,6 @@
 <?php
+	namespace shgysk8zer0\Core;
+
 	/**
 	 * Makes easy use of simple regular expressions
 	 *
@@ -25,8 +27,6 @@
 	 * 		$some_var = $reg->replace('foo')->with('bar')[->in($string)]->execute()
 	 * @depreciated
 	 */
-
-	namespace shgysk8zer0\Core;
 	class regexp{
 
 		protected $pattern, $replacement, $limit = -1, $find;
@@ -40,11 +40,11 @@
 		 * @return void
 		 * @example $reg = new regexp([$string])
 		 */
-
-		public function __construct($str = null) {
+		public function __construct($str = null)
+		{
 			$this->pattern = array();
 			$this->replacement = array();
-			if(is_string($str)) $this->in = $str;
+			if (is_string($str)) $this->in = $str;
 		}
 
 		/**
@@ -52,8 +52,8 @@
 		 * @return boolean
 		 * @example "isset({$reg->key})"
 		 */
-
-		public function __isset($name) {
+		public function __isset($name)
+		{
 			return isset($this->$name);
 		}
 
@@ -65,8 +65,8 @@
 		 * @uses functions.php::pattern()
 		 * @example "$reg->set_pattern('number')" sets $this->patttern to "\d+(\.\d{1,})?"
 		 */
-
-		public function set_pattern($type = null) {
+		public function set_pattern($type = null)
+		{
 			$this->pattern = pattern($type);
 			return $this;
 		}
@@ -77,8 +77,8 @@
 		 * @param string $str
 		 * @return self
 		 */
-
-		public function replace($str = null) {
+		public function replace($str = null)
+		{
 			array_push($this->pattern, $this->regexp($str));
 			return $this;
 		}
@@ -89,8 +89,8 @@
 		 * @param strign $str
 		 * @return self
 		 */
-
-		public function with($str = null) {
+		public function with($str = null)
+		{
 			array_push($this->replacement, (string)$str);
 			return $this;
 		}
@@ -101,8 +101,8 @@
 		 * @param string $str
 		 * @return boolean
 		 */
-
-		public function ends_with($str = null) {
+		public function ends_with($str = null)
+		{
 			$this->find = $this->regexp($str, 'end');
 			return $this->test();
 		}
@@ -113,8 +113,8 @@
 		 * @param string $str
 		 * @return boolean
 		 */
-
-		public function begins_with($str) {
+		public function begins_with($str)
+		{
 			$this->find = $this->regexp((string)$str, 'begin');
 			return $this->test();
 		}
@@ -125,8 +125,8 @@
 		 * @param string $str
 		 * @return boolean
 		 */
-
-		public function is($str = null) {
+		public function is($str = null)
+		{
 			$this->find = $this->regexp($str, 'full');
 			return $this->test();
 		}
@@ -137,8 +137,8 @@
 		 * @param string $str
 		 * @return boolean
 		 */
-
-		public function has($str = null) {
+		public function has($str = null)
+		{
 			$this->find = $this->regexp($str, null);
 			return $this->test();
 		}
@@ -149,8 +149,8 @@
 		 * @param string $str[, string $loc]
 		 * @return string (regular expression)
 		 */
-
-		public function regexp($str = null, $loc = null) {
+		public function regexp($str = null, $loc = null)
+		{
 			$pattern = preg_quote((string)$str, '/');
 			switch($loc) {
 				case 'begin':
@@ -177,8 +177,8 @@
 		 * @param void
 		 * @return boolean
 		 */
-
-		public function test() {
+		public function test()
+		{
 			return preg_match($this->find, $this->in);
 		}
 
@@ -188,8 +188,8 @@
 		 * @param string $str[, string $loc]
 		 * @return self
 		 */
-
-		public function find($str = null, $loc = null) {
+		public function find($str = null, $loc = null)
+		{
 			$this->find = $this->regexp($str, $full);
 			return $this;
 		}
@@ -200,8 +200,8 @@
 		 * @param string $str
 		 * @return self
 		 */
-
-		public function in($str) {
+		public function in($str)
+		{
 			$this->in = (string)$str;
 			return $this;
 		}
@@ -212,8 +212,8 @@
 		 * @param int $n
 		 * @return self
 		 */
-
-		public function limit($n = 0) {
+		public function limit($n = 0)
+		{
 			$this->limit = (int)$n;
 			return $this;
 		}
@@ -225,12 +225,14 @@
 		 * @return string
 		 */
 
-		public function execute($update = true) {
-			if($update) {
+		public function execute($update = true)
+		{
+			if ($update) {
 				$this->in = preg_replace($this->pattern, $this->replacement, $this->in, $this->limit);
 				return $this->in;
+			} else {
+				return preg_replace($this->pattern, $this->replacement, $this->in, $this->limit);
 			}
-			else return preg_replace($this->pattern, $this->replacement, $this->in, $this->limit);
 		}
 
 		/**
@@ -238,7 +240,6 @@
 		 * @param void
 		 * @return string
 		 */
-
 		public function value() {
 			return $this->in;
 		}
@@ -249,14 +250,15 @@
 		 * @param string $type
 		 * @return boolean
 		 */
-
-		public function matches_pattern($type = null) {
+		public function matches_pattern($type = null)
+		{
 			$pattern = pattern($type);
 			$this->find = "/^$pattern$/";
 			return $this->test();
 		}
 
-		public function debug() {
+		public function debug()
+		{
 			debug($this);
 		}
 	}

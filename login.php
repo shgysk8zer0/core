@@ -1,4 +1,6 @@
 <?php
+	namespace shgysk8zer0\Core;
+
 	/**
 	 * Class to handle login or create new users from form submissions or $_SESSION
 	 * Can check login role as well (new, user, admin, etc)
@@ -25,9 +27,8 @@
 	 * @var array $data
 	 * @var login $instance
 	 */
-
-	namespace shgysk8zer0\Core;
-	class login extends PDO {
+	class login extends PDO
+	{
 		public $data = [];
 		protected static $instance = null;
 
@@ -36,14 +37,15 @@
 		 * It checks if an instance has been created and returns that or a new instance
 		 *
 		 * @param string $ini (ini file to use for database connection configuration)
-		 * @return login object/class
+		 * @return self
 		 * @example $login = _login::load
 		 */
-
-		public static function load($ini = 'connect') {
-			if(is_null(self::$instance)) {
+		public static function load($ini = 'connect')
+		{
+			if (is_null(self::$instance)) {
 				self::$instance = new self($ini);
 			}
+
 			return self::$instance;
 		}
 
@@ -52,12 +54,11 @@
 		 * Uses that data to create a new PHP Data Object
 		 *
 		 * @param string $ini (ini file to use for database connection configuration)
-		 * @return void
 		 * @example $login = new login()
 		 * @todo Use static parent::load() instead, but this causes errors
 		 */
-
-		public function __construct($ini = 'connect') {
+		public function __construct($ini = 'connect')
+		{
 			parent::__construct($ini);	//login extends PDO, so create new instance of parent.
 
 			$this->data = array(
@@ -72,12 +73,12 @@
 		 * Creates new user using an array passed as source. Usually $_POST or $_SESSION
 		 *
 		 * @param array $source
-		 * @return boolean
+		 * @return bool
 		 * @example $login->create_from($_POST|$_GET|$_REQUEST|array())
 		 */
-
-		public function create_from(array $source) {
-			if(array_keys_exist('user', 'password', $source)) {
+		public function create_from(array $source)
+		{
+			if (array_keys_exist('user', 'password', $source)) {
 				$keys = array_map(function($key) {
 					return preg_replace('/\W/', null, $key);
 				}, array_keys($source));
@@ -89,19 +90,18 @@
 					PASSWORD_DEFAULT
 				);
 
-				return $this->prepare("
-					INSERT INTO `users` (
+				return $this->prepare(
+					"INSERT INTO `users` (
 						`" . join('`, `', $keys) . "`
 					) VALUES ("
 						. join(', ', array_map(function($key) {
 							return ':' . $key;
 						}, $keys)) . "
-					)
-				")->bind(
+					)"
+				)->bind(
 					$source
 				)->execute();
-			}
-			else {
+			} else {
 				return false;
 			}
 		}
@@ -113,20 +113,20 @@
 		 * @return void
 		 * @example $login->login_with($_POST|$_GET|$_REQUEST|$_SESSION|array())
 		 */
-
-		public function login_with(array $source) {
-			if(array_keys_exist('user', 'password', $source)) {
+		public function login_with(array $source)
+		{
+			if (array_keys_exist('user', 'password', $source)) {
 				array_walk($source, 'trim');
-				$results = $this->prepare("
-					SELECT *
+				$results = $this->prepare(
+					"SELECT *
 					FROM `users`
 					WHERE `user` = :user
-					LIMIT 1
-				")->bind([
+					LIMIT 1"
+				)->bind([
 					'user' => $source['user']
 				])->execute()->get_results(0);
 
-				if(password_verify(
+				if (password_verify(
 					$source['password'],
 					$results->password
 				) and $results->role !== 'new') {
@@ -147,21 +147,12 @@
 		 * @param void
 		 * @return void
 		 */
-
-		public function logout() {
+		public function logout()
+		{
 			$this->data = array_combine(
 				array_keys($this->data),
 				array_pad([], count($this->data), null)
 			);
-			/*$this->setUser(
-				null
-			)->setPassword(
-				null
-			)->setRole(
-				null
-			)->setLogged_In(
-				false
-			);*/
 		}
 
 		/**
@@ -171,9 +162,8 @@
 		 * @param void
 		 * @return void
 		 */
-
-		public function debug() {
+		public function debug()
+		{
 			debug($this);
 		}
 	}
-?>

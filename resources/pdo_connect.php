@@ -1,4 +1,7 @@
 <?php
+	namespace shgysk8zer0\Core\resources;
+	use \shgysk8zer0\Core\resources\Parser as Parser;
+
 	/**
 	 * Wrapper for standard PDO class.
 	 *
@@ -24,10 +27,8 @@
 	 * You should have received a copy of the GNU General Public License
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	*/
-
-	namespace shgysk8zer0\Core\resources;
-	use \shgysk8zer0\Core\resources\Parser as Parser;
-	class pdo_connect extends \PDO {
+	class PDO_Connect extends \PDO
+	{
 		protected $connect;
 		protected static $instances = [];
 		public $connected = false;
@@ -46,15 +47,16 @@
 		 * @param mixed $con
 		 * @return
 		 */
-
-		public static function load($con = 'connect') {
-			if(is_string($con)) {
-				if(!array_key_exists($con, self::$instances)) {
+		public static function load($con = 'connect')
+		{
+			if (is_string($con)) {
+				if (!array_key_exists($con, self::$instances)) {
 					self::$instances[$con] = new self($con);
 				}
 				return self::$instances[$con];
+			} else {
+				return new self($con);
 			}
-			else return new self($con);
 		}
 
 		/**
@@ -71,34 +73,30 @@
 		 * @uses \shgysk8zer0\Core\resources\Parser
 		 * @example parent::__construct($con)
 		 */
-
-		public function __construct($con = 'connect') {
+		public function __construct($con = 'connect')
+		{
 			try{
-				if(is_string($con)) {
+				if (is_string($con)) {
 					$tmp_ext = Parser::$DEFAULT_EXT;
 					Parser::$DEFAULT_EXT = $this::$ext;
 					$this->connect = Parser::parse($con);
 					Parser::$DEFAULT_EXT = $tmp_ext;
 					unset($tmp_ext);
-				}
-				elseif(is_object($con)) {
+				} elseif (is_object($con)) {
 					$this->connect = $con;
-				}
-				elseif(is_array($con)) {
+				} elseif (is_array($con)) {
 					$this->connect = (object)$con;
 				}
 
-				if(is_null($this->connect) or !is_object($this->connect)) {
+				if (is_null($this->connect) or !is_object($this->connect)) {
 					throw new \Exception('Unable to parse credentials.');
-				}
-				elseif(is_null($this->connect->user)) {
+				} elseif (is_null($this->connect->user)) {
 					throw new \Exception('User not given in credentials');
-				}
-				elseif(is_null($this->connect->password)) {
+				} elseif (is_null($this->connect->password)) {
 					throw new \Exception('Password not given in credentials');
 				}
 
-				if(
+				if (
 					isset($this->connect->server)
 					and array_key_exists('SERVER_ADDR', $_SERVER)
 					and $this->connect->server === $_SERVER['SERVER_ADDR']
@@ -106,11 +104,11 @@
 					unset($this->connect->server);
 				}
 
-				if(is_null($this->connect->database)) {
+				if (is_null($this->connect->database)) {
 					$this->connect->database = $this->connect->user;
 				}
 
-				if(
+				if (
 					isset($this->connect->port)
 					and (
 						!isset($this->connect->server)
@@ -119,14 +117,15 @@
 				) {
 					unset($this->connect->port);
 				}
+
 				$connect_string = (isset($this->connect->type)) ? "{$this->connect->type}:" : 'mysql:';
 				$connect_string .= "dbname={$this->connect->database}";
 
-				if(isset($this->connect->server)) {
+				if (isset($this->connect->server)) {
 					$connect_string .= ";host={$this->connect->server}";
 				}
 
-				if(
+				if (
 					isset($this->connect->port)
 					and isset($this->connect->server)
 					and $this->connect->server !== $this::DEFAULT_SERVER
@@ -139,10 +138,9 @@
 					"{$this->connect->user}",
 					"{$this->connect->password}"
 				);
-				$this->connected = true;
-			}
 
-			catch(\Exception $e) {
+				$this->connected = true;
+			} catch(\Exception $e) {
 				@file_put_contents(
 					self::LOG_DIR . DIRECTORY_SEPARATOR . __CLASS__ . '.log',
 					"{$e}" . PHP_EOL,
@@ -159,8 +157,8 @@
 		 * @param string $message
 		 * @return void
 		 */
-
-		protected function log($method = null, $line = null, $message = '') {
+		protected function log($method = null, $line = null, $message = '')
+		{
 			file_put_contents(
 				BASE . DIRECTORY_SEPARATOR . __CLASS__ . '.log',
 				"Error in $method in line $line: $message" . PHP_EOL,
@@ -174,17 +172,16 @@
 		 * @param string $fname
 		 * @return self
 		 */
-
-		public function restore($fname = null) {
-			if(is_null($fname)) {
+		public function restore($fname = null)
+		{
+			if (is_null($fname)) {
 				$fname = BASE . DIRECTORY_SEPERATOR . $this->connect->database;
 			}
 
 			$sql = file_get_contents("{$fname}.sql");
-			if(is_string($sql)) {
+			if (is_string($sql)) {
 				return $this->query($sql);
-			}
-			else {
+			} else {
 				return false;
 			}
 		}
@@ -201,13 +198,13 @@
 		 * @param string $filename
 		 * @return boolean
 		 */
-
-		public function dump($filename = null) {
-			if(is_null($filename)) {
+		public function dump($filename = null)
+		{
+			if (is_null($filename)) {
 				$filename = BASE . DIRECTORY_SEPARATOR . $this->connect->database . '.sql';
 			}
 
-			if(
+			if (
 				(
 					file_exists($filename)
 					and is_writable($filename)
@@ -218,7 +215,7 @@
 			) {
 				$command = 'mysqldump -u ' . escapeshellarg($this->connect->user);
 
-				if(isset($this->connect->server) and $this->connect->server !== $this::DEFAULT_SERVER) {
+				if (isset($this->connect->server) and $this->connect->server !== $this::DEFAULT_SERVER) {
 					$command .= ' -h ' . escapeshellarg($this->connect->server);
 				}
 
@@ -227,17 +224,14 @@
 				$command .=  ' ' . escapeshellarg($this->connect->database);
 
 				exec($command, $output, $return_var);
-				if($return_var === 0 and is_array($output) and !empty($output)) {
+				if ($return_var === 0 and is_array($output) and !empty($output)) {
 					file_put_contents($filename, join(PHP_EOL, $output));
 					return true;
-				}
-				else {
+				} else {
 					return false;
 				}
-			}
-			else {
+			} else {
 				return false;
 			}
 		}
 	}
-?>

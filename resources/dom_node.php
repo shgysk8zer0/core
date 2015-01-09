@@ -1,4 +1,6 @@
 <?php
+	namespace \shgysk8zer0\Core\Resources;
+
 	/**
 	* @copyright 2014, Chris Zuber
 	* @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
@@ -17,13 +19,17 @@
 	* @version 0.9.0
 	* @package shgysk8zer0\Core
 	*/
-
-	namespace \shgysk8zer0\Core\resources;
-	abstract class dom_node extends \DOMDocument {
+	abstract class DOM_Node extends \DOMDocument
+	{
 
 		private $node, $attributes, $content, $charset;
-		public function __construct($tag_name, $content, array $attributes = null, $charset = null) {
-			$this->tag_name = preg_replace('/[\W]/', null, $tag_name)
+		public function __construct(
+			$tag_name, $content,
+			array $attributes = null,
+			$charset = null
+		)
+		{
+			$this->tag_name = preg_replace('/[\W]/', null, $tag_name);
 			$this->encoding = $encoding;
 			$this->attributes = $attributes;
 			$this->charset = (is_null($charset)) ? ini_get("default_charset") : $charset;
@@ -32,8 +38,9 @@
 			$this->set_attributes();
 		}
 
-		private function set_attributes() {
-			if(is_array($this->attributes)) {
+		private function set_attributes()
+		{
+			if (is_array($this->attributes)) {
 				foreach($attributes as $prop => $value) {
 					$attr = $this->createAttribute($prop);
 					$attr->value = str_replace('"', '&quote', $value);
@@ -42,8 +49,8 @@
 			}
 		}
 
-		private function encode($str) {
+		private function encode($str)
+		{
 			return htmlentities($str, ENT_XML1, $this->charset);
 		}
 	}
-?>

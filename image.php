@@ -1,4 +1,6 @@
 <?php
+	namespace shgysk8zer0\Core;
+
 	/**
 	 * Class to load image, resize/scale/rotate it, convert to other types,
 	 * append text, etc.
@@ -28,10 +30,8 @@
 	 * @var string   $extension  [Extension with leading "."]
 	 * @var string   $mime_type  [image/jpeg|gif|png]
 	 */
-
-	namespace shgysk8zer0\Core;
-
-	class Image {
+	class Image
+	{
 		const JPG = IMAGETYPE_JPEG, PNG = IMAGETYPE_PNG, GIF = IMAGETYPE_GIF;
 		protected $image, $fname, $type, $extension, $width, $height;
 		public $mime_type, $alt='';
@@ -42,9 +42,10 @@
 		 *
 		 * @param string $fname [path/to/image]
 		 */
-		public function __construct($fname) {
+		public function __construct($fname)
+		{
 			$this->fname = $fname;
-			if(@file_exists($this->fname)) {
+			if (@file_exists($this->fname)) {
 				$this->img_data();
 				$this->read_img();
 			}
@@ -56,7 +57,8 @@
 		 * @param  string $prop  [Name of variable]
 		 * @return [mixed]       [Value or null]
 		 */
-		public function __get($prop) {
+		public function __get($prop)
+		{
 			return (isset($this->$prop)) ? $this->$prop : null;
 		}
 
@@ -66,7 +68,8 @@
 		 * @param  string  $prop [Name of variable]
 		 * @return boolean       [Whether or not it is set]
 		 */
-		public function __isset($prop) {
+		public function __isset($prop)
+		{
 			return isset($this->$prop);
 		}
 
@@ -76,7 +79,8 @@
 		 * @param void
 		 * @return string [HTML <img/> complete with alt, width, & height]
 		 */
-		public function __toString() {
+		public function __toString()
+		{
 			return "<img src=\"{$this->as_data_uri($this::$DEFAULT_TYPE)}\" alt=\"{$this->alt}\" width=\"{$this->width}\" height=\"{$this->height}\" />";
 		}
 
@@ -87,17 +91,19 @@
 		 * @param  string $caption [Optional <figcaption> content]
 		 * @return string          [HTML <figure> with <img /> & <figcaption>]
 		 */
-		public function __invoke($caption = null) {
+		public function __invoke($caption = null)
+		{
 			$html = '<figure>' . "{$this}";
-			if(is_string($caption)) $html .="<figcaption>{$caption}</figcaption>";
+			if (is_string($caption)) $html .="<figcaption>{$caption}</figcaption>";
 			$html .= '</figure>';
 			return $html;
 		}
 
-		public static function create($src, $alt = '', $scale = null) {
+		public static function create($src, $alt = '', $scale = null)
+		{
 			$img = new self($src);
 			$img->alt = $alt;
-			if(is_float($scale)) $img->scale($scale);
+			if (is_float($scale)) $img->scale($scale);
 			return "{$img}";
 		}
 
@@ -107,7 +113,8 @@
 		 * @param void
 		 * @return void
 		 */
-		final protected function img_data() {
+		final protected function img_data()
+		{
 			$this->type = getimagesize($this->fname)[2];
 			$this->mime_type = image_type_to_mime_type($this->type);
 			$this->extension = image_type_to_extension($this->type);
@@ -119,14 +126,15 @@
 		 * @param void
 		 * @return void
 		 */
-		final protected function read_img() {
+		final protected function read_img()
+		{
 			switch($this->type) {
 				case self::JPG: {
 					$this->image = imagecreatefromjpeg($this->fname);
 				} break;
 
 				case self::GIF: {
-					$this->image = imagecreatefromgif($this->fname);
+					$this->image = imagecreatefromgif ($this->fname);
 				} break;
 
 				case self::PNG: {
@@ -144,7 +152,8 @@
 		 * @param void
 		 * @return int [Image width in pixels]
 		 */
-		final public function get_width() {
+		final public function get_width()
+		{
 			return imagesx($this->image);
 		}
 
@@ -154,7 +163,8 @@
 		 * @param void
 		 * @return int [Image height in pixels]
 		 */
-		final public function get_height() {
+		final public function get_height()
+		{
 			return imagesy($this->image);
 		}
 
@@ -164,7 +174,8 @@
 		 * @param  float $scalar [Factor to scale by, E.G. 0.5 for half]
 		 * @return self
 		 */
-		final public function scale($scalar) {
+		final public function scale($scalar)
+		{
 			$this->resize($this->get_width() * $scalar, $this->get_height() * $scalar);
 			return $this;
 		}
@@ -177,7 +188,8 @@
 		 * @param  integer $ignore_transparent [> 0 means true]
 		 * @return self
 		 */
-		final public function rotate($degrees, $bgd_color = 0, $ignore_transparent = 0) {
+		final public function rotate($degrees, $bgd_color = 0, $ignore_transparent = 0)
+		{
 			$this->image = imagerotate($this->image, $degrees, $bgd_color, $ignore_transparent);
 			return $this;
 		}
@@ -189,7 +201,8 @@
 		 * @param  int $height [Height in pixels]
 		 * @return self        [With $this->image as resized iamge]
 		 */
-		final public function resize($width, $height) {
+		final public function resize($width, $height)
+		{
 			$new_image = imagecreatetruecolor($width, $height);
 			imagecopyresampled(
 				$new_image,
@@ -218,9 +231,10 @@
 		 * @param  int  $height [Ending height in pixels]
 		 * @return self
 		 */
-		final public function crop($x = 0, $y = 0, $width = null, $height = null) {
-			if(is_null($width)) $width = $this->get_width();
-			if(is_null($height)) $height = $this->get_height();
+		final public function crop($x = 0, $y = 0, $width = null, $height = null)
+		{
+			if (is_null($width)) $width = $this->get_width();
+			if (is_null($height)) $height = $this->get_height();
 			imagecrop($this->image, [
 				'x' => $x,
 				'y' => $y,
@@ -240,23 +254,29 @@
 		 * @param  string  $output  [Optional output file instead of return]
 		 * @return string           [If no $output, returns binary data as string]
 		 */
-		final public function as_binary($type = IMAGETYPE_JPEG,  $quality = 100, $output = null) {
+		final public function as_binary(
+			$type = IMAGETYPE_JPEG,
+			$quality = 100,
+			$output = null
+		)
+		{
 			$this->type = $type;
 			$this->extension = image_type_to_extension($this->type);
 			ob_start();
 			switch($type) {
-				case IMAGETYPE_JPEG: {
+				case IMAGETYPE_JPEG:
 					imagejpeg($this->image, $output, $quality);
-				} break;
+					break;
 
-				case IMAGETYPE_GIF: {
-					imagegif($this->image, $output, $quality);
-				} break;
+				case IMAGETYPE_GIF:
+					imagegif ($this->image, $output, $quality);
+					break;
 
-				case IMAGETYPE_PNG: {
+				case IMAGETYPE_PNG:
 					imagepng($this->image, $output, $quality);
-				} break;
+					break;
 			}
+
 			return ob_get_clean();
 		}
 
@@ -266,10 +286,12 @@
 		 * @param void
 		 * @return string [Base64 encoded data-URI of image data]
 		 */
-		final public function as_data_uri($type = null) {
-			if(!is_int($type)) {
+		final public function as_data_uri($type = null)
+		{
+			if (!is_int($type)) {
 				$type = $this->type;
 			}
+
 			$mime = image_type_to_mime_type($type);
 			return "data:{$mime};base64," . base64_encode($this->as_binary($type));
 		}
@@ -282,7 +304,8 @@
 		 * @param  int     $quality [Quality or cmpression level]
 		 * @return self
 		 */
-		final public function save($fname, $type = IMAGETYPE_JPEG, $quality = 90) {
+		final public function save($fname, $type = IMAGETYPE_JPEG, $quality = 90)
+		{
 			$fname = pathinfo($fname, PATHINFO_FILENAME);
 			$extension = image_type_to_mime_type($type);
 			$this->as_binary($type, $fname . $extension, $quality);
@@ -296,9 +319,16 @@
 		 * @param  int    $type  [From image constants]
 		 * @return self
 		 */
-		final public function download($fname = null, $type = null) {
-			if(is_null($fname)) $fname = $this->fname;
-			if(is_null($type)) $type = $this->type;
+		final public function download($fname = null, $type = null)
+		{
+			if (is_null($fname)) {
+				$fname = $this->fname;
+			}
+
+			if (is_null($type)) {
+				$type = $this->type;
+			}
+
 			$extension = image_type_to_extension($type);
 			$fname = pathinfo($fname, PATHINFO_FILENAME);
 			$mime_type = image_type_to_mime_type($type);
@@ -316,7 +346,8 @@
 		 * @param void
 		 * @return self
 		 */
-		final public function set_headers() {
+		final public function set_headers()
+		{
 			header('Content-Type: ' . $this->mime_type);
 			return $this;
 		}
@@ -330,7 +361,8 @@
 		 * @param  int     $a [Alpha/transparency]
 		 * @return int
 		 */
-		final public function color($r, $g, $b, $a = 255) {
+		final public function color($r, $g, $b, $a = 255)
+		{
 			return imageColorAllocateAlpha($this->image, $r, $g, $b, $a);
 		}
 
@@ -339,7 +371,8 @@
 		 * @param  string $font [path/to/font.gdf]
 		 * @return int
 		 */
-		final public function font($font) {
+		final public function font($font)
+		{
 			return imageloadfont($font);
 		}
 
@@ -353,7 +386,8 @@
 		 * @param  int     $font   [From imageloadfont() or built-in font]
 		 * @return self
 		 */
-		final public function text($string, $x = 0, $y = 0, $color = 0, $font = 5) {
+		final public function text($string, $x = 0, $y = 0, $color = 0, $font = 5)
+		{
 			imagestring ($this->image , $font, $x, $y, $string, $color);
 			return $this;
 		}
@@ -364,7 +398,8 @@
 		 * @param  bool   $bool [True to enable, false to disable]
 		 * @return self
 		 */
-		final public function alpha_blending($bool = false) {
+		final public function alpha_blending($bool = false)
+		{
 			imagealphablending($this->image, $bool);
 			return $this;
 		}
@@ -375,7 +410,8 @@
 		 * @param  bool   $bool [True to enable, false to disable]
 		 * @return self
 		 */
-		final public function save_alpha($bool = true) {
+		final public function save_alpha($bool = true)
+		{
 			imagesavealpha($this->image, $bool);
 		}
 
@@ -384,10 +420,10 @@
 		 * @param  bool   $bool [True to enable, false to disable]
 		 * @return self
 		 */
-		final public function enable_transparency($bool = true) {
+		final public function enable_transparency($bool = true)
+		{
 			imagealphablending($this->image, !$bool);
 			imagesavealpha($this->image, $bool);
 			return $this;
 		}
 	}
-?>

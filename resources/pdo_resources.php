@@ -1,4 +1,7 @@
 <?php
+	namespace shgysk8zer0\Core\resources;
+	use \shgysk8zer0\Core\magic_methods as magic_methods;
+
 	/**
 	 * Wrapper for standard PDO class.
 	 *
@@ -24,10 +27,8 @@
 	 * You should have received a copy of the GNU General Public License
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	*/
-
-	namespace shgysk8zer0\Core\resources;
-	use \shgysk8zer0\Core\magic_methods as magic_methods;
-	abstract class pdo_resources implements magic_methods {
+	abstract class pdo_resources implements magic_methods
+	{
 		public $connected;
 		protected $pdo, $data = [];
 
@@ -45,8 +46,11 @@
 		 * @example parent::__construct($con)
 		 */
 
-		protected function __construct($con = 'connect') {
-			$this->pdo = (is_string($con)) ? pdo_connect::load($con) : new pdo_connect($con);
+		protected function __construct($con = 'connect')
+		{
+			$this->pdo = (is_string($con))
+				? pdo_connect::load($con)
+				: new pdo_connect($con);
 			$this->connected = (is_object($this->pdo) and $this->pdo->connected);
 		}
 
@@ -59,8 +63,8 @@
 		 * @return void
 		 * @example "$pdo->key = $value"
 		 */
-
-		public function __set($key, $value) {
+		public function __set($key, $value)
+		{
 			$key = str_replace(' ', '-', (string)$key);
 			$this->data[$key] = $value;
 		}
@@ -72,10 +76,10 @@
 		 * @return mixed
 		 * @example "$pdo->key" Returns $value
 		 */
-
-		public function __get($key) {
+		public function __get($key)
+		{
 			$key = str_replace(' ', '-', (string)$key);
-			if(array_key_exists($key, $this->data)) {
+			if (array_key_exists($key, $this->data)) {
 				return $this->data[$key];
 			}
 			return false;
@@ -86,8 +90,8 @@
 		 * @return boolean
 		 * @example "isset({$pdo->key})"
 		 */
-
-		public function __isset($key) {
+		public function __isset($key)
+		{
 			return array_key_exists(str_replace(' ', '-', $key), $this->data);
 		}
 
@@ -98,8 +102,8 @@
 		 * @return void
 		 * @example "unset($pdo->key)"
 		 */
-
-		public function __unset($key) {
+		public function __unset($key)
+		{
 			unset($this->data[str_replace(' ', '-', $key)]);
 		}
 
@@ -108,27 +112,25 @@
 		 * @param string $name, array $arguments
 		 * @example "$pdo->[getName|setName]($value)"
 		 */
-
-		public function __call($name, array $arguments) {
+		public function __call($name, array $arguments)
+		{
 			$name = strtolower((string)$name);
 			$act = substr($name, 0, 3);
 			$key = str_replace(' ', '-', substr($name, 3));
 			switch($act) {
-				case 'get': {
-					if(array_key_exists($key, $this->data)) {
+				case 'get':
+					if (array_key_exists($key, $this->data)) {
 						return $this->data[$key];
-					}
-					else{
+					} else{
 						return false;
 					}
-				} break;
-				case 'set': {
+					break;
+				case 'set':
 					$this->data[$key] = $arguments[0];
 					return $this;
-				} break;
-				default: {
-					throw new Exception("Unknown method: {$name} in " . __CLASS__ .'->' . __METHOD__);
-				}
+					break;
+				default:
+					throw new \Exception("Unknown method: {$name} in " . __CLASS__ .'->' . __METHOD__);
 			}
 		}
 
@@ -138,8 +140,8 @@
 		 * @param void
 		 * @return array
 		 */
-
-		public function keys() {
+		public function keys()
+		{
 			return array_keys($this->data);
 		}
 
@@ -149,14 +151,14 @@
 		 * @param mixed $str
 		 * @return mixed
 		 */
-
-		public function escape(&$val) {
-			if(is_string($val)) {
+		public function escape(&$val)
+		{
+			if (is_string($val)) {
 				$val = preg_replace('/^\'|\'$/', null, $this->pdo->quote($val));
-			}
-			elseif(is_array($val)) {
+			} elseif (is_array($val)) {
 				array_walk($val, [$this, 'escape']);
 			}
+
 			return $val;
 		}
 
@@ -166,8 +168,8 @@
 		 * @param string $str
 		 * @return string
 		*/
-
-		public function quote(&$str) {
+		public function quote(&$str)
+		{
 			$str = $this->pdo->quote((string)$str);
 			return $str;
 		}
@@ -179,11 +181,11 @@
 		 * @param array $arr
 		 * @return array
 		 */
-
-		public function columns(array $arr) {
+		public function columns(array $arr)
+		{
 			$keys = array_keys($arr);
 			$this->escape($keys);
-			return join(', ', array_map(function($key){
+			return join(', ', array_map(function($key) {
 				return "`{$key}`";
 			}, $keys));
 		}
@@ -195,8 +197,8 @@
 		 * @param array $arr
 		 * @return array
 		 */
-
-		public function prepare_keys(array $arr) {
+		public function prepare_keys(array $arr)
+		{
 			$keys = array_keys($arr);
 			$this->escape($keys);
 			return array_map(function($key) {
@@ -204,7 +206,14 @@
 			}, $keys);
 		}
 
-		public function bind_keys(array $arr) {
+		/**
+		 * Maps passed array_keys into keys suitable for binding,
+		 * E.G. "some key" becomes "some_key"
+		 * @param  array  $arr [Full array, though only keys will be used]
+		 * @return array       [Indexed array created from array_keys]
+		 */
+		public function bind_keys(array $arr)
+		{
 			$keys = array_keys($arr);
 			$this->escape($keys);
 			return array_map(function($key) {
@@ -212,11 +221,23 @@
 			}, $keys);
 		}
 
-		public function restore($fname = null) {
+		/**
+		 * Restore database connection from a ".sql" file
+		 * @param  string $fname [SQL file without the extension]
+		 * @return bool          [Whether or not the restore query was successful]
+		 */
+		public function restore($fname = null)
+		{
 			return $this->pdo->restore($fname);
 		}
 
-		public function dump($filename = null) {
+		/**
+		 * Does a mysqldump and outputs to $filename
+		 * @param  string $filename [Name of file to output to]
+		 * @return bool             [Whether or not dump was successful]
+		 */
+		public function dump($filename = null)
+		{
 			return $this->pdo->dump($filename);
 		}
 
@@ -224,12 +245,11 @@
 		 * Returns a 0 indexed array of tables in database
 		 *
 		 * @param void
-		 * @return array
+		 * @return array     [Array containing all tables in database]
 		 */
-
-		public function show_tables() {
-			$query = "SHOW TABLES";
-			$results = $this->pdo->query($query);
+		public function show_tables()
+		{
+			$results = $this->pdo->query('SHOW TABLES');
 			$tables = $results->fetchAll(\PDO::FETCH_COLUMN, 0);
 			return $tables;
 		}
@@ -238,12 +258,11 @@
 		 * Returns a 0 indexed array of tables in database
 		 *
 		 * @param void
-		 * @return array
+		 * @return array    [Array containing database names]
 		 */
-
-		public function show_databases() {
-			$query = 'SHOW DATABASES';
-			$results = $this->pdo->query($query);
+		public function show_databases()
+		{
+			$results = $this->pdo->query('SHOW DATABASES');
 			$databases = $results->fetchAll(\PDO::FETCH_COLUMN, 0);
 			return $databases;
 		}
@@ -258,10 +277,15 @@
 		 *
 		 * @param string $table
 		 * @return array
+		 * @depreciated
 		 */
-
-		public function describe($table = null) {
-			return $this->pdo->query("DESCRIBE `{$this->escape($table)}")->fetchAll(\PDO::FETCH_CLASS);
+		public function describe($table = null)
+		{
+			return $this->pdo->query(
+				"DESCRIBE `{$this->escape($table)}"
+			)->fetchAll(
+				\PDO::FETCH_CLASS
+			);
 		}
 
 		/**
@@ -275,8 +299,8 @@
 		 * @param array $array
 		 * @return string
 		 */
-
-		public function columns_from(array $array) {
+		public function columns_from(array $array)
+		{
 			$keys = array_keys($array);
 			$key_walker = function(&$key) {
 				$this->escape($key);
@@ -287,5 +311,3 @@
 			return join(', ', $keys);
 		}
 	}
-
-?>

@@ -12,6 +12,7 @@
 	abstract class Unit_Test extends \ReflectionClass implements Interfaces\Unit_Test
 	{
 		use Traits\Asserts;
+		use Traits\Linter;
 
 		public $methods, $child_class, $output;
 
@@ -60,7 +61,7 @@
 		 */
 		final public function __get($prop)
 		{
-			if(method_exists($this, "get{$prop}")) {
+			if (method_exists($this, "get{$prop}")) {
 				return \call_user_func([$this, "get{$prop}"]);
 			}
 		}
@@ -111,11 +112,11 @@
 				self::ERROR_HANDLER_LEVEL
 			);
 
-			if(empty(static::$defined_levels)) {
+			if (empty(static::$defined_levels)) {
 				$consts = get_defined_constants(true)['Core'];
 				array_map(function($key, $val)
 					{
-						if(preg_match('/^E(_[A-Z]+){1,2}$/', $key)) {
+						if (preg_match('/^E(_[A-Z]+) {1,2}$/', $key)) {
 							static::$defined_levels[$key] = $val;
 						}
 					},
@@ -125,14 +126,14 @@
 				unset($consts);
 			}
 
-			if(empty($this->methods)) {
+			if (empty($this->methods)) {
 				$this->methods = array_diff(
 					get_class_methods(get_class($this)),
 					get_class_methods($this->child_class)
 				);
 			}
 
-			if(is_array($this->methods) and !empty($this->methods)) {
+			if (is_array($this->methods) and !empty($this->methods)) {
 				foreach($this->methods as $method) {
 					call_user_func([$this, $method]);
 				}
@@ -152,7 +153,7 @@
 			$return_var;
 			$tmp = exec("php5 -l {$file}", $output, $return_var);
 
-			if($return_var !== 0) {
+			if ($return_var !== 0) {
 				trigger_error(join(PHP_EOL, $output));
 			}
 			return $this;
@@ -163,7 +164,7 @@
 		 */
 		final protected function forceCLI()
 		{
-			if(!in_array(PHP_SAPI, static::$CLIs)) {
+			if (!in_array(PHP_SAPI, static::$CLIs)) {
 				http_response_code(404);
 				exit();
 			}
@@ -176,7 +177,7 @@
 		 */
 		final public static function exceptionHandler(\Exception $exception)
 		{
-			if(static::$ECHO_EXCEPTIONS) echo $exception . PHP_EOL;
+			if (static::$ECHO_EXCEPTIONS) echo $exception . PHP_EOL;
 			array_push(static::$exceptions, "{$exception}");
 		}
 

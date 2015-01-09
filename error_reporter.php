@@ -1,4 +1,6 @@
 <?php
+	namespace shgysk8zer0\Core;
+
 	/**
 	 * Custom error handling.
 	 * Catch errors using custom function using set_error_handler($callback_function, ERROR_LEVEL)
@@ -22,9 +24,8 @@
 	 * You should have received a copy of the GNU General Public License
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
-
-	namespace shgysk8zer0\Core;
-	class error_reporter extends PDO {
+	class error_reporter extends PDO
+	{
 
 		protected static $instance = null;
 
@@ -40,11 +41,12 @@
 		 * @param string $method
 		 * @return error_reporter
 		 */
-
-		public static function load($method = 'default') {
-			if(is_null(self::$instance)) {
+		public static function load($method = 'default')
+		{
+			if (is_null(self::$instance)) {
 				self::$instance = new self((string)$method);
 			}
+
 			return self::$instance;
 		}
 
@@ -62,8 +64,8 @@
 		 * might themselves be array or object).
 		 * @ return mixed (return false to make PHP handle the error in the default way)
 		 */
-
-		public function __construct($method = 'default') {
+		public function __construct($method = 'default')
+		{
 			$this->method = strtolower((string)$method);
 
 			/**
@@ -94,7 +96,7 @@
 
 			$this->defined_levels = get_defined_constants(true)['Core'];
 
-			if($this->method === 'database') {
+			if ($this->method === 'database') {
 				/**
 				 * construct the PDO class and create prepared
 				 * statement here. Since we will be using the static
@@ -104,8 +106,8 @@
 
 				parent::__construct();
 
-				$this->prepare("
-					INSERT INTO `PHP_errors`
+				$this->prepare(
+					"INSERT INTO `PHP_errors`
 					(
 						`datetime`,
 						`file`,
@@ -122,7 +124,7 @@
 					)
 				");
 			}
-			elseif($this->method === 'log') {
+			elseif ($this->method === 'log') {
 				/**
 				 * Open the file during class construct. Same reasons as above.
 				 */
@@ -144,26 +146,25 @@
 		 * @param mixed $scope (All variables set in the current scope when the error occured).
 		 * @return boolean (false will tell PHP to handle the error by its own means)
 		 */
-
 		public function report(
 			$error_level = null,
 			$error_message = null,
 			$file = null,
 			$line = null,
 			$scope = null
-		) {
+		)
+		{
 			switch($this->method) {
-				case 'database': {
+				case 'database':
 					return $this->database((int)$error_level, (string)$error_message, (string)$file, (int)$line, $scope);
-				} break;
+					break;
 
-				case 'log': {
+				case 'log':
 					return $this->logger((int)$error_level, (string)$error_message, (string)$file, (int)$line, $scope);
-				} break;
+					break;
 
-				default: {
+				default:
 					return false;
-				}
 			}
 		}
 
@@ -177,8 +178,8 @@
 		 * @param mixed $scope (All variables set in the current scope when the error occured).
 		 * @return boolean (Whether or not the write was successful)
 		 */
-
-		private function logger($error_level, $error_message, $file, $line, $scope) {
+		private function logger($error_level, $error_message, $file, $line, $scope)
+		{
 			$error_level = array_search($error_level, $this->defined_levels);
 			return !!fwrite($this->log, "{$error_level}: {$error_message} in {$file} on line {$line} at " . date('Y-m-d\TH:i:s') . PHP_EOL);
 		}
@@ -193,8 +194,8 @@
 		 * @param mixed $scope (All variables set in the current scope when the error occured).
 		 * @return boolean (Whether or not it executed)
 		 */
-
-		private function database($error_level, $error_message, $file, $line, $scope) {
+		private function database($error_level, $error_message, $file, $line, $scope)
+		{
 			return $this->bind([
 				'datetime' => date('Y-m-d\TH:i:s'),
 				'file' => $file,

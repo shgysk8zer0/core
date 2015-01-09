@@ -1,4 +1,6 @@
 <?php
+	namespace shgysk8zer0\Core;
+
 	/**
 	 * Easily work with dates created from almost any
 	 * imaginable form (Yesterday, 2014-01-01, 1/1/14, January 1st, ...)
@@ -28,9 +30,8 @@
 	 * @var array $days (for converting Sunday <=> 1)
 	 * @depreciated
 	 */
-
-	namespace shgysk8zer0\Core;
-	class simple_date {
+	class Simple_Date
+	{
 		public $obj, $data = [], $src, $months = [
 			'January',
 			'February',
@@ -76,12 +77,12 @@
 		 * date formats include m/d/y, y-m-d, written [long form or abbreviated]
 		 * time formats include 12/24 hour formats (depending on if AM/PM are included). Seconds are optional
 		 *
-		 * @link http://www.php.net/manual/en/function.getdate.php
-		 * @link http://www.php.net/manual/en/datetime.construct.php
+		 * @see http://www.php.net/manual/en/function.getdate.php
+		 * @see http://www.php.net/manual/en/datetime.construct.php
 		 * @param mixed $t (null, int unix_timestamp, [date][time]_format)
 		 */
-
-		public function __construct($t = null) {
+		public function __construct($t = null)
+		{
 			(preg_match('/^\d+$/', $t)) ? $this->data = getdate($t) : $this->data = getdate(date_timestamp_get(date_create($t)));
 			$this->data['timestamp'] = array_pop($this->data);
 			$this->obj = $this->make();
@@ -95,14 +96,13 @@
 		 * @return void
 		 * @example "$storage->key = $value"
 		 */
-
-		public function __set($key, $value) {
+		public function __set($key, $value)
+		{
 			$key = str_replace('_', '-', $key);
 			$this->data[$key] = $value;
-			if($key === 'mon') {
+			if ($key === 'mon') {
 				$this->data['month'] = $this->months[(int)$value - 1];
-			}
-			elseif($key === 'month') {
+			} elseif ($key === 'month') {
 				$this->data['mon'] = array_search(caps($value), $this->months) +1;
 			}
 		}
@@ -114,10 +114,10 @@
 		 * @return mixed
 		 * @example "$storage->key" Returns $value
 		 */
-
-		public function __get($key) {
+		public function __get($key)
+		{
 			$key = str_replace('_', '-', $key);
-			if(array_key_exists($key, $this->data)) {
+			if (array_key_exists($key, $this->data)) {
 				return $this->data[$key];
 			}
 			return false;
@@ -128,8 +128,8 @@
 		 * @return boolean
 		 * @example "isset({$storage->key})"
 		 */
-
-		public function __isset($key) {
+		public function __isset($key)
+		{
 			return array_key_exists(str_replace('_', '-', $key), $this->data);
 		}
 
@@ -140,30 +140,31 @@
 		 * @return void
 		 * @example "unset($storage->key)"
 		 */
-
-		public function __unset($index) {
+		public function __unset($index)
+		{
 			unset($this->data[str_replace('_', '-', $index)]);
 		}
 
 		/**
 		 * Chained magic getter and setter
 		 * @param string $name, array $arguments
+		 * @return self
 		 * @example "$storage->[getName|setName]($value)"
 		 */
-
-		public function __call($name, array $arguments) {
+		public function __call($name, array $arguments)
+		{
 			$name = strtolower($name);
 			$act = substr($name, 0, 3);
 			$key = str_replace('_', '-', substr($name, 3));
 			switch($act) {
-				case 'get': {
+				case 'get':
 					return $this->$key;
-				}break;
+					break;
 
-				case 'set': {
+				case 'set':
 					$this->$key = $arguments[0];
 					return $this;
-				}break;
+					break;
 			}
 		}
 
@@ -173,8 +174,8 @@
 		 * @param void
 		 * @return array
 		 */
-
-		public function keys() {
+		public function keys()
+		{
 			return array_keys($this->data);
 		}
 
@@ -183,10 +184,10 @@
 		 *
 		 * @param string $format
 		 * @return string
-		 * @link http://php.net/manual/en/function.date.php
+		 * @see http://php.net/manual/en/function.date.php
 		 */
-
-		public function out($format = 'Y-m-d\TH:i:s') {
+		public function out($format = 'Y-m-d\TH:i:s')
+		{
 			return date($format, $this->data['timestamp']);
 		}
 
@@ -194,19 +195,22 @@
 		 * @param void
 		 * @retrun void
 		 */
-
 		public function update() {
 			$str = "{$this->year}-{$this->mon}-{$this->mday}T{$this->hours}:{$this->minutes}:{$this->seconds}";
 			$this->data['timestamp'] = date_timestamp_get(date_create($str));
-//			$updated = new simple_date(
 		}
 
-		public function make() {
+		public function make()
+		{
 			return new \DateTime(date($this->out(), $this->data['timestamp']));
 		}
 
-		public function diff($t) {
-			if(!preg_match('/\d{10}/', $t)) $t = date_timestamp_get(date_create($t));
+		public function diff($t)
+		{
+			if (!preg_match('/\d{10}/', $t)) {
+				$t = date_timestamp_get(date_create($t));
+			}
+
 			return $this->data['timestamp'] - $t;
 		}
 	}

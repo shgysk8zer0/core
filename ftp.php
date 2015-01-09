@@ -1,4 +1,6 @@
 <?php
+	namespace shgysk8zer0\Core;
+
 	/**
 	 * An FTP class designed to make FTP in PHP more similar to
 	 * standard BASH commands.
@@ -21,9 +23,8 @@
 	 * You should have received a copy of the GNU General Public License
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
-
-	namespace shgysk8zer0\Core;
-	class ftp {
+	class FTP
+	{
 		private $pass, $user, $server, $path;
 		protected $ftp;
 		public $tmp;
@@ -33,8 +34,8 @@
 		 * @param string $pass
 		 * @param string $server
 		 */
-
-		public function __construct($user, $pass, $server) {
+		public function __construct($user, $pass, $server)
+		{
 			$this->user = (string)$user;
 			$this->pass = (string)$pass;
 			$this->server = (string)$server;
@@ -47,8 +48,8 @@
 		 * @param void
 		 * @return boolean (status of ftp_login())
 		 */
-
-		private function login() {
+		private function login()
+		{
 			$this->ftp = ftp_connect($this->server);
 			return ftp_login($this->ftp, $this->user, $this->pass);
 		}
@@ -59,8 +60,8 @@
 		 * @return ftp
 		 *
 		 */
-
-		public function cd($dir) {
+		public function cd($dir)
+		{
 			$dir = (string)$dir;
 			($dir === '..') ? ftp_cdup($this->ftp) : ftp_chdir($this->ftp, $dir);
 			$this->path = $this->pwd();
@@ -74,8 +75,8 @@
 		 * @param int $mode (binary or text)
 		 * @return string (file contents)
 		 */
-
-		public function get($file, $mode = FTP_BINARY) {
+		public function get($file, $mode = FTP_BINARY)
+		{
 			ftp_get($this->ftp, $this->tmp, (string)$file, $mode);
 			return file_get_contents($this->tmp);
 		}
@@ -86,10 +87,10 @@
 		 * @param array $list (all files to get())
 		 * @return array (return values of get() as an array)
 		 */
-
-		public function get_all(array $list) {
+		public function get_all(array $list)
+		{
 			$all = array();
-			foreach($list as $file){
+			foreach($list as $file) {
 				array_push($all, $this->get((string)$file));
 			}
 			return $all;
@@ -101,8 +102,8 @@
 		 * @param string $exp
 		 * @return int
 		 */
-
-		public function count($exp = '.') {
+		public function count($exp = '.')
+		{
 			return count($this->ls((string)$exp));
 		}
 
@@ -112,8 +113,8 @@
 		 * @param void
 		 * @return void
 		 */
-
-		public function close() {
+		public function close()
+		{
 			ftp_close($this->ftp);
 		}
 
@@ -123,8 +124,8 @@
 		 * @param string command
 		 * @return mixed
 		 */
-
-		protected function exec($cmd = null) {
+		protected function exec($cmd = null)
+		{
 			return ftp_exec($this->ftp, (string)$cmd);
 		}
 
@@ -134,8 +135,8 @@
 		 * @param string $name
 		 * @return boolean
 		 */
-
-		public function mkdir($name = null) {
+		public function mkdir($name = null)
+		{
 			return ftp_mkdir($this->ftp, (string)$name);
 		}
 
@@ -144,8 +145,8 @@
 		 * @param string $dir
 		 * @return boolean
 		 */
-
-		public function rmdir($dir = null) {
+		public function rmdir($dir = null)
+		{
 			return ftp_rmdir($this->ftp, (string)$dir);
 		}
 
@@ -155,8 +156,8 @@
 		 * @param string $dir
 		 * @return string
 		 */
-
-		public function ls($dir = '.') {
+		public function ls($dir = '.')
+		{
 			return ftp_nlist($this->ftp, (string)$dir);
 		}
 
@@ -166,8 +167,8 @@
 		 * @param void
 		 * @return string
 		 */
-
-		public function pwd() {
+		public function pwd()
+		{
 			return ftp_pwd($this->ftp);
 		}
 
@@ -177,8 +178,8 @@
 		 * @param string $f
 		 * @return boolean
 		 */
-
-		public function rm($f = null) {
+		public function rm($f = null)
+		{
 			return $this->delete($f);
 		}
 
@@ -188,8 +189,8 @@
 		 * @param string $f
 		 * @return boolean
 		 */
-
-		public function delete($f = null) {
+		public function delete($f = null)
+		{
 			return ftp_delete($this->ftp, (string)$f);
 		}
 
@@ -200,8 +201,8 @@
 		 * @param string $to
 		 * @return boolean
 		 */
-
-		public function mv($from = null, $to = null) {
+		public function mv($from = null, $to = null)
+		{
 			return ftp_rename($this->ftp, (string)$from, (string)$to);
 		}
 
@@ -212,8 +213,8 @@
 		 * @param string $file
 		 * @return boolean
 		 */
-
-		public function chmod($mode = null, $file = null) {
+		public function chmod($mode = null, $file = null)
+		{
 			return ftp_chmod($this->ftp, (string)$mode, (string)$file);
 		}
 
@@ -223,9 +224,8 @@
 		 * @param string $file
 		 * @return boolean
 		 */
-
-		public function exists($file = null) {
+		public function exists($file = null)
+		{
 			return (ftp_size($this->ftp, (string)$file) !== -1);
 		}
 	}
-?>

@@ -1,4 +1,6 @@
 <?php
+	namespace shgysk8zer0\Core;
+
 	/**
 	 * Since this class is using $_SESSION for all data, there are few variables
 	 * There are several methods to make better use of $_SESSION, and it adds the ability to chain
@@ -30,9 +32,8 @@
 	 * @var boolean $httponly
 	 * @var session $instance
 	*/
-
-	namespace shgysk8zer0\Core;
-	class session implements magic_methods {
+	class session implements Magic_Methods
+	{
 		private $name, $expires, $path, $domain, $secure, $httponly;
 		private static $instance = null;
 
@@ -41,12 +42,13 @@
 		 * It checks if an instance has been created and returns that or a new instance
 		 *
 		 * @params [string $site] optional name for session
-		 * @return session object/class
+		 * @return self
 		 * @example $session = session::load([$site])
 		 */
 
-		public static function load($site = null) {
-			if(is_null(self::$instance)) {
+		public static function load($site = null)
+		{
+			if (is_null(self::$instance)) {
 				self::$instance = new self($site);
 			}
 			return self::$instance;
@@ -59,26 +61,33 @@
 		 * @return void
 		 * @example $session = new session([$site])
 		 */
-
-		public function __construct($name = null) {
+		public function __construct($name = null)
+		{
 			//Do not create new session of one has already been created
-			if(session_status() !== PHP_SESSION_ACTIVE) {
+			if (session_status() !== PHP_SESSION_ACTIVE) {
 				//Avoid trying to figure out cookie paramaters for CLI
-				if(PHP_SAPI != 'cli') {
+				if (PHP_SAPI != 'cli') {
 					$this->expires = 0;
 					$this->path = '/' . trim(str_replace("{$_SERVER['REQUEST_SCHEME']}://{$_SERVER['SERVER_NAME']}", '/', URL), '/');
 					$this->domain = $_SERVER['HTTP_HOST'];
 					$this->secure = https();
 					$this->httponly = true;
 
-					if(is_null($name)) {
+					if (is_null($name)) {
 						$path = explode(DIRECTORY_SEPARATOR, BASE);
 						$name = end($path);
 					}
+
 					$this->name = preg_replace('/[^\w]/', null, strtolower($name));
 					session_name($this->name);
-					if(!array_key_exists($this->name, $_COOKIE)) {
-						session_set_cookie_params($this->expires, $this->path, $this->domain, $this->secure, $this->httponly);
+					if (!array_key_exists($this->name, $_COOKIE)) {
+						session_set_cookie_params(
+							$this->expires,
+							$this->path,
+							$this->domain,
+							$this->secure,
+							$this->httponly
+						);
 					}
 				}
 				session_start();
@@ -92,10 +101,10 @@
 		 * @return mixed
 		 * @example "$session->key" Returns $value
 		 */
-
-		public function __get($key) {
+		public function __get($key)
+		{
 			$key = strtolower(str_replace('_', '-', $key));
-			if(array_key_exists($key, $_SESSION)) {
+			if (array_key_exists($key, $_SESSION)) {
 				return $_SESSION[$key];
 			}
 			return false;
@@ -108,8 +117,8 @@
 		 * @return void
 		 * @example "$session->key = $value"
 		 */
-
-		public function __set($key, $value) {
+		public function __set($key, $value)
+		{
 			$key = strtolower(str_replace('_', '-', $key));
 			$_SESSION[$key] = trim($value);
 		}
@@ -117,19 +126,19 @@
 		/**
 		 * Chained magic getter and setter
 		 * @param string $name, array $arguments
+		 * @return self
 		 * @example "$session->[getName|setName]($value)"
 		 */
-
-		public function __call($name, array $arguments) {
+		public function __call($name, array $arguments)
+		{
 			$name = strtolower($name);
 			$act = substr($name, 0, 3);
 			$key = str_replace('_', '-', substr($name, 3));
 			switch($act) {
 				case 'get':
-					if(array_key_exists($key, $_SESSION)) {
+					if (array_key_exists($key, $_SESSION)) {
 						return $_SESSION[$key];
-					}
-					else{
+					} else{
 						return false;
 					}
 					break;
@@ -147,8 +156,8 @@
 		 * @return boolean
 		 * @example "isset({$session->key})"
 		 */
-
-		public function __isset($key) {
+		public function __isset($key)
+		{
 			$key = strtolower(str_replace('_', '-', $key));
 			return array_key_exists($key, $_SESSION);
 		}
@@ -160,8 +169,8 @@
 		 * @return void
 		 * @example "unset($session->key)"
 		 */
-
-		public function __unset($key) {
+		public function __unset($key)
+		{
 			$key = strtolower(str_replace('_', '-', $key));
 			unset($_SESSION[$key]);
 		}
@@ -171,12 +180,13 @@
 		*
 		* @param void
 		* @return void
+		* @todo __destruct
 		*/
-
-		public function destroy() {
+		public function destroy()
+		{
 			session_destroy();
 			unset($_SESSION);
-			if(array_key_exists($this->name, $_COOKIE)){
+			if (array_key_exists($this->name, $_COOKIE)) {
 				unset($_COOKIE[$this->name]);
 				setcookie($this->name, null, -1, $this->path, $this->domain, $this->secure, $this->httponly);
 			}
@@ -186,6 +196,7 @@
 		 * Clear $_SESSION. All data in $_SESSION is unset
 		 *
 		 * @param void
+		 * @return self
 		 * @example $session->restart()
 		 */
 
@@ -193,17 +204,4 @@
 			session_unset();
 			return $this;
 		}
-
-		/**
-		 * Prints out class information using print_r
-		 * wrapped in <pre> and <code>
-		 *
-		 * @param void
-		 * @return void
-		 */
-
-		public function debug() {
-			debug($this);
-		}
 	}
-?>

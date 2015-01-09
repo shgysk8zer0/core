@@ -1,4 +1,6 @@
 <?php
+	namespace shgysk8zer0\Core;
+
 	/**
 	 * Interface for common magic methods
 	 *
@@ -20,18 +22,15 @@
 	 * You should have received a copy of the GNU General Public License
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	*/
-
-	namespace shgysk8zer0\Core;
-	interface magic_methods {
+	interface Magic_Methods
+	{
 		/**
 		 * Setter method
 		 *
 		 * @param string $key
 		 * @param mixed $value
 		 * @example $someClass->$key = $value;
-		 * @return void
 		*/
-
 		public function __set($key, $value);
 
 		/**
@@ -41,7 +40,6 @@
 		 * @return mixed
 		 * @example $var = $someClass->$key;
 		*/
-
 		public function __get($key);
 
 		/**
@@ -51,7 +49,6 @@
 		 * @return boolean
 		 * @example isset($someClass->$key);
 		*/
-
 		public function __isset($key);
 
 		/**
@@ -61,7 +58,6 @@
 		 * @return void
 		 * @example unset($someClass->$key);
 		*/
-
 		public function __unset($key);
 
 		/**
@@ -73,7 +69,5 @@
 		 * @return mixed
 		 * @example $someClass->$name($arguments[0][, $arguments[1]...]);
 		*/
-
 		public function __call($name, array $arguments);
 	}
-?>

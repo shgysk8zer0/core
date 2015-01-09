@@ -1,4 +1,6 @@
 <?php
+	namespace shgysk8zer0\Core;
+
 	/**
 	 * Class for quickly and easily creating HTML <table>s
 	 *
@@ -52,10 +54,10 @@
 	 * )->last_name(
 	 * 		$last
 	 * )->next_row();
+	 * @todo Extend DOMDocument and use taht for building HTML
 	 */
-
-	namespace shgysk8zer0\Core;
-	class table implements magic_methods {
+	class Rable implements Magic_Methods
+	{
 		private $data, $headers, $row, $empty_row, $table, $thead, $tfoot, $tbody;
 		public $caption;
 
@@ -75,8 +77,8 @@
 		 * @param mixed arguments (will take arguments as an array or comma separated list, either results in an array)
 		 * @example $table = new table($cells[] | 'field1'[, ...])
 		 */
-
-		public function __construct() {
+		public function __construct()
+		{
 			$this->data = [];
 			$this->headers = flatten(func_get_args());
 			$this->table = null;
@@ -98,8 +100,8 @@
 		 * @return void
 		 * @example $table->$cell = $value
 		 */
-
-		public function __set($cell, $value) {
+		public function __set($cell, $value)
+		{
 			$this->set($cell, (string)$value);
 		}
 
@@ -112,21 +114,31 @@
 		 * @return string
 		 * @example $table->$cell .= ' and on and on...'
 		 */
-
-		public function __get($cell) {
-			if(in_array($cell, $this->headers)) {
+		public function __get($cell)
+		{
+			if (in_array($cell, $this->headers)) {
 				return $this->data[$this->row][$cell];
-			}
-			else {
+			} else {
 				return '';
 			}
 		}
 
-		public function __isset($cell) {
+		/**
+		 * Magic method to check if Row/Column is set
+		 * @param  string  $cell [Column name for current row]
+		 * @return bool          [Whether or not it is set]
+		 */
+		public function __isset($cell)
+		{
 			return array_key_exists($cell, $this->data[$this->row]);
 		}
 
-		public function __unset($cell) {
+		/**
+		 * MAgic method to unset a cell (Column on current row)
+		 * @param string $cell [Name of column for current row]
+		 */
+		public function __unset($cell)
+		{
 			unset($this->data[$this->row][$cell]);
 		}
 
@@ -140,8 +152,8 @@
 		 * @return self
 		 * @example $table->$cell[1]($value1)->$cell[2]($value2)...
 		 */
-
-		public function __call($cell, array $arguments) {
+		public function __call($cell, array $arguments)
+		{
 			$this->set($cell, join(null, $arguments));
 
 			return $this;
@@ -159,8 +171,8 @@
 		 * @return self
 		 * @example $table->next_row();
 		 */
-
-		public function next_row() {
+		public function next_row()
+		{
 			$this->tbody .= '<tr>' . html_join('td', $this->data[$this->row]) . '</tr>';
 			$this->data[$this->row] = $this->empty_row;
 			$this->row++;
@@ -177,13 +189,12 @@
 		 * @param bool $echo
 		 * @return mixed (HTML formatted <table> string from $data if $echo is false)
 		 */
-
-		public function out($echo = false, $border = false) {
+		public function out($echo = false, $border = false)
+		{
 			$this->build_table($border);
-			if($echo) {
+			if ($echo) {
 				echo $this->table;
-			}
-			else {
+			} else {
 				return $this->table;
 			}
 		}
@@ -195,18 +206,21 @@
 		 *
 		 * Will also append the current row to $tbody if it hasn't been already
 		 *
-		 * @param void
+		 * @param bool   $border     [Whether or not to include the border attribute]
 		 * @return void
 		 */
-
-		private function build_table($border = false) {
-			if(is_null($this->table)) {
-				if(array_key_exists($this->row, $this->data) and $this->data[$this->row] !== $this->empty_row) {
+		private function build_table($border = false)
+		{
+			if (is_null($this->table)) {
+				if (array_key_exists($this->row, $this->data) and $this->data[$this->row] !== $this->empty_row) {
 					$this->tbody .= '<tr>' . html_join('td', $this->data[$this->row]) . '</tr>';
 				}
 				unset($this->data[$this->row]);
 				$this->table = ($border) ? '<table border="1">' : '<table>';
-				if(isset($this->caption)) $this->table .= "<caption>{$this->caption}</caption>";
+				if (isset($this->caption)) {
+					$this->table .= "<caption>{$this->caption}</caption>";
+				}
+
 				$this->table .= $this->thead;
 				$this->table .= $this->tfoot;
 				$this->table .= $this->tbody;
@@ -227,12 +241,12 @@
 		 *
 		 * @param string $cell (name of field to set for current row)
 		 * @param string $value (value to set it to)
-		 * @return boolean (whether or not $cell is available)
+		 * @return bool (whether or not $cell is available)
 		 * @example $this->set($cell, $value)
 		 */
-
-		private function set($cell, $value) {
-			if(is_string($cell) and in_array($cell, $this->headers)) {
+		private function set($cell, $value)
+		{
+			if (is_string($cell) and in_array($cell, $this->headers)) {
 				$this->data[$this->row][$cell] = (string)$value;
 				return true;
 			}
@@ -240,4 +254,3 @@
 			return false;
 		}
 	}
-?>
