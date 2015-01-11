@@ -1,6 +1,5 @@
 <?php
 	namespace shgysk8zer0\Core\resources;
-	use \shgysk8zer0\Core\magic_methods as magic_methods;
 
 	/**
 	 * Wrapper for standard PDO class.
@@ -27,7 +26,7 @@
 	 * You should have received a copy of the GNU General Public License
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	*/
-	abstract class pdo_resources implements magic_methods
+	abstract class pdo_resources implements \shgysk8zer0\Core\Traits\Magic_Methods
 	{
 		public $connected;
 		protected $pdo, $data = [];

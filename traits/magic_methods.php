@@ -1,5 +1,5 @@
 <?php
-	namespace shgysk8zer0\Core;
+	namespace shgysk8zer0\Core\Traits;
 
 	/**
 	 * Interface for common magic methods

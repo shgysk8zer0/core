@@ -32,7 +32,7 @@
 	 * @var boolean $httponly
 	 * @var session $instance
 	*/
-	class session implements Magic_Methods
+	class session implements \shgysk8zer0\Core\Traits\Magic_Methods
 	{
 		private $name, $expires, $path, $domain, $secure, $httponly;
 		private static $instance = null;

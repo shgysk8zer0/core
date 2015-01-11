@@ -66,7 +66,6 @@
 		 * Initialize the class and set its default variable from arguments
 		 * $default_headers is built dynamically based on SERVER_ADMIN and
 		 *
-		 *
 		 * @param mixed $to                     [String of array of recipients]
 		 * @param string $subject               [The subject of the email]
 		 * @param string $message               [Email body text]

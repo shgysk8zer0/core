@@ -56,7 +56,7 @@
 	 * )->next_row();
 	 * @todo Extend DOMDocument and use taht for building HTML
 	 */
-	class Rable implements Magic_Methods
+	class Rable implements \shgysk8zer0\Core\Traits\Magic_Methods
 	{
 		private $data, $headers, $row, $empty_row, $table, $thead, $tfoot, $tbody;
 		public $caption;

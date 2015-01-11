@@ -14,20 +14,15 @@
 		use Traits\Asserts;
 		use Traits\Linter;
 
-		public $methods, $child_class, $output;
+		public $methods, $child_class;
 
 		protected $reflected_class = null;
 
 		private $constructor_args = null;
 
-		protected static $defined_levels = [];
+		public static $defined_levels = [];
 
 		public static $exceptions = [],
-			$ASSERT_ACTIVE = true,
-			$ASSERT_WARNING = false,
-			$ASSERT_BAIL = false,
-			$ASSERT_QUIET_EVAL = false,
-			$ASSERT_CALLBACK = 'assertFailed',
 			$CLIs = ['cli'],
 			$ECHO_EXCEPTIONS = true;
 
@@ -46,11 +41,6 @@
 			$this->forceCLI();
 			parent::__construct($testsClass);
 			$this->constructor_args = $constructor_args;
-			assert_options(ASSERT_ACTIVE, static::$ASSERT_ACTIVE);
-			assert_options(ASSERT_WARNING, static::$ASSERT_WARNING);
-			assert_options(ASSERT_BAIL, static::$ASSERT_BAIL);
-			assert_options(ASSERT_QUIET_EVAL, static::$ASSERT_QUIET_EVAL);
-			assert_options(ASSERT_CALLBACK, [$this, $this::ASSERT_FAILED_METHOD]);
 			$this->init();
 		}
 

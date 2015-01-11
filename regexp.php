@@ -27,7 +27,8 @@
 	 * 		$some_var = $reg->replace('foo')->with('bar')[->in($string)]->execute()
 	 * @depreciated
 	 */
-	class regexp{
+	class regexp
+	{
 
 		protected $pattern, $replacement, $limit = -1, $find;
 		public $in, $result;
