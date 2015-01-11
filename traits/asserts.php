@@ -7,8 +7,23 @@ namespace shgysk8zer0\Core\Traits;
  */
 Trait Asserts {
 	use \shgysk8zer0\Core\Traits\CLI_Colors;
-	protected static $ASSERT_FAIL_TEMPLATE = 'assert(): "%DESC%" failed on line %LINE% in %FILE%';
+	protected static $ASSERT_FAIL_TEMPLATE = 'assert(): "%DESC%" failed on line %LINE% in %FILE%',
+		$ASSERT_ACTIVE = true,
+		$ASSERT_WARNING = false,
+		$ASSERT_BAIL = false,
+		$ASSERT_QUIET_EVAL = false,
+		$ASSERT_CALLBACK = 'assertFailed';
+
 	protected $passed_asserts = 0, $failed_asserts = 0, $total_asserts = 0;
+
+	protected function assertsInitialize()
+	{
+		assert_options(ASSERT_ACTIVE, static::$ASSERT_ACTIVE);
+		assert_options(ASSERT_WARNING, static::$ASSERT_WARNING);
+		assert_options(ASSERT_BAIL, static::$ASSERT_BAIL);
+		assert_options(ASSERT_QUIET_EVAL, static::$ASSERT_QUIET_EVAL);
+		assert_options(ASSERT_CALLBACK, [$this, static::ASSERT_FAILED_METHOD]);
+	}
 
 	public function assertEquals($test1, $test2, $desc = null)
 	{
