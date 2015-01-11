@@ -5,7 +5,7 @@ trait Errors
 {
 	public static $error_levels = [];
 
-	public static function defineErrorLevels()
+	final protected static function defineErrorLevels()
 	{
 		if (empty(static::$error_levels)) {
 			$consts = get_defined_constants(true)['Core'];
@@ -21,9 +21,24 @@ trait Errors
 		}
 	}
 
-	public static function getErrorFromLevel($code)
+	final public static function getErrorFromLevel($code)
 	{
 		static::defineErrorLevels();
 		return array_search($code, static::$error_levels);
+	}
+
+	final protected static function errorToException(
+		$level,
+		$message,
+		$file,
+		$line,
+		$scope
+	)
+	{
+		try {
+			throw new \ErrorException($message, 0, $level, $file, $line);
+		} catch (\ErrorException $e) {
+			return $e;
+		}
 	}
 }
