@@ -33,7 +33,7 @@
 	 * $cookies->cookie_name = 'Value';
 	 * $cookie->existing_cookie //Returns value of $_COOKIES['existing-cookie']
 	 */
-	class cookies implements magic_methods
+	class cookies implements \shgysk8zer0\Core\Traits\Magic_Methods
 	{
 		public $expires, $path, $domain, $secure, $httponly;
 		private static $instance = null;

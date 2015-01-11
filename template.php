@@ -39,7 +39,7 @@
 	 * 	$table .= $template->out();
 	 * 	$table .= $template->old('Newer')->replace('Updated Again')->out();
 	 */
-	class Template implements Magic_Methods
+	class Template implements \shgysk8zer0\Core\Traits\Magic_Methods
 	{
 		private static $instance = [];
 		private $path, $source = '', $replacements = [], $seperator, $minify_results;
