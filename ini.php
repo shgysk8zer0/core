@@ -26,7 +26,7 @@
 	 * but __set, __get, __unset, __isset, and __call will be ineffective
 	 * @depreciated
 	 */
-	class ini implements magic_methods
+	class ini implements \shgysk8zer0\Core\Traits\Magic_Methods
 	{
 		private static $instance = [];
 		private $data = [];

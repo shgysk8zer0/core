@@ -54,7 +54,7 @@
 	 * 		$last
 	 * )->next_row();
 	 */
-	class CSV implements magic_methods
+	class CSV implements \shgysk8zer0\Core\Traits\Magic_Methods
 	{
 		private $data, $fields, $row, $empty_row, $csv;
 		public $delimiter, $enclosure, $print_headers;

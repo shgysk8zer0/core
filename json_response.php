@@ -29,7 +29,7 @@
 	 * @example $resp = new json_response();
 	 * $resp->notify(...)->html(...)->append(...)->prepend(...)->before(...)->after(...)->attributes(...)->remove(...)->send();
 	 */
-	class json_response implements magic_methods
+	class json_response implements \shgysk8zer0\Core\Traits\Magic_Methods
 	{
 		protected $response = [];
 		private static $instance = null;
