@@ -38,9 +38,5 @@ class Test extends \shgysk8zer0\Core\Abstracts\Unit_Test
 		assert($this->true, 'True is true');
 		assert(!$this->false, 'False is false');
 		assert(get_class() === __CLASS__, 'Same class');
-		assert(
-			get_class($this->set_pattern('%TEST%')) === get_class($this->reflected_class),
-			'Chainable test'
-		);
 	}
 }
