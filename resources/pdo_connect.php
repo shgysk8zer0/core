@@ -32,7 +32,7 @@
 		protected $connect;
 		protected static $instances = [];
 		public $connected = false;
-		public static $ext = 'ini';
+		public static $ext = 'json';
 
 		const DEFAULT_SERVER = 'localhost';
 		const LOG_DIR = 'logs';
@@ -47,7 +47,7 @@
 		 * @param mixed $con
 		 * @return
 		 */
-		public static function load($con = 'connect')
+		public static function load($con = 'connect.json')
 		{
 			if (is_string($con)) {
 				if (!array_key_exists($con, self::$instances)) {
@@ -73,7 +73,7 @@
 		 * @uses \shgysk8zer0\Core\resources\Parser
 		 * @example parent::__construct($con)
 		 */
-		public function __construct($con = 'connect')
+		public function __construct($con = 'connect.json')
 		{
 			try{
 				if (is_string($con)) {

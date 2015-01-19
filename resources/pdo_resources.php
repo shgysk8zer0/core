@@ -45,7 +45,7 @@
 		 * @example parent::__construct($con)
 		 */
 
-		protected function __construct($con = 'connect')
+		protected function __construct($con = 'connect.json')
 		{
 			$this->pdo = (is_string($con))
 				? pdo_connect::load($con)

@@ -43,7 +43,7 @@
 		 * @return prepared Object
 		 * @example $prepared prepared::load($connect) or $prepared = prepared::load($connect)
 		 */
-		public static function load($ini = 'connect')
+		public static function load($ini = 'connect.json')
 		{
 			if (!array_key_exists($ini, self::$instances)) {
 				self::$instances[$ini] = new self($ini);
@@ -55,7 +55,7 @@
 		 * [__construct description]
 		 * @param mixed $ini [description]
 		 */
-		public function __construct($ini = 'connect')
+		public function __construct($ini = 'connect.json')
 		{
 			/**
 			 * Do I need this? Will __construct not just be

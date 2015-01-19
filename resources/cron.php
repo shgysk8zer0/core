@@ -48,7 +48,7 @@
 		 *
 		 * @param mixed $con [Variable containing database connection info]
 		 */
-		public function __construct($con = 'connect')
+		public function __construct($con = 'connect.json')
 		{
 			$pdo = \shgysk8zer0\Core\PDO::load($con);
 			if ($pdo->connected) {
