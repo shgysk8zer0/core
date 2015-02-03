@@ -29,4 +29,7 @@ class PDO
 	implements \shgysk8zer0\Core\Depreciated\Interfaces\PDO
 {
 	use \shgysk8zer0\Core\Depreciated\Traits\PDO;
+	use \shgysk8zer0\Core_API\Traits\Magic_Methods;
+
+	const MAGIC_PROPERTY = 'data';
 }

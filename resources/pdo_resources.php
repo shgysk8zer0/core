@@ -54,59 +54,6 @@
 		}
 
 		/**
-		 * @method __set
-		 * Setter method for the class.
-		 *
-		 * @param string $key
-		 * @param mixed $value
-		 * @return void
-		 * @example "$pdo->key = $value"
-		 */
-		public function __set($key, $value)
-		{
-			$key = str_replace(' ', '-', (string)$key);
-			$this->data[$key] = $value;
-		}
-
-		/**
-		 * The getter method for the class.
-		 *
-		 * @param string $key
-		 * @return mixed
-		 * @example "$pdo->key" Returns $value
-		 */
-		public function __get($key)
-		{
-			$key = str_replace(' ', '-', (string)$key);
-			if (array_key_exists($key, $this->data)) {
-				return $this->data[$key];
-			}
-			return false;
-		}
-
-		/**
-		 * @param string $key
-		 * @return boolean
-		 * @example "isset({$pdo->key})"
-		 */
-		public function __isset($key)
-		{
-			return array_key_exists(str_replace(' ', '-', $key), $this->data);
-		}
-
-		/**
-		 * Removes an index from the array.
-		 *
-		 * @param string $key
-		 * @return void
-		 * @example "unset($pdo->key)"
-		 */
-		public function __unset($key)
-		{
-			unset($this->data[str_replace(' ', '-', $key)]);
-		}
-
-		/**
 		 * Chained magic getter and setter
 		 * @param string $name, array $arguments
 		 * @example "$pdo->[getName|setName]($value)"
