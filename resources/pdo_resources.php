@@ -26,10 +26,9 @@
 	 * You should have received a copy of the GNU General Public License
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	*/
-	abstract class pdo_resources implements \shgysk8zer0\Core\Traits\Magic_Methods
+	abstract class pdo_resources
 	{
 		public $connected;
-		protected $pdo, $data = [];
 
 		/**
 		 * @method __construct
@@ -54,97 +53,6 @@
 		}
 
 		/**
-		 * @method __set
-		 * Setter method for the class.
-		 *
-		 * @param string $key
-		 * @param mixed $value
-		 * @return void
-		 * @example "$pdo->key = $value"
-		 */
-		public function __set($key, $value)
-		{
-			$key = str_replace(' ', '-', (string)$key);
-			$this->data[$key] = $value;
-		}
-
-		/**
-		 * The getter method for the class.
-		 *
-		 * @param string $key
-		 * @return mixed
-		 * @example "$pdo->key" Returns $value
-		 */
-		public function __get($key)
-		{
-			$key = str_replace(' ', '-', (string)$key);
-			if (array_key_exists($key, $this->data)) {
-				return $this->data[$key];
-			}
-			return false;
-		}
-
-		/**
-		 * @param string $key
-		 * @return boolean
-		 * @example "isset({$pdo->key})"
-		 */
-		public function __isset($key)
-		{
-			return array_key_exists(str_replace(' ', '-', $key), $this->data);
-		}
-
-		/**
-		 * Removes an index from the array.
-		 *
-		 * @param string $key
-		 * @return void
-		 * @example "unset($pdo->key)"
-		 */
-		public function __unset($key)
-		{
-			unset($this->data[str_replace(' ', '-', $key)]);
-		}
-
-		/**
-		 * Chained magic getter and setter
-		 * @param string $name, array $arguments
-		 * @example "$pdo->[getName|setName]($value)"
-		 */
-		public function __call($name, array $arguments)
-		{
-			$name = strtolower((string)$name);
-			$act = substr($name, 0, 3);
-			$key = str_replace(' ', '-', substr($name, 3));
-			switch($act) {
-				case 'get':
-					if (array_key_exists($key, $this->data)) {
-						return $this->data[$key];
-					} else{
-						return false;
-					}
-					break;
-				case 'set':
-					$this->data[$key] = $arguments[0];
-					return $this;
-					break;
-				default:
-					throw new \Exception("Unknown method: {$name} in " . __CLASS__ .'->' . __METHOD__);
-			}
-		}
-
-		/**
-		 * Show all keys for entries in $this->data array
-		 *
-		 * @param void
-		 * @return array
-		 */
-		public function keys()
-		{
-			return array_keys($this->data);
-		}
-
-		/**
 		 * For lack of a PDO escape, use quote, trimming off the quotations
 		 *
 		 * @param mixed $str
@@ -153,7 +61,7 @@
 		public function escape(&$val)
 		{
 			if (is_string($val)) {
-				$val = preg_replace('/^\'|\'$/', null, $this->pdo->quote($val));
+				$val = trim($val, '\'');
 			} elseif (is_array($val)) {
 				array_walk($val, [$this, 'escape']);
 			}

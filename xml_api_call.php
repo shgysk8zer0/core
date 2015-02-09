@@ -132,7 +132,8 @@
 		 * @param array $headers [$key => $value set of headers]
 		 * @return self
 		 */
-		public function set_headers(array $headers) {
+		public function set_headers(array $headers)
+		{
 			$this->headers = array_merge($this->headers, $headers);
 			return $this;
 		}

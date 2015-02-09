@@ -27,12 +27,9 @@
 	 * You should have received a copy of the GNU General Public License
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	*/
-	class PDO_Connect extends \PDO
+	class PDO_Connect extends \shgysk8zer0\Core\Abstracts\PDO_Connect
 	{
-		protected $connect;
 		protected static $instances = [];
-		public $connected = false;
-		public static $ext = 'ini';
 
 		const DEFAULT_SERVER = 'localhost';
 		const LOG_DIR = 'logs';
@@ -56,96 +53,6 @@
 				return self::$instances[$con];
 			} else {
 				return new self($con);
-			}
-		}
-
-		/**
-		 * @method __construct
-		 * @desc
-		 * Gets database connection info from /connect.ini (using parse_ini_file)
-		 * The default ini file to use is connect, but can be passed another
-		 * in the $con argument.
-		 *
-		 * Uses that data to create a new PHP Data Object
-		 *
-		 * @param mixed $con (.ini file to use for database credentials)
-		 * @return void
-		 * @uses \shgysk8zer0\Core\resources\Parser
-		 * @example parent::__construct($con)
-		 */
-		public function __construct($con = 'connect')
-		{
-			try{
-				if (is_string($con)) {
-					$tmp_ext = Parser::$DEFAULT_EXT;
-					Parser::$DEFAULT_EXT = $this::$ext;
-					$this->connect = Parser::parse($con);
-					Parser::$DEFAULT_EXT = $tmp_ext;
-					unset($tmp_ext);
-				} elseif (is_object($con)) {
-					$this->connect = $con;
-				} elseif (is_array($con)) {
-					$this->connect = (object)$con;
-				}
-
-				if (is_null($this->connect) or !is_object($this->connect)) {
-					throw new \Exception('Unable to parse credentials.');
-				} elseif (is_null($this->connect->user)) {
-					throw new \Exception('User not given in credentials');
-				} elseif (is_null($this->connect->password)) {
-					throw new \Exception('Password not given in credentials');
-				}
-
-				if (
-					isset($this->connect->server)
-					and array_key_exists('SERVER_ADDR', $_SERVER)
-					and $this->connect->server === $_SERVER['SERVER_ADDR']
-				) {
-					unset($this->connect->server);
-				}
-
-				if (is_null($this->connect->database)) {
-					$this->connect->database = $this->connect->user;
-				}
-
-				if (
-					isset($this->connect->port)
-					and (
-						!isset($this->connect->server)
-						or $this->connect->server === $this::DEFAULT_SERVER
-					)
-				) {
-					unset($this->connect->port);
-				}
-
-				$connect_string = (isset($this->connect->type)) ? "{$this->connect->type}:" : 'mysql:';
-				$connect_string .= "dbname={$this->connect->database}";
-
-				if (isset($this->connect->server)) {
-					$connect_string .= ";host={$this->connect->server}";
-				}
-
-				if (
-					isset($this->connect->port)
-					and isset($this->connect->server)
-					and $this->connect->server !== $this::DEFAULT_SERVER
-				) {
-					$connect_string .= ";port={$this->connect->port}";
-				}
-
-				parent::__construct(
-					$connect_string,
-					"{$this->connect->user}",
-					"{$this->connect->password}"
-				);
-
-				$this->connected = true;
-			} catch(\Exception $e) {
-				@file_put_contents(
-					self::LOG_DIR . DIRECTORY_SEPARATOR . __CLASS__ . '.log',
-					"{$e}" . PHP_EOL,
-					FILE_APPEND | LOCK_EX
-				);
 			}
 		}
 
@@ -175,7 +82,7 @@
 		public function restore($fname = null)
 		{
 			if (is_null($fname)) {
-				$fname = BASE . DIRECTORY_SEPERATOR . $this->connect->database;
+				$fname = BASE . DIRECTORY_SEPERATOR . $this->database;
 			}
 
 			$sql = file_get_contents("{$fname}.sql");
@@ -201,7 +108,7 @@
 		public function dump($filename = null)
 		{
 			if (is_null($filename)) {
-				$filename = BASE . DIRECTORY_SEPARATOR . $this->connect->database . '.sql';
+				$filename = BASE . DIRECTORY_SEPARATOR . $this->database . '.sql';
 			}
 
 			if (
@@ -213,15 +120,15 @@
 					and is_writable(BASE)
 				)
 			) {
-				$command = 'mysqldump -u ' . escapeshellarg($this->connect->user);
+				$command = 'mysqldump -u ' . escapeshellarg($this->user);
 
-				if (isset($this->connect->server) and $this->connect->server !== $this::DEFAULT_SERVER) {
-					$command .= ' -h ' . escapeshellarg($this->connect->server);
+				if (isset($this->server) and $this->server !== $this::DEFAULT_SERVER) {
+					$command .= ' -h ' . escapeshellarg($this->server);
 				}
 
-				$command .= ' -p' . escapeshellarg($this->connect->password);
+				$command .= ' -p' . escapeshellarg($this->password);
 
-				$command .=  ' ' . escapeshellarg($this->connect->database);
+				$command .=  ' ' . escapeshellarg($this->database);
 
 				exec($command, $output, $return_var);
 				if ($return_var === 0 and is_array($output) and !empty($output)) {

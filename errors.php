@@ -10,11 +10,7 @@ class Errors
 
 	final public static function printError($level, $message, $file, $line, $scope)
 	{
-		try {
-			throw new \ErrorException($message, 0, $level, $file, $line);
-		} catch (\ErrorException $e) {
-			print_r($e);
-		}
+		echo static::errorToException($level, $message, $file, $line, $scope) . PHP_EOL;
 	}
 
 	final public static function logError($level, $message, $file, $line, $scope)
@@ -24,5 +20,10 @@ class Errors
 			static::errorToException($level, $message, $file, $line, $scope) . PHP_EOL,
 			LOCK_EX | FILE_APPEND
 		);
+	}
+
+	final static public function trigger($message, $level = E_USER_NOTICE)
+	{
+		trigger_error($message, $level);
 	}
 }

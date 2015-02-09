@@ -1,0 +1,914 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+ASSERT_ACTIVE	./traits/asserts.php	/^		$ASSERT_ACTIVE = true,$/;"	v
+ASSERT_BAIL	./traits/asserts.php	/^		$ASSERT_BAIL = false,$/;"	v
+ASSERT_CALLBACK	./traits/asserts.php	/^		$ASSERT_CALLBACK = 'assertFailed';$/;"	v
+ASSERT_FAIL_TEMPLATE	./traits/asserts.php	/^	protected static $ASSERT_FAIL_TEMPLATE = 'assert(): "%DESC%" failed on line %LINE% in %FILE%',$/;"	v
+ASSERT_QUIET_EVAL	./traits/asserts.php	/^		$ASSERT_QUIET_EVAL = false,$/;"	v
+ASSERT_WARNING	./traits/asserts.php	/^		$ASSERT_WARNING = false,$/;"	v
+BASE	./tests/unit.php	/^		define('BASE', dirname(dirname(dirname(__DIR__))));$/;"	d
+CLIs	./abstracts/unit_test.php	/^			$CLIs = ['cli'],$/;"	v
+CSV	./csv.php	/^	class CSV implements \\shgysk8zer0\\Core\\Traits\\Magic_Methods$/;"	c
+DB	./pages.php	/^			$DB =PDO::load('connect');$/;"	v
+DEFAULT_EXT	./resources/parser.php	/^		public static $DEFAULT_EXT = 'ini', $logging = false;$/;"	v
+DEFAULT_TYPE	./image.php	/^		public static $DEFAULT_TYPE = IMAGETYPE_JPEG;$/;"	v
+DOM_Node	./resources/dom_node.php	/^	abstract class DOM_Node extends \\DOMDocument$/;"	c
+ECHO_EXCEPTIONS	./abstracts/unit_test.php	/^			$ECHO_EXCEPTIONS = true;$/;"	v
+Errors	./errors.php	/^class Errors$/;"	c
+Exception	./resources/exception.php	/^	class Exception extends \\Exception$/;"	c
+FTP	./ftp.php	/^	class FTP$/;"	c
+GitHubWebhook	./githubwebhook.php	/^	class GitHubWebhook$/;"	c
+Image	./image.php	/^	class Image$/;"	c
+LOG_DIR	./errors.php	/^	public static $LOG_DIR = 'logs',$/;"	v
+LOG_FILE	./errors.php	/^		$LOG_FILE = 'errors.log';$/;"	v
+Linter	./tests/linter.php	/^class Linter$/;"	c
+LogLevel	./abstracts/loglevel.php	/^abstract class LogLevel$/;"	c
+Logger	./abstracts/logger.php	/^abstract class Logger extends LogLevel implements \\shgysk8zer0\\Core\\Interfaces\\Logger$/;"	c
+Logger	./interfaces/logger.php	/^interface Logger$/;"	i
+Magic_Methods	./traits/magic_methods.php	/^	interface Magic_Methods$/;"	i
+PDO	./interfaces/pdo.php	/^	interface PDO$/;"	i
+PDO	./pdo.php	/^	class PDO extends PDO_Resources implements Interfaces\\PDO$/;"	c
+PDO	./tests/pdo.php	/^class PDO extends \\shgysk8zer0\\Core\\Abstracts\\PDO_Connect$/;"	c
+PDOStatement	./interfaces/pdostatement.php	/^interface PDOStatement$/;"	i
+PDOStatement	./resources/pdostatement.php	/^final class PDOStatement extends \\PDOStatement$/;"	c
+PDO_Connect	./abstracts/pdo_connect.php	/^abstract class PDO_Connect extends \\PDO$/;"	c
+PDO_Connect	./resources/pdo_connect.php	/^	class PDO_Connect extends \\shgysk8zer0\\Core\\Abstracts\\PDO_Connect$/;"	c
+Pages	./pages.php	/^	class Pages$/;"	c
+Parser	./resources/parser.php	/^	final class Parser$/;"	c
+Rable	./table.php	/^	class Rable implements \\shgysk8zer0\\Core\\Traits\\Magic_Methods$/;"	c
+Search	./search.php	/^	class Search$/;"	c
+SimpleImage	./simpleimage.php	/^	class SimpleImage {$/;"	c
+Simple_Date	./simple_date.php	/^	class Simple_Date$/;"	c
+Storage	./storage.php	/^	class Storage$/;"	c
+Template	./template.php	/^	class Template implements \\shgysk8zer0\\Core\\Traits\\Magic_Methods$/;"	c
+Test	./tests/resources/test.php	/^class Test extends \\shgysk8zer0\\Core\\Abstracts\\Unit_Test$/;"	c
+Unit_Test	./abstracts/unit_test.php	/^	abstract class Unit_Test extends \\ReflectionClass implements Interfaces\\Unit_Test$/;"	c
+Unit_Test	./interfaces/unit_test.php	/^interface Unit_Test$/;"	i
+XML_API_Call	./xml_api_call.php	/^	class XML_API_Call extends resources\\XML_Document$/;"	c
+XML_Document	./resources/xml_document.php	/^	class XML_Document extends \\DOMDocument$/;"	c
+XML_Node	./resources/xml_node.php	/^	class XML_Node extends \\DOMElement$/;"	c
+__call	./cookies.php	/^		public function __call($name, array $arguments)$/;"	f
+__call	./csv.php	/^		public function __call($field, array $arguments)$/;"	f
+__call	./ini.php	/^		public function __call($name, array $arguments)$/;"	f
+__call	./interfaces/unit_test.php	/^	public function __call($method, array $args = null);$/;"	f
+__call	./resources/xml_document.php	/^		public function __call($name, array $arguments)$/;"	f
+__call	./resources/xml_node.php	/^		public function __call($key, array $args)$/;"	f
+__call	./session.php	/^		public function __call($name, array $arguments)$/;"	f
+__call	./simple_date.php	/^		public function __call($name, array $arguments)$/;"	f
+__call	./storage.php	/^		public function __call($name, array $arguments)$/;"	f
+__call	./table.php	/^		public function __call($cell, array $arguments)$/;"	f
+__call	./template.php	/^		public function __call($replace, array $arguments)$/;"	f
+__call	./traits/magic_methods.php	/^		public function __call($name, array $arguments);$/;"	f
+__construct	./abstracts/unit_test.php	/^		public function __construct($testsClass, array $constructor_args = null)$/;"	f
+__construct	./cookies.php	/^		public function __construct($/;"	f
+__construct	./csv.php	/^		public function __construct() {$/;"	f
+__construct	./email.php	/^		public function __construct($/;"	f
+__construct	./error_reporter.php	/^		public function __construct($method = 'default')$/;"	f
+__construct	./ftp.php	/^		public function __construct($user, $pass, $server)$/;"	f
+__construct	./githubwebhook.php	/^		public function __construct($config = null)$/;"	f
+__construct	./image.php	/^		public function __construct($fname)$/;"	f
+__construct	./ini.php	/^		public function __construct($file, $multi = false)$/;"	f
+__construct	./interfaces/pdo.php	/^		public function __construct($con = 'connect');$/;"	f
+__construct	./json_response.php	/^		public function __construct(array $arr = null)$/;"	f
+__construct	./login.php	/^		public function __construct($ini = 'connect')$/;"	f
+__construct	./magic_cache.php	/^		public function __construct($file)$/;"	f
+__construct	./pages.php	/^		public function __construct($url = null)$/;"	f
+__construct	./pdo.php	/^		public function __construct($con = 'connect')$/;"	f
+__construct	./prepared.php	/^		public function __construct($ini = 'connect')$/;"	f
+__construct	./regexp.php	/^		public function __construct($str = null)$/;"	f
+__construct	./resources/cron.php	/^		public function __construct($con = 'connect')$/;"	f
+__construct	./resources/dom_node.php	/^		public function __construct($/;"	f
+__construct	./resources/exception.php	/^		public function __construct($message, $code = null, \\Exception $prev = null)$/;"	f
+__construct	./resources/parser.php	/^		public function __construct($file)$/;"	f
+__construct	./resources/pdo_resources.php	/^		protected function __construct($con = 'connect')$/;"	f
+__construct	./resources/pdostatement.php	/^	protected function __construct(\\PDO $PDO)$/;"	f
+__construct	./resources/xml_document.php	/^		public function __construct($charset = null)$/;"	f
+__construct	./resources/xml_node.php	/^		public function __construct($name, $content = null, $namespaceURI = null)$/;"	f
+__construct	./search.php	/^		public function __construct()$/;"	f
+__construct	./server_event.php	/^		public function __construct(array $data = null)$/;"	f
+__construct	./session.php	/^		public function __construct($name = null)$/;"	f
+__construct	./simple_date.php	/^		public function __construct($t = null)$/;"	f
+__construct	./simpleimage.php	/^		public function __construct($filename)$/;"	f
+__construct	./storage.php	/^		public function __construct()$/;"	f
+__construct	./table.php	/^		public function __construct()$/;"	f
+__construct	./template.php	/^		public function __construct($tpl = null, $seperator = '%', $minify = true)$/;"	f
+__construct	./tests/resources/test.php	/^	public function __construct()$/;"	f
+__construct	./xml_api_call.php	/^		public function __construct($/;"	f
+__get	./cookies.php	/^		public function __get($name)$/;"	f
+__get	./csv.php	/^		public function __get($field)$/;"	f
+__get	./email.php	/^		public function __get($key)$/;"	f
+__get	./image.php	/^		public function __get($prop)$/;"	f
+__get	./ini.php	/^		public function __get($key)$/;"	f
+__get	./interfaces/unit_test.php	/^	public function __get($prop);$/;"	f
+__get	./json_response.php	/^		public function __get($key)$/;"	f
+__get	./pages.php	/^		public function __get($key)$/;"	f
+__get	./resources/parser.php	/^		public function __get($key)$/;"	f
+__get	./resources/xml_node.php	/^		public function __get($attribute)$/;"	f
+__get	./session.php	/^		public function __get($key)$/;"	f
+__get	./simple_date.php	/^		public function __get($key)$/;"	f
+__get	./storage.php	/^		public function __get($key)$/;"	f
+__get	./table.php	/^		public function __get($cell)$/;"	f
+__get	./template.php	/^		public function __get($replace)$/;"	f
+__get	./traits/magic_methods.php	/^		public function __get($key);$/;"	f
+__invoke	./image.php	/^		public function __invoke($caption = null)$/;"	f
+__invoke	./resources/xml_node.php	/^		public function __invoke($value)$/;"	f
+__isset	./cookies.php	/^		public function __isset($name)$/;"	f
+__isset	./csv.php	/^		public function __isset($field)$/;"	f
+__isset	./email.php	/^		public function __isset($key)$/;"	f
+__isset	./image.php	/^		public function __isset($prop)$/;"	f
+__isset	./ini.php	/^		public function __isset($key)$/;"	f
+__isset	./pages.php	/^		public function __isset($key)$/;"	f
+__isset	./regexp.php	/^		public function __isset($name)$/;"	f
+__isset	./resources/parser.php	/^		public function __isset($key)$/;"	f
+__isset	./resources/xml_node.php	/^		public function __isset($attribute)$/;"	f
+__isset	./session.php	/^		public function __isset($key)$/;"	f
+__isset	./simple_date.php	/^		public function __isset($key)$/;"	f
+__isset	./storage.php	/^		public function __isset($key)$/;"	f
+__isset	./table.php	/^		public function __isset($cell)$/;"	f
+__isset	./template.php	/^		public function __isset($key)$/;"	f
+__isset	./traits/magic_methods.php	/^		public function __isset($key);$/;"	f
+__set	./cookies.php	/^		public function __set($name, $value)$/;"	f
+__set	./csv.php	/^		public function __set($field, $value)$/;"	f
+__set	./email.php	/^		public function __set($key, $value)$/;"	f
+__set	./ini.php	/^		public function __set($key, $value)$/;"	f
+__set	./json_response.php	/^		public function __set($key, $value)$/;"	f
+__set	./resources/parser.php	/^		public function __set($key, $value)$/;"	f
+__set	./resources/pdostatement.php	/^	public function __set($key, $value)$/;"	f
+__set	./resources/xml_document.php	/^		public function __set($key, $value)$/;"	f
+__set	./resources/xml_node.php	/^		public function __set($attribute, $value)$/;"	f
+__set	./session.php	/^		public function __set($key, $value)$/;"	f
+__set	./simple_date.php	/^		public function __set($key, $value)$/;"	f
+__set	./storage.php	/^		public function __set($key, $value)$/;"	f
+__set	./table.php	/^		public function __set($cell, $value)$/;"	f
+__set	./template.php	/^		public function __set($replace, $with)$/;"	f
+__set	./traits/magic_methods.php	/^		public function __set($key, $value);$/;"	f
+__toString	./image.php	/^		public function __toString()$/;"	f
+__unset	./cookies.php	/^		public function __unset($name)$/;"	f
+__unset	./csv.php	/^		public function __unset($field)$/;"	f
+__unset	./email.php	/^		public function __unset($key)$/;"	f
+__unset	./ini.php	/^		public function __unset($key)$/;"	f
+__unset	./resources/parser.php	/^		public function __unset($key)$/;"	f
+__unset	./resources/xml_node.php	/^		public function __unset($attribute)$/;"	f
+__unset	./session.php	/^		public function __unset($key)$/;"	f
+__unset	./simple_date.php	/^		public function __unset($index)$/;"	f
+__unset	./storage.php	/^		public function __unset($key)$/;"	f
+__unset	./table.php	/^		public function __unset($cell)$/;"	f
+__unset	./template.php	/^		public function __unset($key)$/;"	f
+__unset	./traits/magic_methods.php	/^		public function __unset($key);$/;"	f
+act	./ini.php	/^			$act = substr($name, 0, 3);$/;"	v
+act	./json_response.php	/^			$act = substr($name, 0, 3);$/;"	v
+act	./session.php	/^			$act = substr($name, 0, 3);$/;"	v
+act	./simple_date.php	/^			$act = substr($name, 0, 3);$/;"	v
+act	./storage.php	/^			$act = substr($name, 0, 3);$/;"	v
+additional_headers	./email.php	/^				$this->additional_headers = $additional_headers;$/;"	v
+additional_headers	./email.php	/^		protected $additional_headers = [], $additional_paramaters = [],$/;"	v
+additional_paramaters	./email.php	/^				$this->additional_paramaters = $additional_paramaters;$/;"	v
+alert	./abstracts/logger.php	/^	public function alert($message, array $context = array())$/;"	f
+alert	./interfaces/logger.php	/^	public function alert($message, array $context = array());$/;"	f
+alert	./traits/logger.php	/^	public function alert($message, array $context = array())$/;"	f
+all	./ftp.php	/^			$all = array();$/;"	v
+all_jobs	./resources/cron.php	/^		private function all_jobs(\\shgysk8zer0\\Core\\PDO &$pdo)$/;"	f
+append	./resources/xml_node.php	/^		public function append(XML_Node $node)$/;"	f
+append	./xml_api_call.php	/^		public function append(\\DOMElement $node, $parent = null, $n = 0)$/;"	f
+args	./json_response.php	/^			$args = func_get_args();$/;"	v
+args	./resources/cron.php	/^				$args = explode(',', $job->arguments);$/;"	v
+array	./tests/resources/test.php	/^	public $array = [0, 1];$/;"	v
+asHTML	./email.php	/^		protected function asHTML()$/;"	f
+assertArray	./traits/asserts.php	/^	public function assertArray($test, $desc = null)$/;"	f
+assertBool	./traits/asserts.php	/^	public function assertBool($test, $desc = null)$/;"	f
+assertClass	./traits/asserts.php	/^	public function assertClass($test, $className, $desc = null)$/;"	f
+assertEmpty	./traits/asserts.php	/^	public function assertEmpty($test, $desc = null)$/;"	f
+assertEquals	./traits/asserts.php	/^	public function assertEquals($test1, $test2, $desc = null)$/;"	f
+assertFalse	./traits/asserts.php	/^	public function assertFalse($test, $desc = null)$/;"	f
+assertFloat	./traits/asserts.php	/^	public function assertFloat($test, $desc = null)$/;"	f
+assertFunctionExists	./traits/asserts.php	/^	public function assertFunctionExists($test, $desc = null)$/;"	f
+assertInt	./traits/asserts.php	/^	public function assertInt($test, $desc = null)$/;"	f
+assertMethodExists	./traits/asserts.php	/^	public function assertMethodExists($class, $method, $desc = null)$/;"	f
+assertNotEmpty	./traits/asserts.php	/^	public function assertNotEmpty($test, $desc)$/;"	f
+assertNumeric	./traits/asserts.php	/^	public function assertNumeric($test, $desc = null)$/;"	f
+assertObject	./traits/asserts.php	/^	public function assertObject($test, $desc = null)$/;"	f
+assertString	./traits/asserts.php	/^	public function assertString($test, $desc = null)$/;"	f
+assertThrows	./traits/asserts.php	/^	public function assertThrows(Callable $callback, array $args = null, $desc = null)$/;"	f
+assertTrue	./traits/asserts.php	/^	public function assertTrue($test, $desc = null)$/;"	f
+assertType	./traits/asserts.php	/^	public function assertType($test, $type, $desc = null)$/;"	f
+assertsInitialize	./traits/asserts.php	/^	protected function assertsInitialize()$/;"	f
+attr	./resources/dom_node.php	/^					$attr = $this->createAttribute($prop);$/;"	v
+attr	./xml_api_call.php	/^				$attr = $this->createAttribute($prop);$/;"	v
+attribute	./resources/xml_document.php	/^		public function attribute($name, $value)$/;"	f
+attributes	./resources/dom_node.php	/^			$this->attributes = $attributes;$/;"	v
+background_CLI_colors	./traits/cli_colors.php	/^	$background_CLI_colors = [$/;"	v
+backtrace	./abstracts/unit_test.php	/^			$backtrace = debug_backtrace();$/;"	v
+begins_with	./regexp.php	/^		public function begins_with($str)$/;"	f
+bind	./interfaces/pdostatement.php	/^	public function bind(array $array);$/;"	f
+bind	./prepared.php	/^		public function bind(array $binders)$/;"	f
+bind	./resources/pdostatement.php	/^	public function bind(array $binders = array())$/;"	f
+bind	./traits/depreciated/pdo.php	/^	public function bind(array $array)$/;"	f
+bindKeys	./resources/pdostatement.php	/^	private function bindKeys(array $binders)$/;"	f
+bind_keys	./resources/pdo_resources.php	/^		public function bind_keys(array $arr)$/;"	f
+body	./email.php	/^			$body = $dom->getElementsByTagName('body')->item(0);$/;"	v
+body	./xml_api_call.php	/^			$this->body = new resources\\XML_Node($root_tag, null, $urn);$/;"	v
+bound_input_params	./resources/pdostatement.php	/^			$bound_input_params = $this->bindKeys($bound_input_params);$/;"	v
+branch	./githubwebhook.php	/^				$branch = ' ' . trim($branch);$/;"	v
+build	./search.php	/^		private function build()$/;"	f
+build_CSV	./csv.php	/^		private function build_CSV($newline = null)$/;"	f
+build_table	./table.php	/^		private function build_table($border = false)$/;"	f
+cache_control	./magic_cache.php	/^		protected function cache_control()$/;"	f
+call_cron	./resources/cron.php	/^		private function call_cron()$/;"	f
+caption	./table.php	/^			$this->caption = null;$/;"	v
+caption	./table.php	/^		public $caption;$/;"	v
+cd	./ftp.php	/^		public function cd($dir)$/;"	f
+ch	./xml_api_call.php	/^			$ch = curl_init();$/;"	v
+ch_result	./xml_api_call.php	/^			$ch_result = simplexml_load_string(curl_exec($ch));$/;"	v
+charset	./email.php	/^			$charset = $dom->createAttribute('charset');$/;"	v
+charset	./resources/dom_node.php	/^			$charset = null$/;"	v
+charset	./resources/dom_node.php	/^			$this->charset = (is_null($charset)) ? ini_get("default_charset") : $charset;$/;"	v
+charset	./resources/xml_document.php	/^			$this->charset = (empty($charset) or !is_string($charset))$/;"	v
+charset	./resources/xml_document.php	/^		protected $charset;$/;"	v
+charset	./xml_api_call.php	/^			$charset = null,$/;"	v
+check_scheduled	./resources/cron.php	/^		private function check_scheduled($job)$/;"	f
+child_class	./abstracts/unit_test.php	/^			$this->child_class = get_class();$/;"	v
+chmod	./ftp.php	/^		public function chmod($mode = null, $file = null)$/;"	f
+classes	./traits/file_scanner.php	/^				$classes = array_merge($classes, $this->getClasses($path));$/;"	v
+classes	./traits/file_scanner.php	/^		$classes = [];$/;"	v
+classes_with_errors	./tests/unit.php	/^	$classes_with_errors = array_filter($/;"	v
+clear	./storage.php	/^		public function clear()$/;"	f
+clear	./template.php	/^		private function clear()$/;"	f
+close	./ftp.php	/^		public function close()$/;"	f
+close	./traits/depreciated/pdo.php	/^	public function close()$/;"	f
+cmd	./githubwebhook.php	/^			$cmd = escapeshellcmd('git pull ' . $remote . $branch);$/;"	v
+code	./pages.php	/^			$code = 404,$/;"	v
+col	./search.php	/^					$col = "`{$this->pdo->escape($col)}`";$/;"	v
+color	./traits/cli_colors.php	/^		$color = strtolower(trim($color));$/;"	v
+cols	./search.php	/^			$cols = flatten(func_get_args());$/;"	v
+columns	./resources/pdo_resources.php	/^		public function columns(array $arr)$/;"	f
+columns_from	./resources/pdo_resources.php	/^		public function columns_from(array $array)$/;"	f
+command	./resources/pdo_connect.php	/^				$command = 'mysqldump -u ' . escapeshellarg($this->user);$/;"	v
+comments	./pages.php	/^					$comments = template::load('comments');$/;"	v
+comments_section	./pages.php	/^					$comments_section = template::load('comments_section');$/;"	v
+compression	./simpleimage.php	/^			$compression = 90,$/;"	v
+config	./githubwebhook.php	/^						$this->config = (object)parse_ini_file($config);$/;"	v
+config	./githubwebhook.php	/^						$this->config = json_decode(file_get_contents($config));$/;"	v
+config	./githubwebhook.php	/^				$this->config = $config;$/;"	v
+config	./githubwebhook.php	/^				$this->config = (object)$config;$/;"	v
+config	./githubwebhook.php	/^				$this->config = new \\stdClass();$/;"	v
+connected	./abstracts/pdo_connect.php	/^			$this->connected = true;$/;"	v
+connected	./resources/pdo_resources.php	/^			$this->connected = (is_object($this->pdo) and $this->pdo->connected);$/;"	v
+connected	./resources/pdo_resources.php	/^		public $connected;$/;"	v
+connected	./traits/pdo.php	/^	public $connected = false;$/;"	v
+constructor_args	./abstracts/unit_test.php	/^			$this->constructor_args = $constructor_args;$/;"	v
+constructor_args	./abstracts/unit_test.php	/^		private $constructor_args = null;$/;"	v
+consts	./abstracts/unit_test.php	/^				$consts = get_defined_constants(true)['Core'];$/;"	v
+consts	./traits/errors.php	/^			$consts = get_defined_constants(true)['Core'];$/;"	v
+content	./pages.php	/^					$this->content = $post->title($/;"	v
+content	./pages.php	/^					$this->content = '<div class="tags">';$/;"	v
+content	./pages.php	/^			$this->content = $template->out();$/;"	v
+content	./resources/xml_document.php	/^				$content = $this->encode($content);$/;"	v
+content	./resources/xml_document.php	/^				$content = str_replace(["\\r", "\\r\\n", "\\n", "\\t"], null, trim("{$content}"));$/;"	v
+content	./resources/xml_node.php	/^				$content = $this->encode($str);$/;"	v
+content	./resources/xml_node.php	/^				$content = str_replace(["\\r", "\\r\\n", "\\n", "\\t"], null, trim("{$content}"));$/;"	v
+contents	./simpleimage.php	/^			$contents = ob_get_clean();$/;"	v
+convert_headers	./email.php	/^		protected function convert_headers()$/;"	f
+convert_message	./email.php	/^		protected function convert_message($html = false)$/;"	f
+convert_paramaters	./email.php	/^		protected function convert_paramaters()$/;"	f
+cookies	./cookies.php	/^	class cookies implements \\shgysk8zer0\\Core\\Traits\\Magic_Methods$/;"	c
+count	./ftp.php	/^		public function count($exp = '.')$/;"	f
+count	./search.php	/^			$count = count($cols);$/;"	v
+create	./image.php	/^		public static function create($src, $alt = '', $scale = null)$/;"	f
+create	./xml_api_call.php	/^		public function create($name, $value = null, $namespaceURI = null)$/;"	f
+create_attributes	./resources/xml_document.php	/^		public function create_attributes(array $attributes)$/;"	f
+create_from	./login.php	/^		public function create_from(array $source)$/;"	f
+creds	./traits/pdo.php	/^				$creds = $con;$/;"	v
+creds	./traits/pdo.php	/^				$creds = (object)$con;$/;"	v
+creds	./traits/pdo.php	/^				$creds = Parser::parse($con);$/;"	v
+critical	./abstracts/logger.php	/^	public function critical($message, array $context = array())$/;"	f
+critical	./interfaces/logger.php	/^	public function critical($message, array $context = array());$/;"	f
+critical	./traits/logger.php	/^	public function critical($message, array $context = array())$/;"	f
+cron	./resources/cron.php	/^	class cron$/;"	c
+cron_filter	./resources/cron.php	/^		private function cron_filter($job)$/;"	f
+csv	./csv.php	/^					$this->csv = str_replace(PHP_EOL, $newline, $this->csv);$/;"	v
+csv	./csv.php	/^				$this->csv = rtrim(stream_get_contents($fp));$/;"	v
+csv	./csv.php	/^			$this->csv = null;$/;"	v
+data	./csv.php	/^			$this->data = [];$/;"	v
+data	./ini.php	/^			$this->data = parse_ini_file("{$file}.ini", $multi);$/;"	v
+data	./ini.php	/^		private $data = [];$/;"	v
+data	./login.php	/^					$this->data = array_merge($/;"	v
+data	./login.php	/^			$this->data = array($/;"	v
+data	./login.php	/^			$this->data = array_combine($/;"	v
+data	./login.php	/^		public $data = [];$/;"	v
+data	./pages.php	/^							$this->data = $pdo->fetch_array($/;"	v
+data	./pages.php	/^							$this->data = $pdo->prepare($/;"	v
+data	./resources/parser.php	/^							$this->data = (object)parse_ini_file($this->file);$/;"	v
+data	./resources/parser.php	/^							$this->data = json_decode(file_get_contents($this->file));$/;"	v
+data	./resources/parser.php	/^							$this->data = simplexml_load_file($this->file);$/;"	v
+data	./storage.php	/^				$this->data = $_SESSION['storage'];$/;"	v
+data	./storage.php	/^			$this->data = array();$/;"	v
+data	./storage.php	/^		private $data;$/;"	v
+data	./table.php	/^			$this->data = [];$/;"	v
+data	./traits/depreciated/pdo.php	/^		$data = $this->fetch_array("$/;"	v
+data	./traits/depreciated/pdo.php	/^		$data = $this->query($query)->fetchAll(\\PDO::FETCH_CLASS);$/;"	v
+database	./error_reporter.php	/^		private function database($error_level, $error_message, $file, $line, $scope)$/;"	f
+database	./traits/pdo.php	/^			$this->database = (@is_string($creds->database))$/;"	v
+database	./traits/pdo.php	/^	protected $database;$/;"	v
+databases	./resources/pdo_resources.php	/^			$databases = $results->fetchAll(\\PDO::FETCH_COLUMN, 0);$/;"	v
+datetime	./pages.php	/^						$datetime = new simple_date($post->created);$/;"	v
+days	./simple_date.php	/^		$days = [$/;"	v
+debug	./abstracts/logger.php	/^	public function debug($message, array $context = array())$/;"	f
+debug	./interfaces/logger.php	/^	public function debug($message, array $context = array());$/;"	f
+debug	./json_response.php	/^		public function debug($format = false)$/;"	f
+debug	./login.php	/^		public function debug()$/;"	f
+debug	./regexp.php	/^		public function debug()$/;"	f
+debug	./search.php	/^		public function debug()$/;"	f
+debug	./traits/logger.php	/^	public function debug($message, array $context = array())$/;"	f
+default_headers	./email.php	/^			$this->default_headers = [$/;"	v
+default_headers	./email.php	/^		$default_headers = null;$/;"	v
+defined_levels	./abstracts/unit_test.php	/^		public static $defined_levels = [];$/;"	v
+defined_levels	./error_reporter.php	/^			$this->defined_levels = get_defined_constants(true)['Core'];$/;"	v
+defined_levels	./error_reporter.php	/^		private $defined_levels = [];$/;"	v
+delete	./ftp.php	/^		public function delete($f = null)$/;"	f
+delimiter	./csv.php	/^			$this->delimiter = ',';$/;"	v
+describe	./resources/pdo_resources.php	/^		public function describe($table = null)$/;"	f
+description	./pages.php	/^					$this->description = "Tags search results for {$this->path[1]}";$/;"	v
+description	./pages.php	/^			$this->description = 'No results for ' . $this->url;$/;"	v
+destroy	./session.php	/^		public function destroy()$/;"	f
+diff	./simple_date.php	/^		public function diff($t)$/;"	f
+dir	./ftp.php	/^			$dir = (string)$dir;$/;"	v
+dom	./email.php	/^			$dom = new \\DOMDocument('1.0', $this::CHARSET);$/;"	v
+domain	./cookies.php	/^					$domain = null,$/;"	v
+domain	./cookies.php	/^				$this->domain = $_SERVER['HTTP_HOST'];$/;"	v
+domain	./cookies.php	/^				$this->domain = $_SERVER['SERVER_NAME'];$/;"	v
+domain	./cookies.php	/^				$this->domain = $domain;$/;"	v
+domain	./cookies.php	/^			$domain = null,$/;"	v
+domain	./session.php	/^					$this->domain = $_SERVER['HTTP_HOST'];$/;"	v
+dsn	./traits/pdo.php	/^			$this->dsn = (isset($creds->type)) ? "{$creds->type}:" : 'mysql:';$/;"	v
+dsn	./traits/pdo.php	/^	protected $dsn;$/;"	v
+dump	./pages.php	/^			$dump = true$/;"	v
+dump	./resources/pdo_connect.php	/^		public function dump($filename = null)$/;"	f
+dump	./resources/pdo_resources.php	/^		public function dump($filename = null)$/;"	f
+email	./email.php	/^	class email$/;"	c
+emergency	./abstracts/logger.php	/^	public function emergency($message, array $context = array())$/;"	f
+emergency	./interfaces/logger.php	/^	public function emergency($message, array $context = array());$/;"	f
+emergency	./traits/logger.php	/^	public function emergency($message, array $context = array())$/;"	f
+empty_array	./tests/resources/test.php	/^	public $empty_array = [];$/;"	v
+empty_row	./csv.php	/^			$this->empty_row = array_combine($this->fields, array_pad([], count($this->fields), null));$/;"	v
+empty_row	./table.php	/^			$this->empty_row = array_combine($this->headers, array_pad([], count($this->headers), null));$/;"	v
+empty_string	./tests/resources/test.php	/^	public $empty_string = '';$/;"	v
+enclosure	./csv.php	/^			$this->enclosure = '"';$/;"	v
+encode	./resources/dom_node.php	/^		private function encode($str)$/;"	f
+encode	./resources/xml_document.php	/^		public function encode($str)$/;"	f
+encode	./resources/xml_node.php	/^		private function encode($str)$/;"	f
+encoding	./resources/dom_node.php	/^			$this->encoding = $encoding;$/;"	v
+end	./server_event.php	/^		public function end($key = null)$/;"	f
+ends_with	./regexp.php	/^		public function ends_with($str = null)$/;"	f
+error	./abstracts/logger.php	/^	public function error($message, array $context = array())$/;"	f
+error	./interfaces/logger.php	/^	public function error($message, array $context = array());$/;"	f
+error	./traits/logger.php	/^	public function error($message, array $context = array())$/;"	f
+errorHandler	./interfaces/unit_test.php	/^	public function errorHandler($/;"	f
+error_level	./abstracts/unit_test.php	/^			$error_level = null,$/;"	v
+error_level	./error_reporter.php	/^			$error_level = array_search($error_level, $this->defined_levels);$/;"	v
+error_level	./error_reporter.php	/^			$error_level = null,$/;"	v
+error_level	./interfaces/unit_test.php	/^		$error_level = null,$/;"	v
+error_levels	./traits/errors.php	/^	public static $error_levels = [];$/;"	v
+error_message	./abstracts/unit_test.php	/^			$error_message = array_search($/;"	v
+error_message	./abstracts/unit_test.php	/^			$error_message = null,$/;"	v
+error_message	./error_reporter.php	/^			$error_message = null,$/;"	v
+error_message	./interfaces/unit_test.php	/^		$error_message = null,$/;"	v
+error_page	./pages.php	/^		private function error_page($/;"	f
+error_reporter	./error_reporter.php	/^	class error_reporter extends PDO$/;"	c
+escape	./resources/pdo_resources.php	/^		public function escape(&$val)$/;"	f
+etag	./magic_cache.php	/^				$this->etag = md5_file($this->file);$/;"	v
+etagHeader	./magic_cache.php	/^			$etagHeader = (isset($_SERVER['HTTP_IF_NONE_MATCH'])$/;"	v
+event	./githubwebhook.php	/^				$this->event = $this->headers['X-GitHub-Event'];$/;"	v
+exceptionHandler	./interfaces/unit_test.php	/^	public static function exceptionHandler(\\Exception $exception);$/;"	f
+exceptions	./abstracts/unit_test.php	/^		public static $exceptions = [],$/;"	v
+exec	./ftp.php	/^		protected function exec($cmd = null)$/;"	f
+execute	./interfaces/pdostatement.php	/^	public function execute();$/;"	f
+execute	./prepared.php	/^		public function execute()$/;"	f
+execute	./regexp.php	/^		public function execute($update = true)$/;"	f
+execute	./resources/pdostatement.php	/^	public function execute($bound_input_params = null)$/;"	f
+execute	./search.php	/^		public function execute($row = null)$/;"	f
+execute	./traits/depreciated/pdo.php	/^	public function execute()$/;"	f
+exists	./ftp.php	/^		public function exists($file = null)$/;"	f
+expires	./cookies.php	/^					$expires = 0,$/;"	v
+expires	./cookies.php	/^			$expires = 0,$/;"	v
+expires	./cookies.php	/^			$this->expires = (int) (preg_match('\/^\\d+$\/', $expires))$/;"	v
+expires	./session.php	/^					$this->expires = 0;$/;"	v
+ext	./magic_cache.php	/^				$this->ext = pathinfo($this->file, PATHINFO_EXTENSION);$/;"	v
+ext	./resources/parser.php	/^					$this->ext = $this::$DEFAULT_EXT;$/;"	v
+ext	./resources/parser.php	/^				$this->ext = "{$this->ext}";$/;"	v
+ext	./resources/parser.php	/^				$this->ext = pathinfo($file, PATHINFO_EXTENSION);$/;"	v
+ext	./traits/pdo.php	/^	public static $ext = 'json';$/;"	v
+extension	./image.php	/^			$extension = image_type_to_extension($type);$/;"	v
+extension	./image.php	/^			$extension = image_type_to_mime_type($type);$/;"	v
+extension	./image.php	/^			$this->extension = image_type_to_extension($this->type);$/;"	v
+false	./tests/resources/test.php	/^	public $false = false;$/;"	v
+fetch_array	./interfaces/pdo.php	/^		public function fetch_array($query = null, $n = null);$/;"	f
+fetch_array	./traits/depreciated/pdo.php	/^	public function fetch_array($query = null, $n = null)$/;"	f
+fields	./csv.php	/^			$this->fields = flatten(func_get_args());$/;"	v
+file	./abstracts/unit_test.php	/^			$file = escapeshellarg($file);$/;"	v
+file	./abstracts/unit_test.php	/^			$file = null,$/;"	v
+file	./error_reporter.php	/^			$file = null,$/;"	v
+file	./ini.php	/^			$file = (string)$file;$/;"	v
+file	./interfaces/unit_test.php	/^		$file = null,$/;"	v
+file	./magic_cache.php	/^			$this->file = realpath($file);$/;"	v
+file	./resources/parser.php	/^				$this->file = $this->path . DIRECTORY_SEPARATOR . $this->filename . '.' . $this->ext;$/;"	v
+filename	./resources/parser.php	/^				$this->filename = pathinfo($file, PATHINFO_FILENAME);$/;"	v
+filename	./resources/pdo_connect.php	/^				$filename = BASE . DIRECTORY_SEPARATOR . $this->database . '.sql';$/;"	v
+files	./resources/parser.php	/^		private static $files = null, $exts = ['ini', 'json', 'xml'];$/;"	v
+find	./regexp.php	/^			$this->find = "\/^$pattern$\/";$/;"	v
+find	./regexp.php	/^			$this->find = $this->regexp($str, $full);$/;"	v
+find	./regexp.php	/^			$this->find = $this->regexp($str, 'end');$/;"	v
+find	./regexp.php	/^			$this->find = $this->regexp($str, 'full');$/;"	v
+find	./regexp.php	/^			$this->find = $this->regexp($str, null);$/;"	v
+find	./regexp.php	/^			$this->find = $this->regexp((string)$str, 'begin');$/;"	v
+find	./regexp.php	/^		public function find($str = null, $loc = null)$/;"	f
+finfo	./magic_cache.php	/^					$finfo = new \\finfo(FILEINFO_MIME);$/;"	v
+float	./tests/resources/test.php	/^	public $float = 3.14;$/;"	v
+fname	./csv.php	/^			$fname = (string)$fname;$/;"	v
+fname	./image.php	/^				$fname = $this->fname;$/;"	v
+fname	./image.php	/^			$fname = pathinfo($fname, PATHINFO_FILENAME);$/;"	v
+fname	./image.php	/^			$this->fname = $fname;$/;"	v
+fname	./magic_cache.php	/^				$this->fname = pathinfo($this->file, PATHINFO_FILENAME);$/;"	v
+fname	./resources/pdo_connect.php	/^				$fname = BASE . DIRECTORY_SEPERATOR . $this->database;$/;"	v
+fname	./simpleimage.php	/^			$this->fname = $filename;$/;"	v
+fname	./simpleimage.php	/^		public $fname;$/;"	v
+foreground_CLI_colors	./traits/cli_colors.php	/^	protected static $foreground_CLI_colors = [$/;"	v
+formatOutput	./resources/xml_document.php	/^					$this->formatOutput = false;$/;"	v
+formatOutput	./resources/xml_document.php	/^					$this->formatOutput = true;$/;"	v
+found	./resources/parser.php	/^				$this->found = @file_exists($this->file);$/;"	v
+fp	./csv.php	/^				$fp = fopen('php:\/\/temp', 'r+');$/;"	v
+from	./search.php	/^				$from = '',$/;"	v
+from	./search.php	/^			$this->from = "`{$this->pdo->escape($table)}`";$/;"	v
+from	./search.php	/^		public function from($table = null)$/;"	f
+ftp	./ftp.php	/^			$this->ftp = ftp_connect($this->server);$/;"	v
+ftp	./ftp.php	/^		protected $ftp;$/;"	v
+funcs	./resources/cron.php	/^				$funcs = array_diff($/;"	v
+funcs	./resources/cron.php	/^				$funcs = array_unique($funcs);$/;"	v
+funcs	./resources/cron.php	/^				$funcs = get_defined_functions()['user'];$/;"	v
+funcs	./resources/cron.php	/^			$this->funcs = static::functions();$/;"	v
+funcs	./resources/cron.php	/^			static $funcs = null;$/;"	v
+functions	./resources/cron.php	/^		public static function functions()$/;"	f
+get	./ftp.php	/^		public function get($file, $mode = FTP_BINARY)$/;"	f
+getFailedAsserts	./traits/asserts.php	/^	public function getFailedAsserts()$/;"	f
+getHeight	./simpleimage.php	/^		public function getHeight()$/;"	f
+getWidth	./simpleimage.php	/^		public function getWidth()$/;"	f
+get_all	./ftp.php	/^		public function get_all(array $list)$/;"	f
+get_content	./pages.php	/^		private function get_content()$/;"	f
+get_functions	./resources/cron.php	/^		private function get_functions()$/;"	f
+get_headers	./xml_api_call.php	/^		private function get_headers()$/;"	f
+get_results	./interfaces/pdostatement.php	/^	public function get_results($n = null);$/;"	f
+get_results	./prepared.php	/^		public function get_results($n = null)$/;"	f
+get_results	./template.php	/^		private function get_results()$/;"	f
+get_results	./traits/depreciated/pdo.php	/^	public function get_results($n = null)$/;"	f
+get_table	./traits/depreciated/pdo.php	/^	public function get_table($table, $these = '*')$/;"	f
+has	./regexp.php	/^		public function has($str = null)$/;"	f
+has_function	./resources/cron.php	/^		private function has_function($function = null) {$/;"	f
+head	./email.php	/^			$head = $dom->createElement('head');$/;"	v
+headers	./email.php	/^			$headers = array_filter(array_merge($/;"	v
+headers	./githubwebhook.php	/^			$this->headers = getallheaders();$/;"	v
+headers	./githubwebhook.php	/^		public $headers = [], $payload = null, $event = null, $parsed = null,  $config = null;$/;"	v
+headers	./table.php	/^			$this->headers = flatten(func_get_args());$/;"	v
+headers	./traits/depreciated/pdo.php	/^		$headers = $results->fetchAll(\\PDO::FETCH_COLUMN, 0);$/;"	v
+headers	./xml_api_call.php	/^				$headers = [],$/;"	v
+headers	./xml_api_call.php	/^			$headers = array_merge($this->headers, [$/;"	v
+headers	./xml_api_call.php	/^			$this->headers = array_merge($this->headers, $headers);$/;"	v
+height	./image.php	/^			$this->height = $height;$/;"	v
+height	./image.php	/^			$this->height = $this->get_height();$/;"	v
+height	./simpleimage.php	/^			$height = $this->getHeight();$/;"	v
+height	./simpleimage.php	/^			$height = $this->getheight() * $ratio;$/;"	v
+height	./simpleimage.php	/^			$height = $this->getheight() * $scale\/100;$/;"	v
+html	./email.php	/^			$html = $dom->getElementsByTagName('html')->item(0);$/;"	v
+html	./image.php	/^			$html = '<figure>' . "{$this}";$/;"	v
+http_status	./magic_cache.php	/^		protected function http_status()$/;"	f
+httponly	./cookies.php	/^					$httponly = null$/;"	v
+httponly	./cookies.php	/^			$httponly = null$/;"	v
+httponly	./cookies.php	/^			$this->httponly = (isset($httponly)) ? $httponly : false;$/;"	v
+httponly	./session.php	/^					$this->httponly = true;$/;"	v
+id	./json_response.php	/^				$id = preg_replace(['\/\\s\/', '\/[\\W]\/'], ['_', null], trim($id));$/;"	v
+image	./image.php	/^					$this->image = imagecreatefromgif ($this->fname);$/;"	v
+image	./image.php	/^					$this->image = imagecreatefromjpeg($this->fname);$/;"	v
+image	./image.php	/^					$this->image = imagecreatefrompng($this->fname);$/;"	v
+image	./image.php	/^			$this->image = $new_image;$/;"	v
+image	./image.php	/^			$this->image = imagerotate($this->image, $degrees, $bgd_color, $ignore_transparent);$/;"	v
+image	./simpleimage.php	/^				$this->image = imagecreatefromgif ($filename);$/;"	v
+image	./simpleimage.php	/^				$this->image = imagecreatefromjpeg($filename);$/;"	v
+image	./simpleimage.php	/^				$this->image = imagecreatefrompng($filename);$/;"	v
+image	./simpleimage.php	/^			$this->image = $new_image;$/;"	v
+image	./simpleimage.php	/^		public $image;$/;"	v
+image_info	./simpleimage.php	/^			$image_info = getimagesize($filename);$/;"	v
+image_type	./simpleimage.php	/^			$image_type = IMAGETYPE_JPEG,$/;"	v
+image_type	./simpleimage.php	/^			$this->image_type = $image_info[2];$/;"	v
+image_type	./simpleimage.php	/^		public $image_type;$/;"	v
+img	./image.php	/^			$img = $this->as_binary($type);$/;"	v
+img	./image.php	/^			$img = new self($src);$/;"	v
+img_data_uri	./simpleimage.php	/^		public function img_data_uri()$/;"	f
+in	./regexp.php	/^				$this->in = preg_replace($this->pattern, $this->replacement, $this->in, $this->limit);$/;"	v
+in	./regexp.php	/^			$this->in = (string)$str;$/;"	v
+in	./regexp.php	/^		public function in($str)$/;"	f
+info	./abstracts/logger.php	/^	public function info($message, array $context = array())$/;"	f
+info	./interfaces/logger.php	/^	public function info($message, array $context = array());$/;"	f
+info	./traits/logger.php	/^	public function info($message, array $context = array())$/;"	f
+ini	./ini.php	/^	class ini implements \\shgysk8zer0\\Core\\Traits\\Magic_Methods$/;"	c
+insert_into	./traits/depreciated/pdo.php	/^	public function insert_into($table, array $values)$/;"	f
+instance	./cookies.php	/^		private static $instance = null;$/;"	v
+instance	./error_reporter.php	/^		protected static $instance = null;$/;"	v
+instance	./ini.php	/^		private static $instance = [];$/;"	v
+instance	./json_response.php	/^		private static $instance = null;$/;"	v
+instance	./login.php	/^		protected static $instance = null;$/;"	v
+instance	./pages.php	/^		private static $instance = null;$/;"	v
+instance	./server_event.php	/^		private static $instance = null;$/;"	v
+instance	./session.php	/^		private static $instance = null;$/;"	v
+instance	./storage.php	/^		private static $instance = null;$/;"	v
+instance	./template.php	/^		private static $instance = [];$/;"	v
+instances	./prepared.php	/^		private static $instances = [];$/;"	v
+instances	./resources/pdo_connect.php	/^		protected static $instances = [];$/;"	v
+instances	./traits/depreciated/pdo.php	/^	protected static $instances = [];$/;"	v
+int	./tests/resources/test.php	/^	public $int = 1;$/;"	v
+is	./regexp.php	/^		public function is($str = null)$/;"	f
+is_email	./email.php	/^		public function is_email($address)$/;"	f
+jobs	./resources/cron.php	/^				$this->jobs = array_filter($/;"	v
+json_response	./json_response.php	/^	class json_response implements \\shgysk8zer0\\Core\\Traits\\Magic_Methods$/;"	c
+key	./cookies.php	/^			$key = str_replace('_', '-', substr(strtolower($name), 3));$/;"	v
+key	./email.php	/^				$key = preg_replace('\/[' . $this::HEADER_FILTER . ']\/', '-', strtoupper($key));$/;"	v
+key	./ini.php	/^			$key = preg_replace('\/_\/', '-', substr($name, 3));$/;"	v
+key	./ini.php	/^			$key = str_replace('_', '-', $key);$/;"	v
+key	./json_response.php	/^			$key = substr($name, 3);$/;"	v
+key	./resources/pdo_resources.php	/^				$key = "`{$key}`";$/;"	v
+key	./session.php	/^			$key = str_replace('_', '-', substr($name, 3));$/;"	v
+key	./session.php	/^			$key = strtolower(str_replace('_', '-', $key));$/;"	v
+key	./simple_date.php	/^			$key = str_replace('_', '-', $key);$/;"	v
+key	./simple_date.php	/^			$key = str_replace('_', '-', substr($name, 3));$/;"	v
+key	./storage.php	/^			$key = str_replace('_', '-', $key);$/;"	v
+key	./storage.php	/^			$key = str_replace('_', '-', substr($name, 3));$/;"	v
+key_walker	./resources/pdo_resources.php	/^			$key_walker = function(&$key) {$/;"	v
+keys	./cookies.php	/^		public function keys()$/;"	f
+keys	./ini.php	/^		public function keys()$/;"	f
+keys	./login.php	/^				$keys = array_map(function($key) {$/;"	v
+keys	./resources/pdo_resources.php	/^			$keys = array_keys($arr);$/;"	v
+keys	./resources/pdo_resources.php	/^			$keys = array_keys($array);$/;"	v
+keys	./simple_date.php	/^		public function keys()$/;"	f
+keys	./storage.php	/^		public function keys()$/;"	f
+keywords	./pages.php	/^					$this->keywords = "Keywords, tags, search, {$this->path[1]}";$/;"	v
+keywords	./pages.php	/^			$this->keywords = '';$/;"	v
+length	./xml_api_call.php	/^		public function length()$/;"	f
+license	./pages.php	/^					$license = template::load('creative_commons');$/;"	v
+limit	./regexp.php	/^			$this->limit = (int)$n;$/;"	v
+limit	./regexp.php	/^		public function limit($n = 0)$/;"	f
+limit	./search.php	/^			$this->limit = (int) $int;$/;"	v
+limit	./search.php	/^		public function limit($int = 0)$/;"	f
+line	./abstracts/unit_test.php	/^			$line = null,$/;"	v
+line	./error_reporter.php	/^			$line = null,$/;"	v
+line	./interfaces/unit_test.php	/^		$line = null,$/;"	v
+lint	./interfaces/unit_test.php	/^	public function lint($file);$/;"	f
+lintScript	./traits/linter.php	/^		public function lintScript($script)$/;"	f
+linter	./tests/unit.php	/^	$linter = new \\shgysk8zer0\\Core\\Tests\\Linter;$/;"	v
+load	./cookies.php	/^		public static function load($/;"	f
+load	./error_reporter.php	/^		public static function load($method = 'default')$/;"	f
+load	./ini.php	/^		public static function load($file = null, $multi = false)$/;"	f
+load	./interfaces/pdo.php	/^		public static function load($con = 'connect');$/;"	f
+load	./json_response.php	/^		public static function load(array $arr = null)$/;"	f
+load	./login.php	/^		public static function load($ini = 'connect')$/;"	f
+load	./pages.php	/^		public static function load($url = null)$/;"	f
+load	./prepared.php	/^		public static function load($ini = 'connect')$/;"	f
+load	./resources/pdo_connect.php	/^		public static function load($con = 'connect')$/;"	f
+load	./server_event.php	/^		public static function load(array $data = null)$/;"	f
+load	./session.php	/^		public static function load($site = null)$/;"	f
+load	./storage.php	/^		public static function load()$/;"	f
+load	./template.php	/^		public static function load($tpl = null, $seperator = '%', $minify = true)$/;"	f
+load	./traits/depreciated/pdo.php	/^	public static function load($con = 'connect')$/;"	f
+log	./error_reporter.php	/^				$this->log = fopen(BASE . '\/' . $this->log, 'a');$/;"	v
+log	./interfaces/logger.php	/^	public function log($level, $message, array $context = array());$/;"	f
+log	./resources/exception.php	/^		public function log($fname)$/;"	f
+log	./resources/parser.php	/^		protected function log(\\Exception $e) {$/;"	f
+log	./resources/pdo_connect.php	/^		protected function log($method = null, $line = null, $message = '')$/;"	f
+logger	./error_reporter.php	/^		private function logger($error_level, $error_message, $file, $line, $scope)$/;"	f
+login	./ftp.php	/^		private function login()$/;"	f
+login	./login.php	/^	class login extends PDO$/;"	c
+login	./pages.php	/^			$login = login::load();$/;"	v
+login_with	./login.php	/^		public function login_with(array $source)$/;"	f
+logout	./login.php	/^		public function logout()$/;"	f
+ls	./ftp.php	/^		public function ls($dir = '.')$/;"	f
+magic_cache	./magic_cache.php	/^	class magic_cache {$/;"	c
+make	./simple_date.php	/^		public function make()$/;"	f
+make_headers	./magic_cache.php	/^		protected function make_headers()$/;"	f
+matches_pattern	./regexp.php	/^		public function matches_pattern($type = null)$/;"	f
+max_dim	./simpleimage.php	/^		public function max_dim($max = 0, $overwrite = false)$/;"	f
+message	./email.php	/^			$message = null,$/;"	v
+message	./email.php	/^			$this->message = $message;$/;"	v
+meta	./email.php	/^			$meta = $dom->createElement('meta');$/;"	v
+method	./error_reporter.php	/^			$this->method = strtolower((string)$method);$/;"	v
+methods	./abstracts/unit_test.php	/^				$this->methods = array_diff($/;"	v
+mime	./image.php	/^			$mime = image_type_to_mime_type($type);$/;"	v
+mime_type	./image.php	/^			$mime_type = image_type_to_mime_type($type);$/;"	v
+mime_type	./image.php	/^			$this->mime_type = image_type_to_mime_type($this->type);$/;"	v
+min_dim	./simpleimage.php	/^		public function min_dim($min = 0, $overwrite = false)$/;"	f
+minify	./template.php	/^		private function minify(&$string = null)$/;"	f
+minify_results	./template.php	/^			$this->minify_results = $minify;$/;"	v
+mkdir	./ftp.php	/^		public function mkdir($name = null)$/;"	f
+mod_time	./magic_cache.php	/^				$this->mod_time = filemtime($this->file);$/;"	v
+mv	./ftp.php	/^		public function mv($from = null, $to = null)$/;"	f
+myMethod	./tests/resources/test.php	/^	public function myMethod()$/;"	f
+n	./tests/unit.php	/^	$n = 0;$/;"	v
+name	./cookies.php	/^			$name = str_replace('_', '-', $name);$/;"	v
+name	./cookies.php	/^			$name = str_replace('_', '-', (string)$name);$/;"	v
+name	./ini.php	/^			$name = strtolower($name);$/;"	v
+name	./json_response.php	/^			$name = '_blank'$/;"	v
+name	./json_response.php	/^			$name = strtolower($name);$/;"	v
+name	./session.php	/^						$name = end($path);$/;"	v
+name	./session.php	/^					$this->name = preg_replace('\/[^\\w]\/', null, strtolower($name));$/;"	v
+name	./session.php	/^			$name = strtolower($name);$/;"	v
+name	./simple_date.php	/^			$name = strtolower($name);$/;"	v
+name	./storage.php	/^			$name = strtolower($name);$/;"	v
+name	./traits/depreciated/pdo.php	/^			$name = trim($row->name);$/;"	v
+name_value	./interfaces/pdo.php	/^		public function name_value($table = null);$/;"	f
+name_value	./traits/depreciated/pdo.php	/^	public function name_value($table = null)$/;"	f
+new_image	./image.php	/^			$new_image = imagecreatetruecolor($width, $height);$/;"	v
+new_image	./simpleimage.php	/^			$new_image = imagecreatetruecolor($width, $height);$/;"	v
+next_row	./csv.php	/^		public function next_row()$/;"	f
+next_row	./table.php	/^		public function next_row()$/;"	f
+node	./resources/dom_node.php	/^			$this->node = $this->createElement($tag_name, $this->encode($content));$/;"	v
+node	./resources/xml_document.php	/^			$node = new XML_Node($name, null, $namespace);$/;"	v
+node	./resources/xml_node.php	/^				$node = new self($name);$/;"	v
+nodeValue	./resources/xml_node.php	/^				$this->nodeValue = $this->trim($content);$/;"	v
+notice	./abstracts/logger.php	/^	public function notice($message, array $context = array())$/;"	f
+notice	./interfaces/logger.php	/^	public function notice($message, array $context = array());$/;"	f
+notice	./traits/logger.php	/^	public function notice($message, array $context = array())$/;"	f
+numeric	./tests/resources/test.php	/^	public $numeric = '2.5818';$/;"	v
+obj	./simple_date.php	/^			$this->obj = $this->make();$/;"	v
+object	./tests/resources/test.php	/^		$this->object = new \\stdClass();$/;"	v
+object	./tests/resources/test.php	/^	public $object;$/;"	v
+out	./csv.php	/^		public function out($newline = null)$/;"	f
+out	./resources/xml_document.php	/^		public function out($filename = null)$/;"	f
+out	./simple_date.php	/^		public function out($format = 'Y-m-d\\TH:i:s')$/;"	f
+out	./table.php	/^		public function out($echo = false, $border = false)$/;"	f
+out	./template.php	/^		public function out($print = false)$/;"	f
+output	./abstracts/unit_test.php	/^			$output = [];$/;"	v
+output	./image.php	/^			$output = null$/;"	v
+output	./simpleimage.php	/^		public function output($image_type = IMAGETYPE_JPEG, $return = false)$/;"	f
+output	./traits/linter.php	/^		public static $output = [];$/;"	v
+parent	./resources/xml_document.php	/^				$parent = $parent->appendChild($this->createElement(trim($tag)));$/;"	v
+parse	./resources/parser.php	/^		public static function parse($file)$/;"	f
+parseConfig	./githubwebhook.php	/^		private function parseConfig($config)$/;"	f
+parsePayload	./githubwebhook.php	/^		private function parsePayload()$/;"	f
+parsed	./githubwebhook.php	/^							$this->parsed = json_decode($this->payload);$/;"	v
+parsed	./pages.php	/^			$this->parsed = (object)parse_url(strtolower(urldecode($this->url)));$/;"	v
+pass	./ftp.php	/^			$this->pass = (string)$pass;$/;"	v
+passed_asserts	./traits/asserts.php	/^	protected $passed_asserts = 0, $failed_asserts = 0, $total_asserts = 0;$/;"	v
+password	./traits/pdo.php	/^			$this->password = $creds->password;$/;"	v
+password	./traits/pdo.php	/^	protected $password;$/;"	v
+path	./cookies.php	/^					$path = null,$/;"	v
+path	./cookies.php	/^			$path = null,$/;"	v
+path	./cookies.php	/^			$this->path = (isset($path))$/;"	v
+path	./ftp.php	/^			$this->path = $this->pwd();$/;"	v
+path	./pages.php	/^					$this->path = [''];$/;"	v
+path	./pages.php	/^				$this->path = array_values($this->path);$/;"	v
+path	./pages.php	/^			$this->path = explode('\/', trim($this->parsed->path, '\/'));$/;"	v
+path	./resources/parser.php	/^				$this->path = dirname(stream_resolve_include_path("{$this->subpath}{$this->filename}.{$this->ext}"));$/;"	v
+path	./session.php	/^						$path = explode(DIRECTORY_SEPARATOR, BASE);$/;"	v
+path	./session.php	/^					$this->path = '\/' . trim(str_replace("{$_SERVER['REQUEST_SCHEME']}:\/\/{$_SERVER['SERVER_NAME']}", '\/', URL), '\/');$/;"	v
+path	./template.php	/^			$this->path = (defined('THEME'))$/;"	v
+paths	./traits/file_scanner.php	/^		$paths = glob($dir . DIRECTORY_SEPARATOR . '*');$/;"	v
+pattern	./regexp.php	/^					$pattern = "\/$pattern$\/";$/;"	v
+pattern	./regexp.php	/^					$pattern = "\/$pattern\/";$/;"	v
+pattern	./regexp.php	/^					$pattern = "\/^$pattern$\/";$/;"	v
+pattern	./regexp.php	/^					$pattern = "\/^$pattern\/";$/;"	v
+pattern	./regexp.php	/^			$pattern = pattern($type);$/;"	v
+pattern	./regexp.php	/^			$pattern = preg_quote((string)$str, '\/');$/;"	v
+pattern	./regexp.php	/^			$this->pattern = array();$/;"	v
+pattern	./regexp.php	/^			$this->pattern = pattern($type);$/;"	v
+payload	./githubwebhook.php	/^						$this->payload = file_get_contents('php:\/\/input');$/;"	v
+pdo	./pages.php	/^			$pdo = PDO::load('connect');$/;"	v
+pdo	./resources/cron.php	/^			$pdo = \\shgysk8zer0\\Core\\PDO::load($con);$/;"	v
+pdo	./resources/pdo_resources.php	/^			$this->pdo = (is_string($con))$/;"	v
+pdo	./search.php	/^			$this->pdo = PDO::load('connect');$/;"	v
+pdo_resources	./resources/pdo_resources.php	/^	abstract class pdo_resources$/;"	c
+permissions	./simpleimage.php	/^			$permissions = null$/;"	v
+post	./pages.php	/^					$post = template::load('posts');$/;"	v
+prepare	./interfaces/pdo.php	/^		public function prepare($query);$/;"	f
+prepare	./prepared.php	/^		public function prepare($query)$/;"	f
+prepare	./traits/depreciated/pdo.php	/^	public function prepare($query)$/;"	f
+prepare_keys	./resources/pdo_resources.php	/^		public function prepare_keys(array $arr)$/;"	f
+prepared	./prepared.php	/^	class prepared extends PDO_Resources$/;"	c
+prepared	./traits/depreciated/pdo.php	/^		$this->prepared = $this->pdo->prepare($query);$/;"	v
+print_headers	./csv.php	/^			$this->print_headers = false;$/;"	v
+pull	./githubwebhook.php	/^		public function pull($remote = null, $branch = null)$/;"	f
+pwd	./ftp.php	/^		public function pwd()$/;"	f
+quality	./image.php	/^			$quality = 100,$/;"	v
+query	./interfaces/pdo.php	/^		public function query($query);$/;"	f
+query	./tests/pdo.php	/^	public function query($query)$/;"	f
+query	./traits/depreciated/pdo.php	/^		$query = "DESCRIBE {$this->escape($table)}";$/;"	v
+query	./traits/depreciated/pdo.php	/^	private $query;$/;"	v
+query	./traits/depreciated/pdo.php	/^	public function query($query)$/;"	f
+quote	./resources/pdo_resources.php	/^		public function quote(&$str)$/;"	f
+ratio	./simpleimage.php	/^			$ratio = $height \/ $this->getHeight();$/;"	v
+ratio	./simpleimage.php	/^			$ratio = $width \/ $this->getWidth();$/;"	v
+read	./resources/parser.php	/^		protected function read() {$/;"	f
+recepients	./email.php	/^		protected function recepients()$/;"	f
+reflected_class	./abstracts/unit_test.php	/^					$this->reflected_class = $this->newInstanceWithoutConstructor();$/;"	v
+reflected_class	./abstracts/unit_test.php	/^					$this->reflected_class = (is_array($args))$/;"	v
+reflected_class	./abstracts/unit_test.php	/^		protected $reflected_class = null;$/;"	v
+regexp	./regexp.php	/^		public function regexp($str = null, $loc = null)$/;"	f
+regexp	./regexp.php	/^	class regexp$/;"	c
+remote	./githubwebhook.php	/^				$remote = $config->repository->git_url;$/;"	v
+replace	./json_response.php	/^			$replace = false,$/;"	v
+replace	./regexp.php	/^		public function replace($str = null)$/;"	f
+replace	./template.php	/^		private function replace($replace = null, $with = null, $join = null)$/;"	f
+replacement	./regexp.php	/^			$this->replacement = array();$/;"	v
+replacements	./template.php	/^			$this->replacements = [];$/;"	v
+report	./error_reporter.php	/^		public function report($/;"	f
+reset_table	./interfaces/pdo.php	/^		public function reset_table($table = null);$/;"	f
+reset_table	./traits/depreciated/pdo.php	/^	public function reset_table($table = null)$/;"	f
+resize	./simpleimage.php	/^		public function resize($width, $height)$/;"	f
+resizeToHeight	./simpleimage.php	/^		public function resizeToHeight($height)$/;"	f
+resizeToWidth	./simpleimage.php	/^		public function resizeToWidth($width)$/;"	f
+response	./json_response.php	/^				$this->response = $arr;$/;"	v
+response	./json_response.php	/^		protected $response = [];$/;"	v
+response	./server_event.php	/^				$this->response = $data;$/;"	v
+response	./server_event.php	/^				$this->response = [];$/;"	v
+response	./xml_api_call.php	/^				$response = new \\DOMDocument('1.0', 'UTF-8');$/;"	v
+restart	./session.php	/^		public function restart() {$/;"	f
+restore	./resources/pdo_connect.php	/^		public function restore($fname = null)$/;"	f
+restore	./resources/pdo_resources.php	/^		public function restore($fname = null)$/;"	f
+restore	./storage.php	/^		public function restore()$/;"	f
+result	./template.php	/^				$result = $this->get_results();$/;"	v
+results	./login.php	/^				$results = $this->prepare($/;"	v
+results	./pages.php	/^					$results = $DB->prepare($/;"	v
+results	./prepared.php	/^			$results = [];$/;"	v
+results	./resources/pdo_resources.php	/^			$results = $this->pdo->query('SHOW DATABASES');$/;"	v
+results	./resources/pdo_resources.php	/^			$results = $this->pdo->query('SHOW TABLES');$/;"	v
+results	./traits/depreciated/pdo.php	/^		$results = $this->fetch_array($query);$/;"	v
+results	./traits/depreciated/pdo.php	/^		$results = $this->pdo->query($query);$/;"	v
+results	./traits/depreciated/pdo.php	/^		$results = $this->prepared->fetchAll(\\PDO::FETCH_CLASS);$/;"	v
+return_var	./traits/linter.php	/^			$return_var = null;$/;"	v
+rm	./ftp.php	/^		public function rm($f = null)$/;"	f
+rmdir	./ftp.php	/^		public function rmdir($dir = null)$/;"	f
+root_tag	./xml_api_call.php	/^			$root_tag = 'root',$/;"	v
+row	./csv.php	/^			$this->row = 0;$/;"	v
+row	./table.php	/^			$this->row = 0;$/;"	v
+save	./csv.php	/^		public function save($fname = 'out', $newline = null)$/;"	f
+save	./resources/parser.php	/^		public function save()$/;"	f
+save	./simpleimage.php	/^		public function save($/;"	f
+save	./storage.php	/^		public function save()$/;"	f
+scale	./simpleimage.php	/^		public function scale($scale)$/;"	f
+scope	./abstracts/unit_test.php	/^			$scope = null$/;"	v
+scope	./error_reporter.php	/^			$scope = null$/;"	v
+scope	./interfaces/unit_test.php	/^		$scope = null$/;"	v
+script	./traits/linter.php	/^			$script = escapeshellarg($script);$/;"	v
+secret	./githubwebhook.php	/^				$secret = $this->config->secret;$/;"	v
+secure	./cookies.php	/^					$secure = null,$/;"	v
+secure	./cookies.php	/^			$secure = null,$/;"	v
+secure	./cookies.php	/^			$this->secure = (isset($secure)) ? $secure : false;$/;"	v
+secure	./session.php	/^					$this->secure = https();$/;"	v
+select	./search.php	/^				$this->select = $cols;$/;"	v
+select	./search.php	/^		private $select = '*',$/;"	v
+select	./search.php	/^		public function select()$/;"	f
+send	./email.php	/^		public function send($html = false)$/;"	f
+send	./json_response.php	/^		public function send($key = null)$/;"	f
+send	./server_event.php	/^		public function send($key = null)$/;"	f
+send	./xml_api_call.php	/^		public function send($output = null)$/;"	f
+seperator	./template.php	/^			$this->seperator = (string)$seperator;$/;"	v
+server	./ftp.php	/^			$this->server = (string)$server;$/;"	v
+server	./traits/pdo.php	/^				$this->server = $creds->server;$/;"	v
+server_event	./server_event.php	/^	class server_event extends JSON_Response$/;"	c
+session	./session.php	/^	class session implements \\shgysk8zer0\\Core\\Traits\\Magic_Methods$/;"	c
+set	./csv.php	/^		private function set($field, $value)$/;"	f
+set	./resources/xml_document.php	/^		private function set(\\DOMNode &$parent, $value, $tag = null)$/;"	f
+set	./table.php	/^		private function set($cell, $value)$/;"	f
+set	./template.php	/^		public function set(array $arr)$/;"	f
+setAttributes	./xml_api_call.php	/^		private function setAttributes(resources\\XML_Node &$node, array $attributes)$/;"	f
+setCLIBackgroundColor	./traits/cli_colors.php	/^	private static function setCLIBackgroundColor(&$string, $color)$/;"	f
+setCLIColors	./traits/cli_colors.php	/^	public static function setCLIColors(&$string, $foreground = null, $background = null)$/;"	f
+setCLIForegroundColor	./traits/cli_colors.php	/^	private static function setCLIForegroundColor(&$string, $color)$/;"	f
+set_attribute	./resources/xml_document.php	/^		private function set_attribute(\\DOMElement &$node, $prop, $value)$/;"	f
+set_attributes	./resources/dom_node.php	/^		private function set_attributes()$/;"	f
+set_attributes	./resources/xml_document.php	/^		private function set_attributes(\\DOMElement &$node, array $attributes)$/;"	f
+set_headers	./server_event.php	/^		private function set_headers()$/;"	f
+set_headers	./xml_api_call.php	/^		public function set_headers(array $headers) {$/;"	f
+set_pattern	./regexp.php	/^		public function set_pattern($type = null)$/;"	f
+show_databases	./resources/pdo_resources.php	/^		public function show_databases()$/;"	f
+show_tables	./resources/pdo_resources.php	/^		public function show_tables()$/;"	f
+size	./magic_cache.php	/^				$this->size = filesize($this->file);$/;"	v
+source	./login.php	/^				$source = array_combine($keys, array_values($source));$/;"	v
+source	./template.php	/^				$this->source = file_get_contents($this->path);$/;"	v
+specs	./json_response.php	/^			$specs = [$/;"	v
+sql	./resources/pdo_connect.php	/^			$sql = file_get_contents("{$fname}.sql");$/;"	v
+sql_table	./traits/depreciated/pdo.php	/^	public function sql_table($query = null, $caption = null)$/;"	f
+src	./simple_date.php	/^			$this->src = $t;$/;"	v
+status	./magic_cache.php	/^				$this->status = 304;$/;"	v
+status	./magic_cache.php	/^				$this->status = 404;$/;"	v
+status	./magic_cache.php	/^			$this->status = 200;$/;"	v
+status	./pages.php	/^			$this->status = $code;$/;"	v
+status	./pages.php	/^			$this->status = (array_key_exists('REDIRECT_STATUS', $_SERVER))$/;"	v
+stm	./prepared.php	/^			$this->stm = $this->pdo->prepare((string)$query);$/;"	v
+stm	./prepared.php	/^		public $stm = null;$/;"	v
+stm	./tests/pdo.php	/^		$stm = parent::query($query);$/;"	v
+str	./resources/pdo_resources.php	/^			$str = $this->pdo->quote((string)$str);$/;"	v
+str	./simple_date.php	/^			$str = "{$this->year}-{$this->mon}-{$this->mday}T{$this->hours}:{$this->minutes}:{$this->seconds}";$/;"	v
+str_replace	./traits/string_methods.php	/^	public function str_replace(array $replacements, $in)$/;"	f
+string	./template.php	/^			$string = preg_replace($this::MINIFY_EXPRESSION, null, $string);$/;"	v
+string	./template.php	/^			$string = str_replace(["\\r", "\\n", "\\t"], [], (string)$string);$/;"	v
+string	./tests/resources/test.php	/^	public $string = 'Hello World!';$/;"	v
+string	./traits/cli_colors.php	/^			$string = "\\33[" . static::$background_CLI_colors[$color] . "m{$string}";$/;"	v
+string	./traits/cli_colors.php	/^			$string = "\\33[" . static::$foreground_CLI_colors[$color] . "m{$string}";$/;"	v
+subject	./email.php	/^			$subject = null,$/;"	v
+subject	./email.php	/^			$this->subject = $subject;$/;"	v
+subpath	./resources/parser.php	/^				$this->subpath = pathinfo($file, PATHINFO_DIRNAME);$/;"	v
+subpath	./resources/parser.php	/^				$this->subpath =($this->subpath === '.') ? null :  $this->subpath . DIRECTORY_SEPARATOR;$/;"	v
+t	./simple_date.php	/^				$t = date_timestamp_get(date_create($t));$/;"	v
+table	./table.php	/^				$this->table = ($border) ? '<table border="1">' : '<table>';$/;"	v
+table	./table.php	/^			$this->table = null;$/;"	v
+table	./traits/depreciated/pdo.php	/^			$table = '<table>';$/;"	v
+table_headers	./traits/depreciated/pdo.php	/^	public function table_headers($table = null)$/;"	f
+tables	./resources/pdo_resources.php	/^			$tables = $results->fetchAll(\\PDO::FETCH_COLUMN, 0);$/;"	v
+tag_name	./resources/dom_node.php	/^			$this->tag_name = preg_replace('\/[\\W]\/', null, $tag_name);$/;"	v
+tbody	./table.php	/^			$this->tbody = '<tbody>';$/;"	v
+tbody	./traits/depreciated/pdo.php	/^			$tbody = '<tbody>';$/;"	v
+template	./pages.php	/^					$template = template::load('tags');$/;"	v
+template	./pages.php	/^			$template = template::load('error_page');$/;"	v
+test	./regexp.php	/^		public function test()$/;"	f
+tfoot	./table.php	/^			$this->tfoot = '<tfoot><tr>' . html_join('th', $this->headers) . '<\/tr><\/tfoot>';$/;"	v
+tfoot	./traits/depreciated/pdo.php	/^			$tfoot = '<tfoot><tr>';$/;"	v
+thead	./table.php	/^			$this->thead = '<thead><tr>' . html_join('th', $this->headers) . '<\/tr><\/thead>';$/;"	v
+thead	./traits/depreciated/pdo.php	/^			$thead = '<thead><tr>';$/;"	v
+these	./traits/depreciated/pdo.php	/^			$these ="`{$these}`";$/;"	v
+time	./pages.php	/^							$time = new simple_date($comment->time);$/;"	v
+time	./pages.php	/^					$time = new simple_date($this->data->created);$/;"	v
+time	./resources/cron.php	/^				$this->time = time();$/;"	v
+title	./email.php	/^			$title = $dom->createElement('title', $this->trim_subject());$/;"	v
+title	./pages.php	/^					$this->title = 'Tags';$/;"	v
+title	./pages.php	/^			$this->title = $title_prefix .  ' (' . $code . ')';$/;"	v
+title_prefix	./pages.php	/^			$title_prefix = 'Woops! Not found',$/;"	v
+tmp	./abstracts/unit_test.php	/^			$tmp = exec("php5 -l {$file}", $output, $return_var);$/;"	v
+tmp	./ftp.php	/^			$this->tmp = '\/tmp\/ftpdata';$/;"	v
+tmp	./ftp.php	/^		public $tmp;$/;"	v
+tmp	./resources/xml_document.php	/^				$tmp = $parent;$/;"	v
+tmp_ext	./traits/pdo.php	/^				$tmp_ext = Parser::$DEFAULT_EXT;$/;"	v
+to	./email.php	/^			$this->to = $to;$/;"	v
+to	./email.php	/^			$to = null,$/;"	v
+to	./email.php	/^		public $to = null, $from = null, $subject = null, $message = null;$/;"	v
+trace	./resources/exception.php	/^			$this->trace = $this->getTrace();$/;"	v
+trim	./resources/xml_document.php	/^		public function trim(&$content)$/;"	f
+trim	./resources/xml_node.php	/^		protected function trim(&$content)$/;"	f
+trim_subject	./email.php	/^		protected function trim_subject()$/;"	f
+true	./tests/resources/test.php	/^	public $true = true;$/;"	v
+type	./image.php	/^				$type = $this->type;$/;"	v
+type	./image.php	/^			$this->type = $type;$/;"	v
+type	./image.php	/^			$this->type = getimagesize($this->fname)[2];$/;"	v
+type	./image.php	/^			$type = IMAGETYPE_JPEG,$/;"	v
+type	./magic_cache.php	/^					$this->type = 'application\/font-woff';$/;"	v
+type	./magic_cache.php	/^					$this->type = 'application\/x-font-opentype';$/;"	v
+type	./magic_cache.php	/^					$this->type = 'application\/xhtml+xml';$/;"	v
+type	./magic_cache.php	/^					$this->type = 'audio\/flac';$/;"	v
+type	./magic_cache.php	/^					$this->type = 'audio\/mp4';$/;"	v
+type	./magic_cache.php	/^					$this->type = 'audio\/ogg';$/;"	v
+type	./magic_cache.php	/^					$this->type = 'image\/svg+xml';$/;"	v
+type	./magic_cache.php	/^					$this->type = 'text\/cache-manifest';$/;"	v
+type	./magic_cache.php	/^					$this->type = 'text\/css';$/;"	v
+type	./magic_cache.php	/^					$this->type = 'text\/javascript';$/;"	v
+type	./magic_cache.php	/^					$this->type = 'text\/x-sql';$/;"	v
+type	./magic_cache.php	/^					$this->type = 'video\/ogg';$/;"	v
+type	./magic_cache.php	/^					$this->type = 'video\/webm';$/;"	v
+type	./magic_cache.php	/^					$this->type = preg_replace('\/\\;.*$\/', null, (string)$finfo->file($this->file));$/;"	v
+type	./pages.php	/^							$this->type = 'tags';$/;"	v
+type	./pages.php	/^						$this->type = 'posts';$/;"	v
+type	./simpleimage.php	/^					$type = 'gif';$/;"	v
+type	./simpleimage.php	/^					$type = 'jpeg';$/;"	v
+type	./simpleimage.php	/^					$type = 'png';$/;"	v
+type_by_extension	./magic_cache.php	/^		protected function type_by_extension()$/;"	f
+update	./simple_date.php	/^		public function update() {$/;"	f
+update_last_ran	./resources/cron.php	/^		private function update_last_ran(\\shgysk8zer0\\Core\\PDO &$pdo)$/;"	f
+url	./json_response.php	/^			$url = null,$/;"	v
+url	./pages.php	/^				$this->url = $_SERVER['REQUEST_SCHEME'] . ':\/\/' . $_SERVER['SERVER_NAME'];$/;"	v
+url	./pages.php	/^				$this->url = $url;$/;"	v
+url	./xml_api_call.php	/^			$this->url = $url;$/;"	v
+urn	./xml_api_call.php	/^			$this->urn = $urn;$/;"	v
+urn	./xml_api_call.php	/^			$urn = null,$/;"	v
+user	./ftp.php	/^			$this->user = (string)$user;$/;"	v
+user	./traits/pdo.php	/^			$this->user = $creds->user;$/;"	v
+user	./traits/pdo.php	/^	protected $user;$/;"	v
+val	./resources/pdo_resources.php	/^				$val = trim($val, '\\'');$/;"	v
+validate	./githubwebhook.php	/^		public function validate($secret = null)$/;"	f
+value	./regexp.php	/^		public function value() {$/;"	f
+value	./resources/xml_node.php	/^		public function value($content)$/;"	f
+value	./traits/depreciated/pdo.php	/^			$value = trim($row->value);$/;"	v
+values	./traits/depreciated/pdo.php	/^		$values = new \\stdClass();$/;"	v
+verbose	./xml_api_call.php	/^			$this->verbose = $verbose;$/;"	v
+verbose	./xml_api_call.php	/^			$verbose = false$/;"	v
+wait	./server_event.php	/^		public function wait($delay = 1) {$/;"	f
+warning	./abstracts/logger.php	/^	public function warning($message, array $context = array())$/;"	f
+warning	./interfaces/logger.php	/^	public function warning($message, array $context = array());$/;"	f
+warning	./traits/logger.php	/^	public function warning($message, array $context = array())$/;"	f
+where	./search.php	/^				$where = null,$/;"	v
+where	./search.php	/^			$this->where = $arr;$/;"	v
+where	./search.php	/^		public function where(array $arr)$/;"	f
+wheres	./search.php	/^				$wheres = [];$/;"	v
+width	./image.php	/^			$this->width = $this->get_width();$/;"	v
+width	./image.php	/^			$this->width = $width;$/;"	v
+width	./simpleimage.php	/^			$width = $this->getWidth() * $ratio;$/;"	v
+width	./simpleimage.php	/^			$width = $this->getWidth() * $scale\/100;$/;"	v
+width	./simpleimage.php	/^			$width = $this->getWidth();$/;"	v
+with	./regexp.php	/^		public function with($str = null)$/;"	f
+zero	./tests/resources/test.php	/^	public $zero = 0;$/;"	v
