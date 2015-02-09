@@ -54,7 +54,7 @@
 				? $_SERVER['REDIRECT_STATUS']
 				: http_response_code();
 
-			$pdo = PDO::load('connect');
+			$pdo = PDO::load('connect.json');
 
 			if (is_string($url)) {
 				$this->url = $url;
@@ -162,7 +162,7 @@
 		private function get_content()
 		{
 			$login = login::load();
-			$DB =PDO::load('connect');
+			$DB =PDO::load('connect.json');
 
 			switch($this->type) {
 				case 'posts':

@@ -36,7 +36,7 @@
 
 		public function __construct()
 		{
-			$this->pdo = PDO::load('connect');
+			$this->pdo = PDO::load('connect.json');
 		}
 
 		public function select()

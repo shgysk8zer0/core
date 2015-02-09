@@ -27,12 +27,10 @@
 	 * You should have received a copy of the GNU General Public License
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	*/
-	class PDO_Connect extends \shgysk8zer0\Core\Abstracts\PDO_Connect
+	class PDO_Connect extends \shgysk8zer0\Core_API\Abstracts\PDO_Connect
 	{
 		protected static $instances = [];
-
-		const DEFAULT_SERVER = 'localhost';
-		const LOG_DIR = 'logs';
+		public static $ext = 'json';
 
 
 		/**
@@ -44,7 +42,7 @@
 		 * @param mixed $con
 		 * @return
 		 */
-		public static function load($con = 'connect')
+		public static function load($con = 'connect.json')
 		{
 			if (is_string($con)) {
 				if (!array_key_exists($con, self::$instances)) {
@@ -57,20 +55,22 @@
 		}
 
 		/**
-		 * Writes errors to a log file
+		 * @method __construct
+		 * @desc
+		 * Gets database connection info from /connect.ini (using parse_ini_file)
+		 * The default ini file to use is connect, but can be passed another
+		 * in the $con argument.
 		 *
-		 * @param string $method
-		 * @param int $line
-		 * @param string $message
+		 * Uses that data to create a new PHP Data Object
+		 *
+		 * @param mixed $con (.ini file to use for database credentials)
 		 * @return void
+		 * @uses \shgysk8zer0\Core\resources\Parser
+		 * @example parent::__construct($con)
 		 */
-		protected function log($method = null, $line = null, $message = '')
+		public function __construct($con = 'connect.json')
 		{
-			file_put_contents(
-				BASE . DIRECTORY_SEPARATOR . __CLASS__ . '.log',
-				"Error in $method in line $line: $message" . PHP_EOL,
-				FILE_APPEND | LOCK_EX
-			);
+			$this->connect($con);
 		}
 
 		/**
@@ -82,7 +82,7 @@
 		public function restore($fname = null)
 		{
 			if (is_null($fname)) {
-				$fname = BASE . DIRECTORY_SEPERATOR . $this->database;
+				$fname = BASE . DIRECTORY_SEPERATOR . $this->connect->database;
 			}
 
 			$sql = file_get_contents("{$fname}.sql");
@@ -108,7 +108,7 @@
 		public function dump($filename = null)
 		{
 			if (is_null($filename)) {
-				$filename = BASE . DIRECTORY_SEPARATOR . $this->database . '.sql';
+				$filename = BASE . DIRECTORY_SEPARATOR . $this->connect->database . '.sql';
 			}
 
 			if (
@@ -120,15 +120,15 @@
 					and is_writable(BASE)
 				)
 			) {
-				$command = 'mysqldump -u ' . escapeshellarg($this->user);
+				$command = 'mysqldump -u ' . escapeshellarg($this->connect->user);
 
-				if (isset($this->server) and $this->server !== $this::DEFAULT_SERVER) {
-					$command .= ' -h ' . escapeshellarg($this->server);
+				if (isset($this->connect->server) and $this->connect->server !== $this::DEFAULT_SERVER) {
+					$command .= ' -h ' . escapeshellarg($this->connect->server);
 				}
 
-				$command .= ' -p' . escapeshellarg($this->password);
+				$command .= ' -p' . escapeshellarg($this->connect->password);
 
-				$command .=  ' ' . escapeshellarg($this->database);
+				$command .=  ' ' . escapeshellarg($this->connect->database);
 
 				exec($command, $output, $return_var);
 				if ($return_var === 0 and is_array($output) and !empty($output)) {

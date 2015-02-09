@@ -40,7 +40,7 @@
 		 * @return self
 		 * @example $login = _login::load
 		 */
-		public static function load($ini = 'connect')
+		public static function load($ini = 'connect.json')
 		{
 			if (is_null(self::$instance)) {
 				self::$instance = new self($ini);
@@ -57,7 +57,7 @@
 		 * @example $login = new login()
 		 * @todo Use static parent::load() instead, but this causes errors
 		 */
-		public function __construct($ini = 'connect')
+		public function __construct($ini = 'connect.json')
 		{
 			parent::__construct($ini);	//login extends PDO, so create new instance of parent.
 

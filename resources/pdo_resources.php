@@ -26,9 +26,10 @@
 	 * You should have received a copy of the GNU General Public License
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	*/
-	abstract class pdo_resources
+	abstract class pdo_resources implements \shgysk8zer0\Core\Traits\Magic_Methods
 	{
 		public $connected;
+		protected $pdo, $data = [];
 
 		/**
 		 * @method __construct
@@ -44,12 +45,50 @@
 		 * @example parent::__construct($con)
 		 */
 
-		protected function __construct($con = 'connect')
+		protected function __construct($con = 'connect.json')
 		{
 			$this->pdo = (is_string($con))
 				? pdo_connect::load($con)
 				: new pdo_connect($con);
 			$this->connected = (is_object($this->pdo) and $this->pdo->connected);
+		}
+
+		/**
+		 * Chained magic getter and setter
+		 * @param string $name, array $arguments
+		 * @example "$pdo->[getName|setName]($value)"
+		 */
+		public function __call($name, array $arguments)
+		{
+			$name = strtolower((string)$name);
+			$act = substr($name, 0, 3);
+			$key = str_replace(' ', '-', substr($name, 3));
+			switch($act) {
+				case 'get':
+					if (array_key_exists($key, $this->data)) {
+						return $this->data[$key];
+					} else{
+						return false;
+					}
+					break;
+				case 'set':
+					$this->data[$key] = $arguments[0];
+					return $this;
+					break;
+				default:
+					throw new \Exception("Unknown method: {$name} in " . __CLASS__ .'->' . __METHOD__);
+			}
+		}
+
+		/**
+		 * Show all keys for entries in $this->data array
+		 *
+		 * @param void
+		 * @return array
+		 */
+		public function keys()
+		{
+			return array_keys($this->data);
 		}
 
 		/**
@@ -61,7 +100,7 @@
 		public function escape(&$val)
 		{
 			if (is_string($val)) {
-				$val = trim($val, '\'');
+				$val = preg_replace('/^\'|\'$/', null, $this->pdo->quote($val));
 			} elseif (is_array($val)) {
 				array_walk($val, [$this, 'escape']);
 			}
