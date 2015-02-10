@@ -20,14 +20,48 @@
  */
 namespace shgysk8zer0\Core;
 
+use \shgysk8zer0\Core_API as API;
+
 /**
  * Provides easy implementation of error reporting though several methods
  */
-class Errors implements \shgysk8zer0\Core_API\Interfaces\Errors
+final class Errors extends PDO implements API\Interfaces\Errors
 {
-	use \shgysk8zer0\Core_API\Traits\Errors;
+	use API\Traits\Errors;
 
 	const DEFAULT_METHOD = 'reportError';
+
+	const DATE_FORMAT = 'Y-m-d H:i:s';
+
+	/**
+	 * Table to use when reporting errors to database
+	 * @var string
+	 */
+	private $error_table = 'PHP_errors';
+
+	/**
+	 * Credentials file for database
+	 * @var string
+	 */
+	public static $con = 'connect.json';
+
+	/**
+	 * Array of tables to use when reporting to database
+	 * @var array
+	 */
+	private static $table_cols = [
+		'error_type',
+		'datetime',
+		'error_message',
+		'file',
+		'line'
+	];
+
+	/**
+	 * Prepared statement to execute to save errors to database
+	 * @var \PDOStatement;
+	 */
+	private static $error_stm;
 
 	/**
 	 * Directory to use for logError
@@ -41,6 +75,8 @@ class Errors implements \shgysk8zer0\Core_API\Interfaces\Errors
 	 */
 	public static $LOG_FILE = 'errors.log';
 
+
+
 	/**
 	 * Sets $this::{$method} as error handler
 	 *
@@ -49,6 +85,15 @@ class Errors implements \shgysk8zer0\Core_API\Interfaces\Errors
 	 */
 	public function __construct($method = self::DEFAULT_METHOD, $level = null)
 	{
+		parent::__construct(static::$con);
+		$this::$error_stm = $this->prepare(
+			"INSERT INTO `{$this->error_table}` (
+				{$this->columns(array_flip(static::$table_cols))}
+			) VALUES (
+				:" . join(', :', static::$table_cols) . "
+			);"
+		);
+
 		if (! is_int($level)) {
 			$level = error_reporting();
 		}
@@ -68,7 +113,7 @@ class Errors implements \shgysk8zer0\Core_API\Interfaces\Errors
 	 * @param array  $context All set variables in scope
 	 * @return void
 	 */
-	final public static function reportError(
+	public static function reportError(
 		$level,
 		$message,
 		$file,
@@ -77,6 +122,30 @@ class Errors implements \shgysk8zer0\Core_API\Interfaces\Errors
 	)
 	{
 		echo static::errorToException($level, $message, $file, $line, $context) . PHP_EOL;
+	}
+
+	/**
+	 * Saves error to database
+	 *
+	 * @param int    $level   Any of the error levels (E_*)
+	 * @param string $message Message given with the error
+	 * @param string $file    File generating the error
+	 * @param itn    $line    Line on which the error occured
+	 * @param array  $context All set variables in scope
+	 * @return void
+	 */
+	public static function DBError(
+		$level,
+		$message,
+		$file,
+		$line,
+		array $context = array()
+	)
+	{
+		static::$error_stm->execute(array_combine(
+			static::$table_cols,
+			[$level, date(self::DATE_FORMAT), $message, $file, $line]
+		));
 	}
 
 	/**
@@ -89,7 +158,7 @@ class Errors implements \shgysk8zer0\Core_API\Interfaces\Errors
 	 * @param array  $context All set variables in scope
 	 * @return void
 	 */
-	final static public function AJAXError(
+	static public function AJAXError(
 		$level,
 		$message,
 		$file,
@@ -121,7 +190,7 @@ class Errors implements \shgysk8zer0\Core_API\Interfaces\Errors
 	 * @param array  $context All set variables in scope
 	 * @return void
 	 */
-	final public static function logError($level, $message, $file, $line, $scope)
+	public static function logError($level, $message, $file, $line, $scope)
 	{
 		file_put_contents(
 			BASE . DIRECTORY_SEPARATOR . static::$LOG_DIR . DIRECTORY_SEPARATOR . static::$LOG_FILE,
