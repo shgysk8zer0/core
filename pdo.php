@@ -23,7 +23,7 @@ namespace shgysk8zer0\Core;
 
 use \shgysk8zer0\Core_API as API;
 
-final class PDO
+class PDO
 extends API\Abstracts\PDO_Connect
 implements API\Interfaces\PDO, API\Interfaces\File_IO, Interfaces\Legacy_PDO
 {
