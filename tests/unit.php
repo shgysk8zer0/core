@@ -9,7 +9,7 @@ namespace shgysk8zer0\Core
 	spl_autoload_extensions('.php');
 	spl_autoload_register('spl_autoload');
 
-	set_error_handler(['\\shgysk8zer0\\Core\\Errors', 'printError'], E_ALL);
+	new Errors;
 
 	$logger = new Logger;
 
