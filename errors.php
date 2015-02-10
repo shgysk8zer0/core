@@ -75,8 +75,6 @@ final class Errors extends PDO implements API\Interfaces\Errors
 	 */
 	public static $LOG_FILE = 'errors.log';
 
-
-
 	/**
 	 * Sets $this::{$method} as error handler
 	 *
@@ -85,14 +83,16 @@ final class Errors extends PDO implements API\Interfaces\Errors
 	 */
 	public function __construct($method = self::DEFAULT_METHOD, $level = null)
 	{
-		parent::__construct(static::$con);
-		$this::$error_stm = $this->prepare(
-			"INSERT INTO `{$this->error_table}` (
-				{$this->columns(array_flip(static::$table_cols))}
-			) VALUES (
-				:" . join(', :', static::$table_cols) . "
-			);"
-		);
+		if ($method === 'DBError') {
+			parent::__construct(static::$con);
+			$this::$error_stm = $this->prepare(
+				"INSERT INTO `{$this->error_table}` (
+					{$this->columns(array_flip(static::$table_cols))}
+				) VALUES (
+					:" . join(', :', static::$table_cols) . "
+				);"
+			);
+		}
 
 		if (! is_int($level)) {
 			$level = error_reporting();
