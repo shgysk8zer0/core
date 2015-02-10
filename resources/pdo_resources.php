@@ -227,10 +227,8 @@
 		 */
 		public function describe($table = null)
 		{
-			return $this->pdo->query(
+			return $this(
 				"DESCRIBE `{$this->escape($table)}"
-			)->fetchAll(
-				\PDO::FETCH_CLASS
 			);
 		}
 
