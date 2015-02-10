@@ -11,8 +11,6 @@ namespace shgysk8zer0\Core
 
 	new Errors;
 
-	$logger = new Logger;
-
 	$linter = new \shgysk8zer0\Core\Tests\Linter;
 
 	$classes_with_errors = array_filter(
