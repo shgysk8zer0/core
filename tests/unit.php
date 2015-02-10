@@ -13,23 +13,6 @@ namespace shgysk8zer0\Core
 
 	$logger = new Logger;
 
-	$events = new Event;
-
-	$events->done = function(array $context) use ($logger)
-	{
-		$logger->debug(
-			'Exiting script on line {line} with included files:' . PHP_EOL .'{files} and backtrace:' . PHP_EOL . '{trace}',
-			[
-				'line' => __LINE__,
-				'files' => join(PHP_EOL, get_included_files()),
-				'trace' => print_r(current(debug_backtrace()), true)
-			]
-		);
-	};
-
-	Event::done(extract(get_included_files()));
-
-	exit();
 	$linter = new \shgysk8zer0\Core\Tests\Linter;
 
 	$classes_with_errors = array_filter(
