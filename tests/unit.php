@@ -5,7 +5,7 @@ namespace shgysk8zer0\Core
 	if (!defined('BASE')) {
 		define('BASE', dirname(dirname(dirname(__DIR__))));
 	}
-	set_include_path(BASE);
+	set_include_path(BASE . PATH_SEPARATOR . BASE . DIRECTORY_SEPARATOR . 'chriszuber/config/');
 	spl_autoload_extensions('.php');
 	spl_autoload_register('spl_autoload');
 
