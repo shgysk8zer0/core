@@ -1,9 +1,5 @@
 <?php
 /**
- * Wrapper for standard PDO class. Allows
- * standard MySQL to be used, while giving benefits
- * of chained prepare->bind->execute...
- *
  * @author Chris Zuber <shgysk8zer0@gmail.com>
  * @package shgysk8zer0\Core
  * @version 0.9.0
@@ -24,12 +20,29 @@
 */
 
 namespace shgysk8zer0\Core;
-class PDO
-	extends \shgysk8zer0\Core\Resources\PDO_Resources
-	implements \shgysk8zer0\Core\Depreciated\Interfaces\PDO
-{
-	use \shgysk8zer0\Core\Depreciated\Traits\PDO;
-	use \shgysk8zer0\Core_API\Traits\Magic_Methods;
 
-	const MAGIC_PROPERTY = 'data';
+use \shgysk8zer0\Core_API as API;
+
+final class PDO
+extends API\Abstracts\PDO_Connect
+implements API\Interfaces\PDO, API\Interfaces\File_IO, Interfaces\Legacy_PDO
+{
+	use API\Traits\PDO;
+	use Traits\PDO;
+	use Traits\Legacy_PDO;
+	use API\Traits\Singleton;
+	use API\Traits\PDO_Backups;
+
+	const STM_CLASS = 'PDOStatement';
+	const DEFAULT_CON = '/var/www/html/chriszuber/config/connect.json';
+
+	public function __construct($con = null)
+	{
+		parent::connect(
+			$con,
+			[
+				self::ATTR_STATEMENT_CLASS => ['\\' . __NAMESPACE__ . '\\' . self::STM_CLASS]
+			]
+		);
+	}
 }
