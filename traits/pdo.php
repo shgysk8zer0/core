@@ -28,7 +28,7 @@ trait PDO
 	 * @param  int    $n     Optional result number to return
 	 * @return array         Array of stClass objects
 	 */
-	public function fetchArray($query, $n = null)
+	final public function fetchArray($query, $n = null)
 	{
 		return (is_int($n)) ? $this($query)[$n] : $this($query);
 	}

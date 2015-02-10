@@ -36,7 +36,7 @@ trait Legacy_PDO
 	* @param void
 	* @return array
 	*/
-	public function keys()
+	final public function keys()
 	{
 		return array_keys($this->data);
 	}
@@ -48,13 +48,11 @@ trait Legacy_PDO
 	* @param array $arr
 	* @return array
 	*/
-	public function columns(array $arr)
+	final public function columns(array $arr)
 	{
-		$keys = array_keys($arr);
-		$keys = $this->escape($keys);
 		return join(', ', array_map(function($key) {
 			return "`{$key}`";
-		}, $keys));
+		}, array_map([$this, 'escape'], array_keys($arr))));
 	}
 
 	/**
@@ -64,16 +62,14 @@ trait Legacy_PDO
 	* @param array $arr
 	* @return array
 	*/
-	public function prepare_keys(array $arr)
+	final public function prepare_keys(array $arr = array())
 	{
-		$keys = array_keys($arr);
-		$keys = $this->escape($keys);
 		return array_map(function($key) {
 			return ':' . preg_replace('/\s/', '_', $key);
-		}, $keys);
+		}, array_map([$this, 'escape'], array_keys($arr)));
 	}
 
-	public function name_value($table)
+	final public function name_value($table)
 	{
 		return $this->nameValue($table);
 	}
@@ -84,13 +80,11 @@ trait Legacy_PDO
 	* @param  array  $arr [Full array, though only keys will be used]
 	* @return array       [Indexed array created from array_keys]
 	*/
-	public function bind_keys(array $arr)
+	final public function bind_keys(array $arr = array())
 	{
-		$keys = array_keys($arr);
-		$keys = $this->escape($keys);
 		return array_map(function($key) {
 			return preg_replace('/\s/', '_', $key);
-		}, $keys);
+		}, array_map([$this, 'escape'], array_keys($arr)));
 	}
 
 	/**
@@ -99,7 +93,7 @@ trait Legacy_PDO
 	* @param void
 	* @return array     [Array containing all tables in database]
 	*/
-	public function show_tables()
+	final public function show_tables()
 	{
 		return $this->showTables();
 	}
@@ -110,7 +104,7 @@ trait Legacy_PDO
 	* @param void
 	* @return array    [Array containing database names]
 	*/
-	public function show_databases()
+	final public function show_databases()
 	{
 		return $this('SHOW DATABASES');
 	}
@@ -126,7 +120,7 @@ trait Legacy_PDO
 	* @param array $array
 	* @return string
 	*/
-	public function columns_from(array $array)
+	final public function columns_from(array $array = array())
 	{
 		$keys = array_keys($array);
 		$key_walker = function(&$key) {
@@ -145,7 +139,7 @@ trait Legacy_PDO
 	 * @param  int    $n     Optional result number to return
 	 * @return array         Array of stClass objects
 	 */
-	public function fetch_array($query, $n = null)
+	final public function fetch_array($query, $n = null)
 	{
 		return $this->fetchArray($query);
 	}
