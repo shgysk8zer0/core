@@ -1,12 +1,7 @@
 <?php
-	namespace shgysk8zer0\Core;
-
 	/**
-	 * Class to allow continuous updates from server using Server Sent Events
-	 *
 	 * @author Chris Zuber <shgysk8zer0@gmail.com>
 	 * @package shgysk8zer0\Core
-	 * @uses json_response
 	 * @version 1.0.0
 	 * @see https://developer.mozilla.org/en-US/docs/Server-sent_events/Using_server-sent_events
 	 * @copyright 2014, Chris Zuber
@@ -23,8 +18,15 @@
 	 *
 	 * You should have received a copy of the GNU General Public License
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+	 */
+
+	namespace shgysk8zer0\Core;
+
+	use \shgysk8zer0\Core_API as API;
+
+	/**
+	 * Class to allow continuous updates from server using Server Sent Events
 	 *
-	 * @var server_event $instance
 	 * @example
 	 * $event = new server_event(); $n = 42;
 	 * while($n--) {
@@ -37,25 +39,16 @@
 	 * )->send()->wait(1)
 	 * }
 	 * $event->close();
-	 * @todo Move JSON_Response methods to a trait and use that isntead of
-	 * extending JSON_Response
 	 */
-	class server_event extends JSON_Response
+	class server_event implements API\Interfaces\Magic_Methods, API\Interfaces\AJAX_DOM
 	{
-		private static $instance = null;
+		use API\Traits\Singleton;
+		use API\Traits\Magic_Methods;
+		use API\Traits\AJAX_DOM;
 
-		/**
-		 * Static method to load class
-		 * @param array $data
-		 * @return self
-		 */
-		public static function load(array $data = null)
-		{
-			if (is_null(self::$instance)) {
-				self::$instance = new self($data);
-			}
-			return self::$instance;
-		}
+		const CONTENT_TYPE = 'text/event-stream';
+		const MAGIC_PROPERTY = 'response';
+		const DEFAULT_EVENT = 'ping';
 
 		/**
 		 * Constructor for class. Class method to set headers
@@ -69,7 +62,6 @@
 		public function __construct(array $data = null)
 		{
 			$this->set_headers();
-			parent::__construct();
 
 			if (isset($data)) {
 				$this->response = $data;
@@ -88,7 +80,7 @@
 		 */
 		public function send($key = null)
 		{
-			echo 'event: ping' . PHP_EOL;
+			echo 'event: ' . $this::DEFAULT_EVENT . PHP_EOL;
 
 			if (count($this->response)) {
 				if (is_string($key)) {
@@ -98,10 +90,10 @@
 				}
 
 				$this->response = [];
+				ob_flush();
+				flush();
 			}
 
-			ob_flush();
-			flush();
 			return $this;
 		}
 
@@ -113,7 +105,7 @@
 		 */
 		private function set_headers()
 		{
-			header('Content-Type: text/event-stream');
+			header('Content-Type: ' . $this::CONTENT_TYPE);
 			header_remove('X-Powered-By');
 			header_remove('Expires');
 			header_remove('Pragma');
