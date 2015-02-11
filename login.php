@@ -46,7 +46,12 @@ implements API\Interfaces\PDO, API\Interfaces\Magic_Methods
 	 * Array to store login data
 	 * @var array
 	 */
-	private $data = [];
+	private $data = [
+		'user' => null,
+		'password' => null,
+		'role' => null,
+		'logged_in' => false
+	];
 
 	public function __construct($con = null)
 	{
