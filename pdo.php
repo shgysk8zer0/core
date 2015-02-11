@@ -34,7 +34,7 @@ implements API\Interfaces\PDO, API\Interfaces\File_IO, Interfaces\Legacy_PDO
 	use API\Traits\PDO_Backups;
 
 	const STM_CLASS = 'PDOStatement';
-	const DEFAULT_CON = '/var/www/html/chriszuber/config/connect.json';
+	const DEFAULT_CON = 'connect.json';
 
 	public function __construct($con = null)
 	{
