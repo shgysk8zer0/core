@@ -166,17 +166,16 @@ final class Errors extends PDO implements API\Interfaces\Errors
 		array $context = array()
 	)
 	{
-		header('Content-Type: application/json');
-		$e = static::errorToException($level, $message, $file, $line, $context);
 		ob_get_clean();
+		header('Content-Type: application/json');
 		exit(json_encode([
 			'error' => [
 				'level' => static::errorLevelAsString($level),
-				'file' => $e->getFile(),
-				'line' => $e->getLine(),
-				'message' => $e->getMessage(),
-				'trace' => $e->getTrace(),
-				'class' => get_class($e)
+				'file' => $file,
+				'line' => $line,
+				'message' => $message,
+				'trace' => @array_splice(debug_backtrace(), 1),
+				'scope' => $context
 			],
 			'notify' => [
 				'title' => 'Error reported',
