@@ -43,6 +43,7 @@
 	{
 		use API\Traits\Singleton;
 		use API\Traits\Magic_Methods;
+		use API\Traits\Magic_Call;
 		use API\Traits\AJAX_DOM;
 
 		const CONTENT_TYPE = 'application/json';
@@ -56,37 +57,6 @@
 		public function __construct(array $arr = array())
 		{
 			$this->response = $arr;
-		}
-
-		/**
-		 * Chained magic getter and setter (and isset via has)
-		 *
-		 * @param string $name
-		 * @param array $arguments
-		 * @return mixed
-		 * @example "$resp->[getName|setName|hasName]($value)"
-		 * @method get*
-		 * @method set*
-		 * @method has*
-		 */
-		final public function __call($name, array $arguments = array())
-		{
-			$name = strtolower($name);
-			$act = substr($name, 0, 3);
-			$key = substr($name, 3);
-			switch($act) {
-				case 'get':
-					if (array_key_exists($key, $this->response)) {
-						return $this->response[$key];
-					} else {
-						return null;
-					}
-				case 'set':
-					$this->response[$key] = current($arguments);
-					return $this;
-				case 'has':
-					return array_key_exists($key, $this->response);
-			}
 		}
 
 		/**
