@@ -59,6 +59,37 @@
 		}
 
 		/**
+		 * Chained magic getter and setter (and isset via has)
+		 *
+		 * @param string $name
+		 * @param array $arguments
+		 * @return mixed
+		 * @example "$resp->[getName|setName|hasName]($value)"
+		 * @method get*
+		 * @method set*
+		 * @method has*
+		 */
+		final public function __call($name, array $arguments = array())
+		{
+			$name = strtolower($name);
+			$act = substr($name, 0, 3);
+			$key = substr($name, 3);
+			switch($act) {
+				case 'get':
+					if (array_key_exists($key, $this->response)) {
+						return $this->response[$key];
+					} else {
+						return null;
+					}
+				case 'set':
+					$this->response[$key] = current($arguments);
+					return $this;
+				case 'has':
+					return array_key_exists($key, $this->response);
+			}
+		}
+
+		/**
 		 * Sends everything with content-type of application/json,
 		 * Exits with json_encode($this->response)
 		 * An optional $key argument can be used to only
