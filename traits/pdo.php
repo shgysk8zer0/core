@@ -32,4 +32,20 @@ trait PDO
 	{
 		return (is_int($n)) ? $this($query)[$n] : $this($query);
 	}
+
+	/**
+	 * Clears all data in a table, possibly resetting auto_increment
+	 * 
+	 * @param string $table    Name of the table
+	 * @param bool   $auto_inc Whether or not to reset auto_increment
+	 * @return self
+	 */
+	final public function resetTable($table, $auto_inc = false)
+		{
+			$this->exec("DELETE FROM `{$table}`");
+			if ($auto_inc) {
+				$this->exec("ALTER TABLE `{$table}` AUTO_INCREMENT = 1");
+			}
+			return $this;
+		}
 }
