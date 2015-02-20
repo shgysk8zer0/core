@@ -28,7 +28,11 @@ namespace shgysk8zer0\Core\Resources;
  * @example $parsed = new \shgysk8zer0\Core\Resorources\Parser(*)
  */
 use \shgysk8zer0\Core_API as API;
-final class Parser
+
+final class Parser implements
+	API\Interfaces\File_IO,
+	API\Interfaces\Magic_Methods,
+	API\Interfaces\Path_Info
 {
 	use API\Traits\Parser;
 	use API\Traits\Magic_Methods;
@@ -36,8 +40,28 @@ final class Parser
 
 	const MAGIC_PROPERTY = 'data';
 
+	/**
+	 * Private var to store parsed data
+	 * @var array
+	 */
 	private $data = [];
 
+	/**
+	 * Static method to parse file & return parsed contents
+	 *
+	 * @param string $file Path to file, using include_path
+	 * @return array       Parsed file contents
+	 */
+	public static function parseFile($file)
+	{
+		return static::load($file)->data;
+	}
+
+	/**
+	 * Class constructor parses $file and stores data in $data array.
+	 *
+	 * @param string $file Path to file, using include_path
+	 */
 	public function __construct($file)
 	{
 		$this->data = $this->parse($file, true);
