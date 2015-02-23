@@ -43,6 +43,7 @@
 	{
 		use API\Traits\Singleton;
 		use API\Traits\Magic_Methods;
+		use API\Traits\Magic_Call;
 		use API\Traits\AJAX_DOM;
 
 		const CONTENT_TYPE = 'application/json';

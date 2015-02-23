@@ -36,6 +36,11 @@ implements API\Interfaces\PDO, API\Interfaces\File_IO, Interfaces\Legacy_PDO
 	const STM_CLASS = 'PDOStatement';
 	const DEFAULT_CON = 'connect.json';
 
+	/**
+	 * Creates a new Databse connection/PDO instance
+	 * 
+	 * @param mixed $con Credentials as filename, object, array.
+	 */
 	public function __construct($con = null)
 	{
 		parent::connect(
@@ -44,5 +49,20 @@ implements API\Interfaces\PDO, API\Interfaces\File_IO, Interfaces\Legacy_PDO
 				self::ATTR_STATEMENT_CLASS => ['\\' . __NAMESPACE__ . '\\' . self::STM_CLASS]
 			]
 		);
+	}
+
+	/**
+	 * Allow read-only access to protected properties
+	 *
+	 * @param  string $prop Name of property
+	 * @return mixed        Value of property
+	 */
+	final public function __get($prop)
+	{
+		if (isset($this->{$prop})) {
+			return $this->{$prop};
+		} else {
+			return null;
+		}
 	}
 }
