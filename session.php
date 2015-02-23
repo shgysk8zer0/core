@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-namespace shgysk8zer0\Core
+namespace shgysk8zer0\Core;
 
 use \shgysk8zer0\Core_API as API;
 
