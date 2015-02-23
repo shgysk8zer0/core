@@ -33,7 +33,7 @@
 	 * $cookies->cookie_name = 'Value';
 	 * $cookie->existing_cookie //Returns value of $_COOKIES['existing-cookie']
 	 */
-	class cookies implements \shgysk8zer0\Core\Traits\Magic_Methods
+	class cookies implements \shgysk8zer0\Core_API\Interfaces\Magic_Methods
 	{
 		public $expires, $path, $domain, $secure, $httponly;
 		private static $instance = null;
@@ -89,7 +89,7 @@
 				:'/' . trim(str_replace("{$_SERVER['REQUEST_SCHEME']}://{$_SERVER['SERVER_NAME']}", '/', URL), '/');
 			if (isset($domain)) {
 				$this->domain = $domain;
-			}elseif (array_key_exists('HTTP_HOST', $_SERVER)) {
+			} elseif (array_key_exists('HTTP_HOST', $_SERVER)) {
 				$this->domain = $_SERVER['HTTP_HOST'];
 			} else {
 				$this->domain = $_SERVER['SERVER_NAME'];
