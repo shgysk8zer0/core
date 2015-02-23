@@ -58,9 +58,11 @@ class JSON_Response implements API\Interfaces\Magic_Methods, API\Interfaces\AJAX
 	 *
 	 * @param array $arr Optional initial data
 	 */
-	public function __construct(array $arr = array())
+	public function __construct($arr = null)
 	{
-		$this->{self::MAGIC_PROPERTY} = $arr;
+		if (is_array($arr)) {
+			$this->{self::MAGIC_PROPERTY} = $arr;
+		}
 	}
 
 	/**
