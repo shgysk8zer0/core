@@ -25,6 +25,8 @@ use \shgysk8zer0\Core_API as API;
 
 /**
  * Class created by PDO::(query|prepare)
+ *
+ * Easier to use and often chainable
  */
 final class PDOStatement extends \PDOStatement implements API\Interfaces\PDOStatement
 {

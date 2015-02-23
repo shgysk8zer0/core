@@ -2,8 +2,8 @@
 /**
  * @author Chris Zuber <shgysk8zer0@gmail.com>
  * @package shgysk8zer0\Core
- * @version 0.9.0
- * @copyright 2014, Chris Zuber
+ * @version 01.0.0
+ * @copyright 2015, Chris Zuber
  * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,6 +23,9 @@ namespace shgysk8zer0\Core;
 
 use \shgysk8zer0\Core_API as API;
 
+/**
+ * Provides easyier to use and often chainable methods for PDO
+ */
 class PDO
 extends API\Abstracts\PDO_Connect
 implements API\Interfaces\PDO, API\Interfaces\File_IO, Interfaces\Legacy_PDO
@@ -38,7 +41,7 @@ implements API\Interfaces\PDO, API\Interfaces\File_IO, Interfaces\Legacy_PDO
 
 	/**
 	 * Creates a new Databse connection/PDO instance
-	 * 
+	 *
 	 * @param mixed $con Credentials as filename, object, array.
 	 */
 	public function __construct($con = null)

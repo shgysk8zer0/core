@@ -17,13 +17,14 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Class to handle login or create new users from form submissions or $_SESSION
- * Can check login role as well (new, user, admin, etc)
  */
 
 namespace shgysk8zer0\Core;
 
+/**
+ * Class to handle login or create new users from form submissions or $_SESSION
+ * Can check login role as well (new, user, admin, etc)
+ */
 use \shgysk8zer0\Core_API as API;
 
 /**

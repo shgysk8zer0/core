@@ -1,6 +1,4 @@
 <?php
-	namespace shgysk8zer0\Core;
-
 	/**
 	 * @author Chris Zuber <shgysk8zer0@gmail.com>
 	 * @package shgysk8zer0\Core
@@ -20,8 +18,6 @@
 	 * You should have received a copy of the GNU General Public License
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
-<<<<<<< HEAD
-=======
 	namespace shgysk8zer0\Core;
 	/**
 	 * Custom error handling.
@@ -29,7 +25,6 @@
 	 * @see http://us3.php.net/set_error_handler
 	 * @depricated
 	 */
->>>>>>> fc3dfd9... Updated documentation
 	class error_reporter extends PDO
 	{
 
