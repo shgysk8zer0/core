@@ -2,10 +2,6 @@
 	namespace shgysk8zer0\Core;
 
 	/**
-	 * Custom error handling.
-	 * Catch errors using custom function using set_error_handler($callback_function, ERROR_LEVEL)
-	 *
-	 * @link http://us3.php.net/set_error_handler
 	 * @author Chris Zuber <shgysk8zer0@gmail.com>
 	 * @package shgysk8zer0\Core
 	 * @version 0.9.0
@@ -24,6 +20,16 @@
 	 * You should have received a copy of the GNU General Public License
 	 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
+<<<<<<< HEAD
+=======
+	namespace shgysk8zer0\Core;
+	/**
+	 * Custom error handling.
+	 * Catch errors using custom function using set_error_handler($callback_function, ERROR_LEVEL)
+	 * @see http://us3.php.net/set_error_handler
+	 * @depricated
+	 */
+>>>>>>> fc3dfd9... Updated documentation
 	class error_reporter extends PDO
 	{
 
