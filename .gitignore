@@ -6,3 +6,7 @@
 .buildpath
 .project
 .settings/
+*BACKUP*
+*BASE*
+*LOCAL*
+*REMOTE*
