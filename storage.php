@@ -2,8 +2,8 @@
 /**
  * @author Chris Zuber <shgysk8zer0@gmail.com>
  * @package shgysk8zer0\Core
- * @version 0.9.0
- * @copyright 2014, Chris Zuber
+ * @version 1.0.0
+ * @copyright 2015, Chris Zuber
  * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,133 +25,34 @@ namespace shgysk8zer0\Core;
 use \shgysk8zer0\Core_API as API;
 
 /**
- *  Consists almost entirely of magic methods.
+ * Consists almost entirely of magic methods.
  * Functionality is similar to globals, except new entries may be made
  * and the class also has save/load methods for saving to or loading from $_SESSION
  * Uses a private array for storage, and magic methods for getters and setters
  *
  * I just prefer using $session->key over $_SESSION[key]
  * It also provides some chaining, so $session->setName(value)->setOtherName(value2)->getExisting() can be done
- *
- * @todo use Core_API traits
  */
-class Storage implements API\Interfaces\Magic_Methods
+final class Storage implements API\Interfaces\Magic_Methods
 {
+	use API\Traits\Magic_Methods;
+	use API\Traits\Magic_Call;
+	use API\Traits\Singleton;
 
-	private static $instance = null;
-	private $data;
+	private $data = [];
 
-	/**
-	 * Static load function avoids creating multiple instances/connections
-	 * It checks if an instance has been created and returns that or a new instance
-	 *
-	 * @params void
-	 * @return storage self
-	 * @example $storage = storage::load
-	 */
-	public static function load()
-	{
-		if (is_null(self::$instance)) {
-			self::$instance = new self;
-		}
-		return self::$instance;
-	}
+	const MAGIC_PROPERTY = 'data';
+	const SESSION_KEY = 'storage';
 
 	/**
-	 * Creates new instance of storage.
-	 *
-	 * @param void
-	 * @example $storage = new storage
-	 */
-	public function __construct()
-	{
-		$this->data = array();
-	}
-
-	/**
-	 * Setter method for the class.
-	 *
-	 * @param string $key
-	 * @param mixed $value
-	 * @return void
-	 * @example "$storage->key = $value"
-	 */
-	public function __set($key, $value)
-	{
-		$key = str_replace('_', '-', $key);
-		$this->data[$key] = $value;
-	}
-
-	/**
-	 * The getter method for the class.
-	 *
-	 * @param string $key
-	 * @return mixed
-	 * @example "$storage->key" Returns $value
-	 */
-	public function __get($key)
-	{
-		$key = str_replace('_', '-', $key);
-		if (array_key_exists($key, $this->data)) {
-			return $this->data[$key];
-		}
-		return false;
-	}
-
-	/**
-	 * @param string $key
-	 * @return boolean
-	 * @example "isset({$storage->key})"
-	 */
-	public function __isset($key)
-	{
-		return array_key_exists(str_replace('_', '-', $key), $this->data);
-	}
-
-	/**
-	 * Removes an index from the array.
-	 *
-	 * @param string $key
-	 * @return void
-	 * @example "unset($storage->key)"
-	 */
-	public function __unset($key)
-	{
-		unset($this->data[str_replace('_', '-', $key)]);
-	}
-
-	/**
-	 * Chained magic getter and setter
-	 * @param string $name, array $arguments
-	 * @example "$storage->[getName|setName]($value)"
-	 */
-	public function __call($name, array $arguments)
-	{
-		$name = strtolower($name);
-		$act = substr($name, 0, 3);
-		$key = str_replace('_', '-', substr($name, 3));
-		switch($act) {
-			case 'get':
-				if (array_key_exists($key, $this->data)) {
-					return $this->data[$key];
-				}
-				break;
-			case 'set':
-				$this->data[$key] = $arguments[0];
-				return $this;
-				break;
-		}
-	}
-
-	/**
-	 * Returns an array of all array keys for $thsi->data
+	 * Returns an array of all array keys for $this->data
 	 *
 	 * @param void
 	 * @return array
 	 */
 	public function keys()
 	{
-		return array_keys($this->data);
+		return array_keys($this->{self::MAGIC_PROPERTY});
 	}
 
 	/**
@@ -159,11 +60,10 @@ class Storage implements API\Interfaces\Magic_Methods
 	 *
 	 * @param void
 	 * @return void
-	 * @todo Make work with more types of data
 	 */
 	public function save()
 	{
-		$_SESSION['storage'] = $this->data;
+		$_SESSION[self::SESSION_KEY] = serialize($this->{self::MAGIC_PROPERTY});
 	}
 
 	/**
@@ -171,12 +71,11 @@ class Storage implements API\Interfaces\Magic_Methods
 	 *
 	 * @param void
 	 * @return void
-	 * @todo Make work with more types of data
 	 */
 	public function restore()
 	{
-		if (array_key_exists('storage', $_SESSION)) {
-			$this->data = $_SESSION['storage'];
+		if (array_key_exists(self::SESSION_KEY, $_SESSION)) {
+			$this->{self::MAGIC_PROPERTY} = unserialize($_SESSION[self::SESSION_KEY]);
 		}
 	}
 
@@ -189,7 +88,7 @@ class Storage implements API\Interfaces\Magic_Methods
 	 */
 	public function clear()
 	{
-		unset($this->data);
+		unset($this->{self::MAGIC_PROPERTY});
 		unset($this);
 	}
 }
