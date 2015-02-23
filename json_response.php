@@ -43,7 +43,7 @@ use \shgysk8zer0\Core_API as API;
  * Creates and sends a JSON encoded response for XMLHTTPRequests
  * Optimized to be handled by handleJSON in functions.js
  */
-class JSON_Response implements API\Interfaces\Magic_Methods, API\Interfaces\AJAX_DOM
+final class JSON_Response implements API\Interfaces\Magic_Methods, API\Interfaces\AJAX_DOM
 {
 	use API\Traits\Singleton;
 	use API\Traits\Magic_Methods;
@@ -78,7 +78,7 @@ class JSON_Response implements API\Interfaces\Magic_Methods, API\Interfaces\AJAX
 	public function send($key = null)
 	{
 		if (count($this->{self::MAGIC_PROPERTY}) and !headers_sent()) {
-			header('Content-Type: ' . $this::CONTENT_TYPE);
+			header('Content-Type: ' . self::CONTENT_TYPE);
 			(is_string($key))
 				? exit(json_encode([$key => $this->{self::MAGIC_PROPERTY}[$key]]))
 				: exit(json_encode($this->{self::MAGIC_PROPERTY}));

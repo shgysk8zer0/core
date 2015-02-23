@@ -40,7 +40,7 @@ use \shgysk8zer0\Core_API as API;
  * }
  * $event->close();
  */
-class server_event implements API\Interfaces\Magic_Methods, API\Interfaces\AJAX_DOM
+final class Server_Event implements API\Interfaces\Magic_Methods, API\Interfaces\AJAX_DOM
 {
 	use API\Traits\Singleton;
 	use API\Traits\Magic_Methods;
@@ -49,8 +49,7 @@ class server_event implements API\Interfaces\Magic_Methods, API\Interfaces\AJAX_
 	const CONTENT_TYPE = 'text/event-stream';
 	const MAGIC_PROPERTY = 'response';
 	const DEFAULT_EVENT = 'ping';
-
-	protected $response = [];
+	const DELAY = 1;
 
 	/**
 	 * Constructor for class. Class method to set headers
@@ -61,11 +60,11 @@ class server_event implements API\Interfaces\Magic_Methods, API\Interfaces\AJAX_
 	 * @param array $data (optional array of data to be initialized with)
 	 * @example $event = new server_event(['html' => ['main' => 'It Works!']]...)
 	 */
-	public function __construct(array $data = null)
+	public function __construct($data = null)
 	{
 		$this->set_headers();
 
-		if (isset($data)) {
+		if (is_array($data)) {
 			$this->{self::MAGIC_PROPERTY} = $data;
 		}
 	}
@@ -82,7 +81,7 @@ class server_event implements API\Interfaces\Magic_Methods, API\Interfaces\AJAX_
 	 */
 	public function send($key = null)
 	{
-		echo 'event: ' . $this::DEFAULT_EVENT . PHP_EOL;
+		echo 'event: ' . self::DEFAULT_EVENT . PHP_EOL;
 
 		if (count($this->{self::MAGIC_PROPERTY})) {
 			if (is_string($key)) {
@@ -107,7 +106,7 @@ class server_event implements API\Interfaces\Magic_Methods, API\Interfaces\AJAX_
 	 */
 	private function set_headers()
 	{
-		header('Content-Type: ' . $this::CONTENT_TYPE);
+		header('Content-Type: ' . self::CONTENT_TYPE);
 		header_remove('X-Powered-By');
 		header_remove('Expires');
 		header_remove('Pragma');
@@ -123,7 +122,7 @@ class server_event implements API\Interfaces\Magic_Methods, API\Interfaces\AJAX_
 	 * @param int $delay
 	 * @return self
 	 */
-	public function wait($delay = 1) {
+	public function wait($delay = self::DELAY) {
 		sleep((int)$delay);
 		return $this;
 	}
@@ -159,4 +158,3 @@ class server_event implements API\Interfaces\Magic_Methods, API\Interfaces\AJAX_
 		return $this;
 	}
 }
-?>
