@@ -60,7 +60,7 @@ class JSON_Response implements API\Interfaces\Magic_Methods, API\Interfaces\AJAX
 	 */
 	public function __construct(array $arr = array())
 	{
-		$this->response = $arr;
+		$this->{self::MAGIC_PROPERTY} = $arr;
 	}
 
 	/**
@@ -75,11 +75,11 @@ class JSON_Response implements API\Interfaces\Magic_Methods, API\Interfaces\AJAX
 	 */
 	public function send($key = null)
 	{
-		if (count($this->response) and !headers_sent()) {
+		if (count($this->{self::MAGIC_PROPERTY}) and !headers_sent()) {
 			header('Content-Type: ' . $this::CONTENT_TYPE);
 			(is_string($key))
-				? exit(json_encode([$key => $this->response[$key]]))
-				: exit(json_encode($this->response));
+				? exit(json_encode([$key => $this->{self::MAGIC_PROPERTY}[$key]]))
+				: exit(json_encode($this->{self::MAGIC_PROPERTY}));
 		} else {
 			http_response_code(403);
 			exit();

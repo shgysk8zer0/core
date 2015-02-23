@@ -50,6 +50,8 @@ class server_event implements API\Interfaces\Magic_Methods, API\Interfaces\AJAX_
 	const MAGIC_PROPERTY = 'response';
 	const DEFAULT_EVENT = 'ping';
 
+	protected $response = [];
+
 	/**
 	 * Constructor for class. Class method to set headers
 	 * and initialize first (optional) set of data.
@@ -64,7 +66,7 @@ class server_event implements API\Interfaces\Magic_Methods, API\Interfaces\AJAX_
 		$this->set_headers();
 
 		if (isset($data)) {
-			$this->response = $data;
+			$this->{self::MAGIC_PROPERTY} = $data;
 		}
 	}
 
@@ -82,14 +84,14 @@ class server_event implements API\Interfaces\Magic_Methods, API\Interfaces\AJAX_
 	{
 		echo 'event: ' . $this::DEFAULT_EVENT . PHP_EOL;
 
-		if (count($this->response)) {
+		if (count($this->{self::MAGIC_PROPERTY})) {
 			if (is_string($key)) {
-				echo 'data: ' . json_encode([$key => $this->response[$key]]) . PHP_EOL . PHP_EOL;
+				echo 'data: ' . json_encode([$key => $this->{self::MAGIC_PROPERTY}[$key]]) . PHP_EOL . PHP_EOL;
 			} else {
-				echo 'data: ' . json_encode($this->response) . PHP_EOL . PHP_EOL;
+				echo 'data: ' . json_encode($this->{self::MAGIC_PROPERTY}) . PHP_EOL . PHP_EOL;
 			}
 
-			$this->response = [];
+			$this->{self::MAGIC_PROPERTY} = [];
 			ob_flush();
 			flush();
 		}
@@ -141,13 +143,13 @@ class server_event implements API\Interfaces\Magic_Methods, API\Interfaces\AJAX_
 	{
 		echo 'event: close' . PHP_EOL;
 
-		if (!empty($this->response)) {
+		if (!empty($this->{self::MAGIC_PROPERTY})) {
 			if (is_string($key)) {
-				echo 'data: ' . json_encode([$key => $this->response[$key]]) . PHP_EOL . PHP_EOL;
+				echo 'data: ' . json_encode([$key => $this->{self::MAGIC_PROPERTY}[$key]]) . PHP_EOL . PHP_EOL;
 			} else {
-				echo 'data: ' . json_encode($this->response) . PHP_EOL . PHP_EOL;
+				echo 'data: ' . json_encode($this->{self::MAGIC_PROPERTY}) . PHP_EOL . PHP_EOL;
 			}
-			$this->response = [];
+			$this->{self::MAGIC_PROPERTY} = [];
 		} else {
 			echo 'data: "{}"' . PHP_EOL . PHP_EOL;
 		}
