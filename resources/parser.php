@@ -23,8 +23,8 @@ namespace shgysk8zer0\Core\Resources;
 /**
  * Easily parse any INI, JSON, or XML file
  *
- * @example $parsed = \shgysk8zer0\Core\Resources\Parser::parse('file')
- * @example $parsed = \shgysk8zer0\Core\Resources\Parser::parse('path/to/file.ext')
+ * @example $parsed = \shgysk8zer0\Core\Resources\Parser::parseFile('file')
+ * @example $parsed = \shgysk8zer0\Core\Resources\Parser::parseFile('path/to/file.ext')
  * @example $parsed = new \shgysk8zer0\Core\Resorources\Parser(*)
  */
 use \shgysk8zer0\Core_API as API;
