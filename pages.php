@@ -95,9 +95,9 @@ class Pages
 							FROM `posts`
 							WHERE `keywords` LIKE :tag
 							LIMIT 20"
-						)->bind([
+						)->execute([
 							'tag' => preg_replace('/\s*/', '%', " {$this->path[1]} ")
-						])->execute()->get_results();
+						])->getResults();
 					}
 					break;
 
@@ -106,7 +106,7 @@ class Pages
 				case '':
 					$this->type = 'posts';
 					if (count($this->path) === 1 and $this->path[0] === '') {
-						$this->data = $pdo->fetch_array(
+						$this->data = $pdo->fetchArray(
 							'SELECT *
 							FROM `posts`
 							WHERE `url` = ""
@@ -119,9 +119,9 @@ class Pages
 							WHERE `url` = :url
 							ORDER BY `created`
 							LIMIT 1'
-						)->bind([
+						)->execute([
 							'url' => urlencode($this->path[1])
-						])->execute()->get_results(0);
+						])->getResults(0);
 					}
 					break;
 			}
@@ -162,8 +162,8 @@ class Pages
 	 */
 	private function get_content()
 	{
-		$login = login::load();
-		$DB =PDO::load('connect.json');
+		$login = Login::load();
+		$DB = PDO::load('connect.json');
 
 		switch($this->type) {
 			case 'posts':
@@ -194,13 +194,13 @@ class Pages
 
 				if (is_array($results)) {
 					foreach($results as $comment) {
-						$time = new simple_date($comment->time);
+						$time = strtotime($comment->time);//new simple_date($comment->time);
 						$comments_section->comments .= $comments->comment(
 							$comment->comment
 						)->author(
 							(strlen($comment->author_url)) ? "<a href=\"{$comment->author_url}\" target=\"_blank\">{$comment->author}</a>" : $comment->author
 						)->time(
-							$time->out('l, F jS Y h:i A')
+							date('l, F jS Y h:i A', $time)
 						)->out();
 					}
 				}
@@ -209,7 +209,7 @@ class Pages
 					$post->tags .= '<a href="' . URL . '/tags/' . urlencode(trim($tag)) . '" rel="tag">' . trim($tag) . "</a>";
 				}
 
-				$time = new simple_date($this->data->created);
+				$time = strtotime($this->data->created);
 
 				$this->content = $post->title(
 					$this->data->title
@@ -229,9 +229,9 @@ class Pages
 					)->author_url(
 						$this->data->author_url
 					)->date(
-						$time->out('m/d/Y')
+						date('m/d/Y', $time)
 					)->datetime(
-						$time->out()
+						$time
 					)->out()
 				)->out();
 
