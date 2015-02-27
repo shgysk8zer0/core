@@ -57,7 +57,7 @@ namespace shgysk8zer0\Core;
  * @todo Extend DOMDocument and use taht for building HTML
  * @todo use Core_API traits
  */
-class Rable implements \shgysk8zer0\Core_API\Interfaces\Magic_Methods
+class Table implements \shgysk8zer0\Core_API\Interfaces\Magic_Methods
 {
 	private $data, $headers, $row, $empty_row, $table, $thead, $tfoot, $tbody;
 	public $caption;
