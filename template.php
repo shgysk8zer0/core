@@ -3,7 +3,7 @@
  * @author Chris Zuber <shgysk8zer0@gmail.com>
  * @package shgysk8zer0\Core
  * @version 1.0.0
- * @copyright 2014, Chris Zuber
+ * @copyright 2015, Chris Zuber
  * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,6 +20,8 @@
  */
 
 namespace shgysk8zer0\Core;
+
+use \shgysk8zer0\Core_API as API;
 /**
  * Opens a template file, ready to be easily modified.
  * File contents are loaded and optionaly inified
@@ -39,47 +41,33 @@ namespace shgysk8zer0\Core;
  * 	$table .= $template->out();
  * 	$table .= $template->old('Newer')->replace('Updated Again')->out();
  */
-class Template implements \shgysk8zer0\Core_API\Interfaces\Magic_Methods
+class Template implements API\Interfaces\Magic_Methods
 {
-	private static $instance = [];
-	private $path, $source = '', $replacements = [], $seperator, $minify_results;
-	const MINIFY_EXPRESSION = '/<!--(?!\s*(?:\[if [^\]]+]|<!|>))(?:(?!-->).)*-->/';
+	use API\Traits\Singleton;
+	use API\Traits\Magic_Methods;
+	use API\Traits\Magic_Call;
+	use API\Traits\File_IO;
 
-	/**
-	 * Static load function avoids creating multiple instances
-	 * It checks if an instance has been created and returns that or a new instance
-	 *
-	 * Can be called on multiple files (one at a time) to load
-	 * multiple files. It stores them as an array, with the file as the
-	 * array key and the instance as the value
-	 *
-	 * @param string $tpl (Path of template, no extension)
-	 * @param string $seperator (Character to mark beginning and end of placeholders)
-	 * @param boolean $minify (whether or not to eliminate tabs and newlines)
-	 * @return template object/class
-	 * @example $template = template::load($template_file, '^', true)
-	 */
-	public static function load($tpl = null, $seperator = '%', $minify = true)
-	{
-		if (!array_key_exists($tpl, self::$instance)) {
-			self::$instance[$tpl] = new self($tpl, $seperator, $minify);
-		}
-		return self::$instance[$tpl];
-	}
+	private $source = '', $replacements = [], $seperator, $minify_results;
+	const MAGIC_PROPERTY = 'replacements';
+	const MINIFY_EXPRESSION = '/<!--(?!\s*(?:\[if [^\]]+]|<!|>))(?:(?!-->).)*-->/';
+	const SEPARATOR = '%';
+	const TEMPLATES_EXTENSION = '.tpl';
+	const TEMPLATES_DIR = 'templates';
 
 	/**
 	 * Reads the template specified by $tpl
 	 * Reads the file from BASE . "/components/templates/{$tpl}.tpl"
 	 * Will exit if file cannot be read (either DNE or denied by permissions)
 	 *
-	 * @params string $tpl (Path of template, no extension)
+	 * @param string $tpl (Path of template, no extension)
 	 * @param string $seperator (Character to mark beginning and end of placeholders)
 	 * @param boolean $minify (whether or not to eliminate tabs and newlines)
 	 * @return template object/class
 	 * @example $template = template::load($template_file, '^', true)
 	 * @example $template = new template($template_file)
 	 */
-	public function __construct($tpl = null, $seperator = '%', $minify = true)
+	public function __construct($tpl, $seperator = self::SEPARATOR, $minify = true)
 	{
 		$this->path = (defined('THEME'))
 			? BASE . '/components/' . THEME .'/templates/' . (string)$tpl . '.tpl'
@@ -165,95 +153,6 @@ class Template implements \shgysk8zer0\Core_API\Interfaces\Magic_Methods
 	{
 		$this->replacements = [];
 		return $this;
-	}
-
-	/**
-	 * Unlike most magic setters, this does not work with variables
-	 * Instead, it sets up a Regular Expression string replacement.
-	 *
-	 * Templates are expected to use placeholders of the format %[A-Z_]+%,
-	 * So $template->url = $url will replace all occurances of %URL% with $url.
-	 * All placeholders should be enclosed in '%' and should be all upper case.
-	 *
-	 * @param string $replace
-	 * @param mixed $with
-	 * @return void
-	 * @example $template->url = $url
-	 * @example $template->data = [...]
-	 */
-	public function __set($replace, $with)
-	{
-		$this->replace($replace, $with);
-	}
-
-	/**
-	 * Magic getter method for the class.
-	 * Not directly useful, since the class is for setting data,
-	 * but this does allow for $template->key .= 'Some value';
-	 *
-	 * @param string $replace (the key to be retrrieved)
-	 * @return string
-	 * @example $template->key //returns $this->replacements[$key]
-	 * @example $template->key .= 'More texty goodness' //Appends to current value
-	 */
-	public function __get($replace)
-	{
-		if (array_key_exists(
-			$this->seperator . strtoupper((string)$replace) . $this->seperator,
-			$this->replacements)
-		) {
-			return $this->replacements[$this->seperator . strtoupper((string)$replace) . $this->seperator];
-		} else {
-			return '';
-		}
-	}
-
-	/**
-	 * Checks if $key is set in $this->replacements
-	 * @param  string  $key [Replacement to test for]
-	 * @return bool         [Whether or not it is set]
-	 */
-	public function __isset($key)
-	{
-		return array_key_exists($key, $this->replace);
-	}
-
-	/**
-	 * Removes $key from $this->replace
-	 *
-	 * @param string $key
-	 * @return void
-	 * @example unset($template->$key)
-	 */
-	public function __unset($key)
-	{
-		unset($this->replace[$key]);
-	}
-
-	/**
-	 * The magic method __call for the class.
-	 * Used in cases where no such method exists in
-	 * this class or its parent.
-	 *
-	 * Unlike most __call methods, this is a 'set' only
-	 * method. More specifically, it will set a new replace/
-	 * with in its parent. No set/get prefixes required.
-	 *
-	 * Use with caution, as it can be difficult to determine when
-	 * a it is causing errors because there is another method
-	 * that already exists, and you might not realize that the
-	 * existing method is being called instead of this method.
-	 *
-	 * Can be easily chained to do multiple replacements at once.
-	 *
-	 * @param string $name (placeholder in template, case-insensitive)
-	 * @param array $arguments (arguments passed to method. Only uses first)
-	 * @return self
-	 * @example $template->testing('Works')->another_test('Still Works')
-	 */
-	public function __call($replace, array $arguments)
-	{
-		return $this->replace($replace, join(null, $arguments));
 	}
 
 	/**
