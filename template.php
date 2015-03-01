@@ -24,22 +24,15 @@ namespace shgysk8zer0\Core;
 use \shgysk8zer0\Core_API as API;
 /**
  * Opens a template file, ready to be easily modified.
- * File contents are loaded and optionaly inified
+ * File contents are loaded and optionaly minified
  * Placeholders are dynamically replaced.
  * When retrieving output, all data is reset and ready
  * to be used again.
- * @var template $instance
- * @var string $path
- * @var string $source
- * @var array $replacements
- * @var string $seperator
- * @var boolean $minify_results
  * @example
- * 	$template = new template('path/to/tempalte', '^', true);
- * 	$template->old = 'New';
- * 	$template->replace = 'Updated';
- * 	$table .= $template->out();
- * 	$table .= $template->old('Newer')->replace('Updated Again')->out();
+ * 	echo Template::load('my_template')->setContent('My content');
+ * 	$template = new Template('template_file');
+ * 	$template->$placeholder = $value;
+ * 	echo $template;
  */
 class Template implements API\Interfaces\Magic_Methods
 {
@@ -48,42 +41,79 @@ class Template implements API\Interfaces\Magic_Methods
 	use API\Traits\Magic_Call;
 	use API\Traits\File_IO;
 
-	private $source = '', $replacements = [], $seperator, $minify_results;
+	/**
+	 * Contents of template file
+	 * @var string
+	 */
+	private $source = '';
+
+	/**
+	 * Array containing replacements to make in template
+	 * @var array
+	 */
+	private $replacements = [];
 	const MAGIC_PROPERTY = 'replacements';
 	const MINIFY_EXPRESSION = '/<!--(?!\s*(?:\[if [^\]]+]|<!|>))(?:(?!-->).)*-->/';
-	const SEPARATOR = '%';
+	const SUFFIX = '%';
+	const PREFIX = '%';
 	const TEMPLATES_EXTENSION = '.tpl';
 	const TEMPLATES_DIR = 'templates';
 
 	/**
 	 * Reads the template specified by $tpl
-	 * Reads the file from BASE . "/components/templates/{$tpl}.tpl"
-	 * Will exit if file cannot be read (either DNE or denied by permissions)
 	 *
-	 * @param string $tpl (Path of template, no extension)
-	 * @param string $seperator (Character to mark beginning and end of placeholders)
-	 * @param boolean $minify (whether or not to eliminate tabs and newlines)
-	 * @return template object/class
-	 * @example $template = template::load($template_file, '^', true)
+	 * @param string $tpl     Path of template, no extension
+	 * @param boolean $minify Whether or not to eliminate tabs and newlines
 	 * @example $template = new template($template_file)
 	 */
-	public function __construct($tpl, $seperator = self::SEPARATOR, $minify = true)
+	public function __construct($tpl, $minify = true)
 	{
-		$this->path = (defined('THEME'))
-			? BASE . '/components/' . THEME .'/templates/' . (string)$tpl . '.tpl'
-			: BASE . '/components/templates/' . (string)$tpl . '.tpl';
+		$this->openFile(
+			defined('THEME')
+				? join(
+					DIRECTORY_SEPARATOR,
+					[
+						BASE,
+						'components',
+						THEME,
+						$this::TEMPLATES_DIR,
+						$tpl . $this::TEMPLATES_EXTENSION
+					]
+				)
+				: join(
+					DIRECTORY_SEPARATOR,
+					[
+						BASE,
+						'components',
+						$this::TEMPLATES_DIR,
+						$tpl . $this::TEMPLATES_EXTENSION
+					]
+				)
+		);
 
-		$this->seperator = (string)$seperator;
-		$this->minify_results = $minify;
-		if (file_exists($this->path)) {
-			$this->source = file_get_contents($this->path);
-		} else {
-			exit("Attempted to load a template that cannot be read. {$tpl} cannot be read");
-		}
+		$this->source = $this->readFile();
 
-		if ($this->minify_results) {
+		if ($minify) {
 			$this->minify($this->source);
 		}
+	}
+
+	/**
+	 * Deprecated output method kept for legacy reasons
+	 *
+	 * @param  bool $print   True to print, false to return
+	 * @return mixed         string if $print is false, otherwise self
+	 * @deprecated
+	 */
+	public function out($print = false)
+	{
+		if ($print) {
+			echo "{$this}";
+			return $this;
+		} else {
+			return "{$this}";
+		}
+
 	}
 
 	/**
@@ -91,108 +121,46 @@ class Template implements API\Interfaces\Magic_Methods
 	 * Also strips out HTML comments but leaves conditional statements
 	 * such as <!--[if IE 6]>Conditional content<![endif]-->
 	 *
-	 * @param string $string (Pointer to string to minify)
+	 * @param string $string Pointer to string to minify
 	 * @return self
 	 * @example $this->minify()
 	 */
 	private function minify(&$string = null)
 	{
-		$string = str_replace(["\r", "\n", "\t"], [], (string)$string);
+		$string = str_replace(["\r", "\n", "\t"], null, $string);
 		$string = preg_replace($this::MINIFY_EXPRESSION, null, $string);
 		return $this;
 	}
 
 	/**
-	 * Private method to prepare replacements
+	 * Private method for converting array keys when making replacements
 	 *
-	 * Adds to the replacements array with a key of $replace
-	 * and a value of $with
-	 *
-	 * @param string $replace (placeholder text in the template)
-	 * @param mixed $with (What it is being replace with)
-	 * @param string $join (If $with is an array, join() with $join)
-	 * @return self
-	 * @example $this->replace('old', 'new')
+	 * @param string $key array key in replacements array
 	 */
-	private function replace($replace = null, $with = null, $join = null)
+	private function replacementsMap($key)
 	{
-		$this->replacements[
-				$this->seperator . strtoupper((string)$replace) . $this->seperator
-			] = (is_array($with))
-				? join($join, $with)
-				: $with;
-
-		return $this;
+		return $this::PREFIX . strtoupper($key) . $this::SUFFIX;
 	}
 
 	/**
-	 * Private method for replacing all placeholders with their
-	 * replacements. Returns the results, but does not update the original
+	 * Magic method to call when class is used a string
 	 *
-	 * @param void
-	 * @return string
-	 * @example $results = $this->get_results()
+	 * @return string Modified content of template file
+	 * @example echo $template
 	 */
-	private function get_results()
+	public function __toString()
 	{
-		return str_replace(
-			array_keys($this->replacements),
-			array_values($this->replacements),
+		$mod = str_replace(
+			array_map(
+				[$this, 'replacementsMap'],
+				array_keys($this->{$this::MAGIC_PROPERTY})
+			),
+			array_values($this->{$this::MAGIC_PROPERTY}),
 			$this->source
 		);
-	}
 
-	/**
-	 * Private method to reset the array of replacements
-	 *
-	 * @param void
-	 * @return self
-	 * @example $this->clear()
-	 */
-	private function clear()
-	{
-		$this->replacements = [];
-		return $this;
-	}
-
-	/**
-	 * Loops through $arr using, replacing array_key with array_value in $template
-	 * See __set() documentation for description of template formatting.
-	 *
-	 * @param array $arr
-	 * @return self
-	 * @example $template->set([$placeholder => $replacement][, ...])
-	 */
-	public function set(array $arr)
-	{
-		foreach($arr as $replace => $with) {
-			$this->replace($replace, $with);
-		}
-		return $this;
-	}
-
-	/**
-	 * Executes string replacement without updating
-	 * the source (original template content).
-	 *
-	 * Will either return the result (default), or will
-	 * echo it (if $print evaluates as true)
-	 *
-	 * @param boolean $print
-	 * @return string or void
-	 * @example $conntent = $template->out([false[, true]]);
-	 */
-	public function out($print = false)
-	{
-		if ($print) {
-			echo $this->get_results();
-			return $this->clear();
-			return $this;
-		} else {
-			$result = $this->get_results();
-			$this->clear();
-			return $result;
-		}
+		$this->{$this::MAGIC_PROPERTY} = [];
+		return $mod;
 	}
 }
 ?>
