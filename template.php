@@ -38,7 +38,6 @@ class Template implements API\Interfaces\Magic_Methods
 {
 	use API\Traits\Singleton;
 	use API\Traits\Magic_Methods;
-	use API\Traits\Magic_Call;
 	use API\Traits\File_IO;
 
 	/**
@@ -96,6 +95,20 @@ class Template implements API\Interfaces\Magic_Methods
 		if ($minify) {
 			$this->minify($this->source);
 		}
+	}
+
+	/**
+	 * Magic Call method that acts as a chained setter only
+	 *
+	 * @param  string $key  $property to set
+	 * @param  array  $args $value(s) to set it to
+	 * @return self
+	 * @example $template->$prop1($val1, $val2)->$prop2(null);
+	 */
+	public function __call($key, array $args = array())
+	{
+		$this->__set($key, join(null, $args));
+		return $this;
 	}
 
 	/**
