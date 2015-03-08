@@ -193,7 +193,7 @@ class Pages implements API\Interfaces\Magic_Methods
 				$post->title($this->data->title)
 					->content($this->data->content)
 					->home(URL)
-					->comments($comments_section->out())
+					->comments("{$comments_section}")
 					->url($this->data->url)
 					->license("{$license}");
 
