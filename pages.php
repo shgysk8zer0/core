@@ -2,8 +2,8 @@
 /**
  * @author Chris Zuber <shgysk8zer0@gmail.com>
  * @package shgysk8zer0\Core
- * @version 0.9.0
- * @copyright 2014, Chris Zuber
+ * @version 1.0.0
+ * @copyright 2015, Chris Zuber
  * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,28 +20,20 @@
  */
 namespace shgysk8zer0\Core;
 
+use \shgysk8zer0\Core_API as API;
+
 /**
  * Easily work with pages by getting just the content/meta unique to them
  * Works for either regular or AJAX requests
  */
-class Pages
+class Pages implements API\Interfaces\Magic_Methods
 {
-	private static $instance = null;
+	use API\Traits\Singleton;
+	use API\Traits\Magic_Methods;
+
+	const MAGIC_PROPERTY = 'data';
 	private $data, $path, $url, $status, $parsed;
 	public $content, $type;
-
-	/**
-	 * Static method for constructing Pages class
-	 * @param  string $url Some URL... absolute or relative
-	 * @return self        New or existing instance of class
-	 */
-	public static function load($url = null)
-	{
-		if (is_null(self::$instance)) {
-			self::$instance = new self($url);
-		}
-		return self::$instance;
-	}
 
 	/**
 	 * Construct the class based on $url (defaulting to the current URL)
@@ -94,7 +86,7 @@ class Pages
 								`created`
 							FROM `posts`
 							WHERE `keywords` LIKE :tag
-							LIMIT 20"
+							LIMIT 20;"
 						)->execute([
 							'tag' => preg_replace('/\s*/', '%', " {$this->path[1]} ")
 						])->getResults();
@@ -110,7 +102,7 @@ class Pages
 							'SELECT *
 							FROM `posts`
 							WHERE `url` = ""
-							LIMIT 1'
+							LIMIT 1;'
 						, 0);
 					} elseif (count($this->path) >= 2) {
 						$this->data = $pdo->prepare(
@@ -118,7 +110,7 @@ class Pages
 							FROM `posts`
 							WHERE `url` = :url
 							ORDER BY `created`
-							LIMIT 1'
+							LIMIT 1;'
 						)->execute([
 							'url' => urlencode($this->path[1])
 						])->getResults(0);
@@ -126,59 +118,36 @@ class Pages
 					break;
 			}
 			if (isset($this->data) and !empty($this->data)) {
-				$this->get_content();
+				$this->getContent();
 			} else{
-				$this->error_page();
+				$this->errorPage();
 			}
 		}
-	}
-
-	/**
-	 * Magic getter method (retrieves private data)
-	 * @param  string $key [Property to get]
-	 * @return mixed       [Value of requested property]
-	 */
-	public function __get($key)
-	{
-		return isset($this->data->$key) ? $this->data->$key : false;
-	}
-
-	/**
-	 * Magic method to check if private property is set
-	 * @param  string  $key [Property to test if exists]
-	 * @return bool         [description]
-	 */
-	public function __isset($key)
-	{
-		return isset($this->data->$key);
 	}
 
 	/**
 	 * Where all of the parsing and setting of data is handled.
 	 * Switches on type of page request, and sets various properties
 	 * accordingly.
+	 *
 	 * @return void
 	 * @uses \shgsyk8zer0\Template
 	 */
-	private function get_content()
+	private function getContent()
 	{
 		$login = Login::load();
 		$DB = PDO::load('connect.json');
 
 		switch($this->type) {
 			case 'posts':
-				$post = template::load('posts');
-				$comments = template::load('comments');
-				$comments_section = template::load('comments_section');
-				$license = template::load('creative_commons');
+				$post = Template::load('posts');
+				$comments = Template::load('comments');
+				$comments_section = Template::load('comments_section');
+				$license = Template::load('creative_commons');
 
-				$comments_section->title(
-					$this->data->title
-				)->home(
-					URL
-				)->comments(
-					null
-				);
+				$comments_section->title($this->data->title)
+					->home(URL)
+					->comments(null);
 
 				$results = $DB->prepare(
 					'SELECT
@@ -187,53 +156,48 @@ class Pages
 						`author_url`,
 						`time`
 					FROM `comments`
-					WHERE `post` = :post'
+					WHERE `post` = :post;'
 				)->bind([
 					'post' => $this->data->url
-				])->execute()->get_results();
+				])->execute()->getResults();
 
 				if (is_array($results)) {
-					foreach($results as $comment) {
-						$time = strtotime($comment->time);//new simple_date($comment->time);
-						$comments_section->comments .= $comments->comment(
+					foreach ($results as $comment) {
+						$time = strtotime($comment->time);
+						$comments->comment(
 							$comment->comment
 						)->author(
-							(strlen($comment->author_url)) ? "<a href=\"{$comment->author_url}\" target=\"_blank\">{$comment->author}</a>" : $comment->author
+							(strlen($comment->author_url))
+								? "<a href=\"{$comment->author_url}\" target=\"_blank\">{$comment->author}</a>"
+								: $comment->author
 						)->time(
 							date('l, F jS Y h:i A', $time)
-						)->out();
+						);
+
+						$comments_section->comments .= "{$comments}";
 					}
 				}
 
-				foreach(explode(',', $this->data->keywords) as $tag) {
+				foreach (explode(',', $this->data->keywords) as $tag) {
 					$post->tags .= '<a href="' . URL . '/tags/' . urlencode(trim($tag)) . '" rel="tag">' . trim($tag) . "</a>";
 				}
 
 				$time = strtotime($this->data->created);
 
-				$this->content = $post->title(
-					$this->data->title
-				)->content(
-					$this->data->content
-				)->home(
-					URL
-				)->comments(
-					$comments_section->out()
-				)->url(
-					$this->data->url
-				)->license(
-					$license->title(
-						$this->data->title
-					)->author(
-						$this->data->author
-					)->author_url(
-						$this->data->author_url
-					)->date(
-						date('m/d/Y', $time)
-					)->datetime(
-						$time
-					)->out()
-				)->out();
+				$license->title($this->data->title)
+					->author($this->data->author)
+					->author_url($this->data->author_url)
+					->date(date('m/d/Y', $time))
+					->datetime($time);
+
+				$post->title($this->data->title)
+					->content($this->data->content)
+					->home(URL)
+					->comments($comments_section->out())
+					->url($this->data->url)
+					->license("{$license}");
+
+				$this->content = "{$post}";
 
 				break;
 
@@ -243,24 +207,19 @@ class Pages
 				$this->keywords = "Keywords, tags, search, {$this->path[1]}";
 				$this->content = '<div class="tags">';
 
-				$template = template::load('tags');
+				$template = Template::load('tags');
 
-				foreach($this->data as $post) {
+				foreach ($this->data as $post) {
 					$datetime = new simple_date($post->created);
 
-					$this->content .= $template->title(
-						$post->title
-					)->description(
-						$post->description
-					)->author(
-						$post->author
-					)->author_url(
-						$post->author_url
-					)->url(
-						($post->url === '')? URL : URL .'/posts/' . $post->url
-					)->date(
-						$datetime->out('D M jS, Y \a\t h:iA')
-					)->out();
+					$template->title($post->title)
+						->description($post->description)
+						->author($post->author)
+						->author_url($post->author_url)
+						->url(($post->url === '')? URL : URL .'/posts/' . $post->url)
+						->date($datetime->out('D M jS, Y \a\t h:iA'));
+
+					$this->content .= "{$template}";
 				}
 				$this->content .= '</div>';
 				break;
@@ -269,12 +228,13 @@ class Pages
 
 	/**
 	 * Handler for invalid URLs
+	 *
 	 * @param  int     $code         HTTP Status Code
 	 * @param  string  $title_prefix Prefix <title> with this string
 	 * @param  bool    $dump         Whether or not to include a dump of parsed URL
 	 * @return void
 	 */
-	private function error_page(
+	private function errorPage(
 		$code = 404,
 		$title_prefix = 'Woops! Not found',
 		$dump = true
@@ -290,12 +250,13 @@ class Pages
 		$template->home = URL;
 		$template->message = "Nothing found for <wbr /><var>{$this->url}</var>";
 		$template->link = $this->url;
+
 		if ($dump) {
 			$template->dump = print_r($this->parsed, true);
 		} else {
 			$template->dump = null;
 		}
 
-		$this->content = $template->out();
+		$this->content = "{$template}";
 	}
 }
