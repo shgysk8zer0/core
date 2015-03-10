@@ -27,12 +27,17 @@ use \shgysk8zer0\Core_API as API;
  * Allows multiple or no callbacks to be registered for each E_*. Any and all
  * registered callbacks are called when an error of that type occurs.
  */
-final class Error_Event implements API\Interfaces\Errors
+final class Error_Event
 {
-	use API\Traits\Events;
 	use API\Traits\Errors;
 
 	const ERROR_HANDLER = 'reportError';
+
+	/**
+	 * Array of callbacks for each error level/event
+	 * @var array
+	 */
+	private static $error_handlers = [];
 
 	/**
 	 * Creates instance and sets up error handling.
@@ -54,7 +59,7 @@ final class Error_Event implements API\Interfaces\Errors
 	public function __set($level, Callable $callback)
 	{
 		$level = 'E_' . strtoupper($level);
-		static::registerEvent($level, $callback);
+		static::$error_handlers[$level][] = $callback;
 	}
 
 	/**
@@ -77,16 +82,16 @@ final class Error_Event implements API\Interfaces\Errors
 	)
 	{
 		$error_exception = static::errorToException($level, $message, $file, $line);
-		return static::triggerEvent(
-			static::errorLevelAsString($level),
-			[
-				'message' => $error_exception->getMessage(),
-				'code' => $error_exception->getCode(),
-				'file' => $error_exception->getFile(),
-				'line' => $error_exception->getLine(),
-				'trace' => $error_exception->getTrace(),
-				'scope' => $scope
-			]
-		);
+		$level = static::errorLevelAsString($level);
+		if (array_key_exists($level, static::$error_handlers)) {
+			array_map(function($handler) use ($error_exception)
+			{
+				call_user_func($handler, $error_exception);
+			}, static::$error_handlers[$level]);
+			return true;
+		} else {
+			return false;
+		}
+
 	}
 }
