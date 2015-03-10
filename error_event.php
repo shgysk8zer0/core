@@ -23,7 +23,9 @@ namespace shgysk8zer0\Core;
 use \shgysk8zer0\Core_API as API;
 
 /**
- *
+ * Create callbacks to be called as events for each type of error level/event.
+ * Allows multiple or no callbacks to be registered for each E_*. Any and all
+ * registered callbacks are called when an error of that type occurs.
  */
 final class Error_Event implements API\Interfaces\Errors
 {
@@ -33,7 +35,7 @@ final class Error_Event implements API\Interfaces\Errors
 	const ERROR_HANDLER = 'reportError';
 
 	/**
-	 * [__construct description]
+	 * Creates instance and sets up error handling.
 	 *
 	 * @param void
 	 */
@@ -42,12 +44,30 @@ final class Error_Event implements API\Interfaces\Errors
 		set_error_handler([$this, self::ERROR_HANDLER], E_ALL);
 	}
 
-	public function __set($event, Callable $callback)
+	/**
+	 * Register a callback for an error level (notice, warning, etc)
+	 *
+	 * @param string   $level    Case insensitive E_* constant, without the "E_"
+	 * @param Callable $callback Callback to be registered for the event/level
+	 * @return void
+	 */
+	public function __set($level, Callable $callback)
 	{
-		$event = 'E_' . strtoupper($event);
-		static::registerEvent($event, $callback);
+		$level = 'E_' . strtoupper($level);
+		static::registerEvent($level, $callback);
 	}
 
+	/**
+	 * Static method called when an error is triggered
+	 * Calls the handler, if any, for the error level/event
+	 *
+	 * @param int    $level   Int value of E_* constant error level
+	 * @param string $message Error description given
+	 * @param string $file    The file which the error occured in
+	 * @param int    $line    The line in $file the error occured on
+	 * @param array  $scope   Variables set in scope when error occured
+	 * @return mixed
+	 */
 	public static function reportError(
 		$level,
 		$message,
@@ -57,7 +77,7 @@ final class Error_Event implements API\Interfaces\Errors
 	)
 	{
 		$error_exception = static::errorToException($level, $message, $file, $line);
-		static::triggerEvent(
+		return static::triggerEvent(
 			static::errorLevelAsString($level),
 			[
 				'message' => $error_exception->getMessage(),
