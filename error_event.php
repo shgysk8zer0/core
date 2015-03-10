@@ -44,7 +44,8 @@ final class Error_Event implements API\Interfaces\Errors
 
 	public function __set($event, Callable $callback)
 	{
-		static::registerEvent(strtoupper($event), $callback);
+		$event = 'E_' . strtoupper($event);
+		static::registerEvent($event, $callback);
 	}
 
 	public static function reportError(
