@@ -40,13 +40,18 @@ final class Error_Event
 	private static $error_handlers = [];
 
 	/**
+	 * Default error handler... Always called if set
+	 * @var Callable
+	 */
+	private static $default_handler = null;
+
+	/**
 	 * Creates instance and sets up error handling.
-	 *
 	 * @param void
 	 */
 	public function __construct()
 	{
-		set_error_handler([$this, self::ERROR_HANDLER], E_ALL);
+		set_error_handler([$this, self::ERROR_HANDLER], error_reporting());
 	}
 
 	/**
@@ -60,6 +65,19 @@ final class Error_Event
 	{
 		$level = 'E_' . strtoupper($level);
 		static::$error_handlers[$level][] = $callback;
+	}
+
+	/**
+	 * Magic method to set default callback for error handler
+	 *
+	 * @param  Callable $callback The default callback for all errors
+	 * @return void
+	 * @example $errors('callback')
+	 * @example $errors(function(\ErrorException) use ($PDO){};);
+	 */
+	public function __invoke(Callable $callback)
+	{
+		static::$default_handler = $callback;
 	}
 
 	/**
@@ -83,6 +101,9 @@ final class Error_Event
 	{
 		$error_exception = static::errorToException($level, $message, $file, $line);
 		$level = static::errorLevelAsString($level);
+		if (is_callable(static::$default_handler)) {
+			call_user_func(static::$default_handler, $error_exception);
+		}
 		if (array_key_exists($level, static::$error_handlers)) {
 			array_map(function($handler) use ($error_exception)
 			{
