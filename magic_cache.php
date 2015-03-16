@@ -2,8 +2,8 @@
 /**
  * @author Chris Zuber <shgysk8zer0@gmail.com>
  * @package shgysk8zer0\Core
- * @version 0.9.0
- * @copyright 2014, Chris Zuber
+ * @version 1.0.0
+ * @copyright 2015, Chris Zuber
  * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -14,8 +14,12 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 namespace shgysk8zer0\Core;
+
+use \shgysk8zer0\Core_API as API;
 /**
  * PHP based caching
  *
@@ -23,22 +27,49 @@ namespace shgysk8zer0\Core;
  * though it may be useful even if you do (.appcache seems problematic)
  *
  * Only sets headers. No HTML or other output is created
-
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @var string $file [absolute path to file]
- * @var string $ext [extension]
- * @var string $type [Mime-type]
- * @var ins $size [filesize in bytes]
- * @var string $etag [MD5 of file]
- * @var int $mod_time [Last modifed time]
- * @var boolean $gz [File is gzipped]
- * @var int $status [HTTP status]
  */
-class magic_cache {
-	private $file, $ext, $type, $size, $etag, $mod_time, $gz, $status;
+class Magic_Cache implements API\Interfaces\File_IO, API\Interfaces\Path_Info
+{
+	use API\Traits\File_IO;
+	//use API\Traits\File_Info;
+
+	const DATE_FORMAT = 'D, d M Y H:i:s T';
+
+	/**
+	 * Mime-type
+	 * @var string
+	 */
+	private $type;
+
+	/**
+	 * File size
+	 * @var int
+	 */
+	private $size = 0;
+
+	/**
+	 * MD5 of file
+	 * @var string
+	 */
+	private $etag;
+
+	/**
+	 * File mod-time (timestamp)
+	 * @var int
+	 */
+	private $mod_time;
+
+	/**
+	 * Whether or not it is gzipped
+	 * @var bool
+	 */
+	private $gz = false;
+
+	/**
+	 * HTTP Response Code
+	 * @var int
+	 */
+	private $status = 200;
 
 	/**
 	 * The only public method of the class.
@@ -50,23 +81,21 @@ class magic_cache {
 	 *
 	 * @param string $file Name of requested file
 	 */
-	public function __construct($file)
+	public function __construct($file, $use_include_path = false)
 	{
-		$this->file = realpath($file);
-		if (@file_exists($this->file)) {
-			$this->etag = md5_file($this->file);
-			$this->mod_time = filemtime($this->file);
-			$this->size = filesize($this->file);
-			$this->fname = pathinfo($this->file, PATHINFO_FILENAME);
-			$this->ext = pathinfo($this->file, PATHINFO_EXTENSION);
-			$this->type_by_extension();
-			$this->cache_control();
-			$this->make_headers();
-			readfile($this->file);
+		$this->openFile($file, $use_include_path);
+		if (@is_string($this->absolute_path)) {
+			$this->etag = md5_file($this->absolute_path);
+			$this->mod_time = filemtime($this->absolute_path);
+			$this->size = filesize($this->absolute_path);
+			$this->typeByExtension();
+			$this->cacheControl();
+			$this->makeHeaders();
+			readfile($this->absolute_path);
 			exit();
-		} else{
+		} else {
 			$this->status = 404;
-			$this->http_status();
+			$this->HTTPStatus();
 		}
 	}
 
@@ -80,16 +109,15 @@ class magic_cache {
 	 * @param void
 	 * @return void
 	 */
-	protected function make_headers()
+	protected function makeHeaders()
 	{
-		$this->status = 200;
-		$this->http_status();
+		$this->HTTPStatus();
 		header("Content-Type: {$this->type}");
 		header("Content-Length: {$this->size}");
-		if (in_array($this->ext, ['svgz', 'cssz', 'jsz'])) {
+		if (in_array($this->extension, ['svgz', 'cssz', 'jsz'])) {
 			header('Content-Encoding: gzip');
 		}
-		header("Last-Modified: " . gmdate("D, d M Y H:i:s T", $this->mod_time));
+		header("Last-Modified: " . gmdate($this::DATE_FORMAT, $this->mod_time));
 		header("Etag: {$this->etag}");
 		header('Cache-Control: public');
 	}
@@ -102,7 +130,7 @@ class magic_cache {
 	 * @param void
 	 * @return void
 	 */
-	protected function cache_control()
+	protected function cacheControl()
 	{
 		$etagHeader = (isset($_SERVER['HTTP_IF_NONE_MATCH'])
 			? trim($_SERVER['HTTP_IF_NONE_MATCH'])
@@ -115,7 +143,7 @@ class magic_cache {
 			|| $etagHeader == $this->etag
 		) {
 			$this->status = 304;
-			$this->http_status();
+			$this->HTTPStatus();
 		}
 	}
 
@@ -128,14 +156,14 @@ class magic_cache {
 	 * @param void
 	 * @return void
 	 */
-	protected function type_by_extension()
+	protected function typeByExtension()
 	{
 		/*
 		 * PHP does a fairly poor job of getting MIME-type correct.
 		 * Switch on the extension to get MIME-type for unsupported
 		 * types. If not one of these, use finfo to guess.
 		 */
-		switch($this->ext) { //Start by matching file extensions
+		switch($this->extension) { //Start by matching file extensions
 			case 'svg':
 			case 'svgz':
 				$this->type = 'image/svg+xml';
@@ -195,7 +223,7 @@ class magic_cache {
 
 			default:		//If not found, try the file's default
 				$finfo = new \finfo(FILEINFO_MIME);
-				$this->type = preg_replace('/\;.*$/', null, (string)$finfo->file($this->file));
+				$this->type = preg_replace('/\;.*$/', null, (string)$finfo->file($this->absolute_path));
 		}
 	}
 
@@ -205,7 +233,7 @@ class magic_cache {
 	 * @param void
 	 * @return void
 	 */
-	protected function http_status()
+	protected function HTTPStatus()
 	{
 		http_response_code($this->status);
 		if (!preg_match('/^2[\d]{2}$/', $this->status)) {
