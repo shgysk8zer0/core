@@ -3,7 +3,7 @@
  * @author Chris Zuber <shgysk8zer0@gmail.com>
  * @package shgysk8zer0\Core
  * @version 1.0.0
- * @copyright 2014, Chris Zuber
+ * @copyright 2015, Chris Zuber
  * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,7 +26,7 @@ namespace shgysk8zer0\Core;
  * methods. Requires compatible handler in JavaScript
  *
  * @example $resp = new json_response();
- * $resp
+ * echo $resp
  * 		->notify(...)
  * 		->html(...)
  * 		->append(...)
@@ -34,8 +34,7 @@ namespace shgysk8zer0\Core;
  * 		->before(...)
  * 		->after(...)
  * 		->attributes(...)
- * 		->remove(...)
- * 		->send();
+ * 		->remove(...);
  */
 use \shgysk8zer0\Core_API as API;
 
@@ -66,22 +65,35 @@ final class JSON_Response implements API\Interfaces\Magic_Methods, API\Interface
 	}
 
 	/**
+	 * Returns the current data when class is converted to string, e.g. echo.
+	 *
+	 * @param void
+	 * @return string
+	 * @example echo $resp
+	 * @example exit($resp)
+	 * @example $var = "$resp"
+	 */
+	public function __toString()
+	{
+		header('Content-Type: ' . self::CONTENT_TYPE);
+		$json = $this->{self::MAGIC_PROPERTY};
+		$this->{self::MAGIC_PROPERTY} = [];
+		return json_encode($json);
+	}
+
+	/**
 	 * Sends everything with content-type of application/json,
 	 * Exits with json_encode($this->response)
-	 * An optional $key argument can be used to only
-	 * send a subset of $this->response
 	 *
-	 * @param string $key
+	 * @param void
 	 * @return void
-	 * @example $resp->send() or $resp->send('notify')
+	 * @example $resp->send()
+	 * @deprecated Use `exit($resp)` instead.
 	 */
-	public function send($key = null)
+	public function send()
 	{
-		if (count($this->{self::MAGIC_PROPERTY}) and !headers_sent()) {
-			header('Content-Type: ' . self::CONTENT_TYPE);
-			(is_string($key))
-				? exit(json_encode([$key => $this->{self::MAGIC_PROPERTY}[$key]]))
-				: exit(json_encode($this->{self::MAGIC_PROPERTY}));
+		if (! empty($this->{self::MAGIC_PROPERTY}) and ! headers_sent()) {
+			exit($this);
 		} else {
 			http_response_code(403);
 			exit();

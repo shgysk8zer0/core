@@ -4,7 +4,7 @@
  * @package shgysk8zer0\Core
  * @version 1.0.0
  * @see https://developer.mozilla.org/en-US/docs/Server-sent_events/Using_server-sent_events
- * @copyright 2014, Chris Zuber
+ * @copyright 2015, Chris Zuber
  * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,15 +30,14 @@ use \shgysk8zer0\Core_API as API;
  * @example
  * $event = new server_event(); $n = 42;
  * while($n--) {
- * 	$event->notify(
+ * 	echo $event->notify(
  * 	'This is an example of a server event',
  * 	'It functions the same has json_response, but can send multiple messages'
  * )->html(
  * 	'main',
  * 	'This is the ' . 43 - $n .'th message'
- * )->send()->wait(1)
+ * )->wait(1)
  * }
- * $event->close();
  */
 final class Server_Event implements API\Interfaces\Magic_Methods, API\Interfaces\AJAX_DOM
 {
@@ -62,7 +61,7 @@ final class Server_Event implements API\Interfaces\Magic_Methods, API\Interfaces
 	 */
 	public function __construct($data = null)
 	{
-		$this->set_headers();
+		$this->setHeaders();
 
 		if (is_array($data)) {
 			$this->{self::MAGIC_PROPERTY} = $data;
@@ -70,32 +69,52 @@ final class Server_Event implements API\Interfaces\Magic_Methods, API\Interfaces
 	}
 
 	/**
-	 * Sends everything with content-type of text/event-stream,
-	 * Echos json_encode($this->response)
-	 * An optional $key argument can be used to only
-	 * send a subset of $this->response
+	 * Send any remaining data when class is destructed
 	 *
-	 * @param string $key
-	 * @return self
-	 * @example $event->send() or $event->send('notify')
+	 * @param void
+	 * @return void
 	 */
-	public function send($key = null)
+	public function __destruct()
 	{
-		echo 'event: ' . self::DEFAULT_EVENT . PHP_EOL;
-
-		if (count($this->{self::MAGIC_PROPERTY})) {
-			if (is_string($key)) {
-				echo 'data: ' . json_encode([$key => $this->{self::MAGIC_PROPERTY}[$key]]) . PHP_EOL . PHP_EOL;
-			} else {
-				echo 'data: ' . json_encode($this->{self::MAGIC_PROPERTY}) . PHP_EOL . PHP_EOL;
-			}
-
-			$this->{self::MAGIC_PROPERTY} = [];
-			ob_flush();
-			flush();
+		if (! empty($this->{self::MAGIC_PROPERTY})) {
+			echo 'event: close' . PHP_EOL;
+			echo 'data:' . json_encode($this->{self::MAGIC_PROPERTY}) . PHP_EOL . PHP_EOL;
 		}
+	}
 
-		return $this;
+	/**
+	 * Returns the current event data when class is converted to string, e.g. echo.
+	 *
+	 * @param void
+	 * @return string
+	 * @example echo $event;
+	 * @example $var = "$event"
+	 * @todo Is there a way to flush after returning? Doesn't work so perfectly
+	 */
+	public function __toString()
+	{
+		$json = $this->{self::MAGIC_PROPERTY};
+		$this->{self::MAGIC_PROPERTY} = [];
+		ob_flush();
+		flush();
+		return 'event: ' . self::DEFAULT_EVENT . PHP_EOL .
+		'data: ' . json_encode($json) . PHP_EOL . PHP_EOL;
+	}
+
+	/**
+	 * Sends everything with content-type of text/event-stream,
+	 * Echoes json_encode($this->response)
+	 *
+	 * @param void
+	 * @return self
+	 * @example $event->send()
+	 * @deprecated
+	 */
+	public function send()
+	{
+		echo $this;
+		ob_flush();
+		flush();
 	}
 
 	/**
@@ -104,7 +123,7 @@ final class Server_Event implements API\Interfaces\Magic_Methods, API\Interfaces
 	 * @return self
 	 * @return self
 	 */
-	private function set_headers()
+	private function setHeaders()
 	{
 		header('Content-Type: ' . self::CONTENT_TYPE);
 		header_remove('X-Powered-By');
@@ -134,20 +153,17 @@ final class Server_Event implements API\Interfaces\Magic_Methods, API\Interfaces
 	 * The handler in handleJSON will terminate the serverEvent
 	 * after receiving an event of type 'close'
 	 *
-	 * @param $key
+	 * @param void
 	 * @return self
-	 * @example $event->close() or $event->close('notify')
+	 * @example $event->close()
+	 * @deprecated
 	 */
-	public function end($key = null)
+	public function end()
 	{
 		echo 'event: close' . PHP_EOL;
 
 		if (!empty($this->{self::MAGIC_PROPERTY})) {
-			if (is_string($key)) {
-				echo 'data: ' . json_encode([$key => $this->{self::MAGIC_PROPERTY}[$key]]) . PHP_EOL . PHP_EOL;
-			} else {
-				echo 'data: ' . json_encode($this->{self::MAGIC_PROPERTY}) . PHP_EOL . PHP_EOL;
-			}
+			echo 'data: ' . json_encode($this->{self::MAGIC_PROPERTY}) . PHP_EOL . PHP_EOL;
 			$this->{self::MAGIC_PROPERTY} = [];
 		} else {
 			echo 'data: "{}"' . PHP_EOL . PHP_EOL;
