@@ -21,99 +21,15 @@
 
 namespace shgysk8zer0\Core;
 
+use \shgysk8zer0\Core_API as API;
+
 /**
  * Extends \DateTime class with a __toString method with a public variable
  * $format to use for the format. Also adds several constants to make setting
  * time fomats easier to use and remember.
- * @see http://php.net/manual/en/function.date.php
- * @uses \DateTime
+ * @uses \shgysk8zer0\Core_API\Abstracts\DateTime_Formats
  */
-class DateTime extends \DateTime
+class DateTime extends API\Abstracts\DateTime_Formats implements API\Interfaces\DateTime
 {
-
-	/**
-	 * Common textual date components
-	 */
-	const LONG_TEXT_DAY_OF_WEEK    = 'D';
-	const SHORT_TEXT_DAY_OF_WEEK   = 'l';
-	const DAY                      = 'l';
-	const LONG_TEXT_MONTH          = 'F';
-	const SHORT_TEXT_MONTH         = 'M';
-	const TEXT_MONTH               = 'F';
-	const DAY_SUFFIX               = 'S';
-	const AMPM_UPPER               = 'A';
-	const AMPM_LOWER               = 'a';
-	const AMPM                     = 'A';
-
-	/**
-	 * Common numeric date components
-	 */
-	const LONG_YEAR                = 'Y';
-	const SHORT_YEAR               = 'y';
-	const ISO_YEAR                 = 'o';
-	const YEAR                     = 'Y';
-	const LONG_MONTH               = 'm';
-	const SHORT_MONTH              = 'n';
-	const MONTH                    = 'm';
-	const LONG_DAY_OF_MONTH        = 'd';
-	const SHORT_DAY_OF_MONTH       = 'j';
-	const DAY_OF_MONTH             = 'd';
-	const HOUR_24_LONG             = 'H';
-	const HOUR_24_SHORT            = 'G';
-	const HOUR_12_LONG             = 'h';
-	const HOUR_12_SHORT            = 'g';
-	const HOUR_24                  = 'H';
-	const HOUR_12                  = 'g';
-	const LONG_HOUR                = 'H';
-	const SHORT_HOUR               = 'h';
-	const HOUR                     = 'h';
-	const MINUTES                  = 'i';
-	const SECONDS                  = 's';
-
-	/**
-	 * Less common parts
-	 */
-	const DAY_OF_YEAR              = 'z';
-	const WEEK_OF_YEAR             = 'W';
-	const WEEK                     = 'W';
-	const DAYS_IN_MONTH            = 't';
-	const MICROSECONDS             = 'u';
-	const SWATCH                   = 'B';
-
-	/**
-	 * Timezones
-	 */
-	const TIMEZONE                 = 'e';
-	const TIMEZONE_ABV             = 'T';
-	const TIMEZONE_OFFSET          = 'Z';
-	const GMT_OFFSET               = 'O';
-	const GMT_OFFSET_FORMATTED     = 'P';
-
-	/**
-	 * Tests. 1 for true, 0 for false
-	 */
-	const IS_LEAP_YEAR             = 'L';
-	const IS_DAYLIGHT_SAVINGS_TIME = 'I';
-
-	/**
-	 * Full "human" formats
-	 */
-	const LONG                     = 'l, F jS Y h:i A';
-	const SHORT                    = 'D, M jS Y h:i A';
-
-	/**
-	 * Format to use when using __toString
-	 * @var string
-	 */
-	public $format = self::W3C;
-
-	/**
-	 * Called when class is used as a string and returns date formated as string
-	 *
-	 * @return string
-	 */
-	public function __toString()
-	{
-		return $this->format($this->format);
-	}
+	use API\Traits\DateTime;
 }
