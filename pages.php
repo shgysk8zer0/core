@@ -72,7 +72,7 @@ class Pages implements API\Interfaces\Magic_Methods
 		}
 
 		if ($pdo->connected) {
-			switch($this->path[0]) {
+			switch(current($this->path)) {
 				case 'tags':
 					if (isset($this->path[1])) {
 						$this->type = 'tags';
@@ -157,9 +157,9 @@ class Pages implements API\Interfaces\Magic_Methods
 						`time`
 					FROM `comments`
 					WHERE `post` = :post;'
-				)->bind([
+				)->execute([
 					'post' => $this->data->url
-				])->execute()->getResults();
+				])->getResults();
 
 				if (is_array($results)) {
 					foreach ($results as $comment) {
@@ -209,18 +209,20 @@ class Pages implements API\Interfaces\Magic_Methods
 
 				$template = Template::load('tags');
 
-				foreach ($this->data as $post) {
-					$datetime = new simple_date($post->created);
-
+				array_map(function(\stdClass $post) use (&$template)
+				{
+					if (! isset($post->title)) {
+						return;
+					}
 					$template->title($post->title)
 						->description($post->description)
 						->author($post->author)
 						->author_url($post->author_url)
 						->url(($post->url === '')? URL : URL .'/posts/' . $post->url)
-						->date($datetime->out('D M jS, Y \a\t h:iA'));
-
+						->date(date('D M jS, Y \a\t h:iA', strtotime($post->created)));
 					$this->content .= "{$template}";
-				}
+				}, array_filter($this->data, 'is_object'));
+
 				$this->content .= '</div>';
 				break;
 		}
@@ -246,7 +248,7 @@ class Pages implements API\Interfaces\Magic_Methods
 		$this->keywords = '';
 		$this->title = $title_prefix .  ' (' . $code . ')';
 
-		$template = template::load('error_page');
+		$template = Template::load('error_page');
 		$template->home = URL;
 		$template->message = "Nothing found for <wbr /><var>{$this->url}</var>";
 		$template->link = $this->url;
