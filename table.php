@@ -3,7 +3,7 @@
  * @author Chris Zuber <shgysk8zer0@gmail.com>
  * @package shgysk8zer0\Core
  * @version 1.0.0
- * @copyright 2014, Chris Zuber
+ * @copyright 2015, Chris Zuber
  * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,238 +20,239 @@
  */
 namespace shgysk8zer0\Core;
 
+use \shgysk8zer0\Core_API as API;
+
 /**
-* Class for quickly and easily creating HTML <table>s
-*
-* The arguments in the constructor become the valid cells & headers, in order.
-*
-* After that, magic __get() method appends to a $data array
-* if the $key is present in $cells.
-*
-* If you want to continue onto the next row (leaving any unset fileds
-* blank), simply call next_row(). Can also be chained using the magic __call()
-* method, which only sets $data, similarly to __set().
+ * Class for quickly and easily creating HTML <table>s
  *
- * @var array $data
- * @var array $headers
- * @var int $row
- * @var array $empty_row
- * @var string $table
- * @var string $thead
- * @var string $tfoot
- * @var string $tbody
- * @var string $captioin
+ * The arguments in the constructor become the valid cells & headers, in order.
+ *
+ * After that, magic __get() method appends to a $data array
+ * if the $key is present in $headers.
+ *
+ * If you want to continue onto the next row (leaving any unset fileds
+ * blank), simply call nextRow(). Can also be chained using the magic __call()
+ * method, which only sets $data, similarly to __set().
  *
  * @example
- * $table = new table('first_name', 'last_name');
+ * $table = new Table('first_name', 'last_name');
+ * // or $table = new Table(['first_name', 'last_name']);
  * $table->first_name = 'John';
  * $table->last_name = 'Smith';
  * $table->foo = 'bar';	//Does nothing
- * $table->next_row();
+ * $table->nextRow();
  *
  * $table->first_name(
  * 		$fist
  * )->last_name(
  * 		$last
- * )->next_row();
- * @todo Extend DOMDocument and use taht for building HTML
- * @todo use Core_API traits
+ * )->nextRow();
+ *
+ * $table([...], ...);
+ *
+ * echo $table
+ * @todo Extend DOMDocument and use that for building HTML
  */
-class Table implements \shgysk8zer0\Core_API\Interfaces\Magic_Methods
+final class Table implements Interfaces\Table, API\Interfaces\Magic_Methods
 {
-	private $data, $headers, $row, $empty_row, $table, $thead, $tfoot, $tbody;
+	use API\Traits\Magic_Methods;
+
+	const MAGIC_PROPERTY = 'data';
+
+	/**
+	 * Array to contain data for current row
+	 * @var array
+	 */
+	protected $data = [];
+
+	/**
+	 * Array for valid keys for arrays. Becomes table's header & footer <th>'s
+	 * @var array
+	 */
+	private $headers =[];
+
+	/**
+	 * Array containing keys from $headers with all null values
+	 * @var array
+	 */
+	private $empty_row = [];
+
+	/**
+	 * Array of $data arrays, filtered to only include those in $headers
+	 * @var array
+	 */
+	protected $table = [];
+
+	/**
+	 * Optional table caption (if set & string)
+	 * @var string
+	 */
 	public $caption;
+
+	/**
+	 * Whether or not to set the border attribute on <table>
+	 * @var mixed
+	 */
+	public $border = false;
 
 	/**
 	 * Sets up default values for class
 	 *
-	 * $data needs to be a multi-dimenstional associative array
-	 *
-	 * $row is the current row (integer) to be working on. Incremented
-	 * by next_row() method.
-	 *
 	 * $empty_row as an associative array with its keys defined by $headers,
 	 * but all of its values null
 	 *
-	 * $thead, $tfoot, & $caption are strings for those elements in a table
-	 *
-	 * @param mixed arguments (will take arguments as an array or comma separated list, either results in an array)
+	 * @param mixed ...
 	 * @example $table = new table($cells[] | 'field1'[, ...])
 	 */
 	public function __construct()
 	{
-		$this->data = [];
-		$this->headers = flatten(func_get_args());
-		$this->table = null;
-		$this->thead = '<thead><tr>' . html_join('th', $this->headers) . '</tr></thead>';
-		$this->tfoot = '<tfoot><tr>' . html_join('th', $this->headers) . '</tr></tfoot>';
-		$this->tbody = '<tbody>';
-		$this->caption = null;
-		$this->row = 0;
-		$this->empty_row = array_combine($this->headers, array_pad([], count($this->headers), null));
-		$this->data[0] = $this->empty_row;
+		$this->headers = array_filter(flatten(func_get_args()), 'is_string');
+		$this->empty_row = array_combine(
+			$this->headers,
+			array_pad([], count($this->headers), null)
+		);
 	}
 
 	/**
-	 * Magic setter for the class.
+	 * Chainable magic method to set values using magic __set method
 	 *
-	 * Calls the private set() method too add a value to a cell
-	 * @param string $cell
-	 * @param string $value
-	 * @return void
-	 * @example $table->$cell = $value
-	 */
-	public function __set($cell, $value)
-	{
-		$this->set($cell, (string)$value);
-	}
-
-	/**
-	 * Magic getter method for the class
-	 * Allows for cells to be appended to rather than having to
-	 * be built ahead of time.
-	 *
-	 * @param string $cell
-	 * @return string
-	 * @example $table->$cell .= ' and on and on...'
-	 */
-	public function __get($cell)
-	{
-		if (in_array($cell, $this->headers)) {
-			return $this->data[$this->row][$cell];
-		} else {
-			return '';
-		}
-	}
-
-	/**
-	 * Magic method to check if Row/Column is set
-	 * @param  string  $cell [Column name for current row]
-	 * @return bool          [Whether or not it is set]
-	 */
-	public function __isset($cell)
-	{
-		return array_key_exists($cell, $this->data[$this->row]);
-	}
-
-	/**
-	 * MAgic method to unset a cell (Column on current row)
-	 * @param string $cell [Name of column for current row]
-	 */
-	public function __unset($cell)
-	{
-		unset($this->data[$this->row][$cell]);
-	}
-
-	/**
-	 * Chaninable magic method, in this case only to set values
-	 *
-	 * Also calls the private set() method too add a value to a field
-	 *
-	 * @param string $cell
-	 * @param array $arguments
+	 * @param  string $prop      Column to set data on
+	 * @param  array  $arguments Array of arguments passed to method
 	 * @return self
-	 * @example $table->$cell[1]($value1)->$cell[2]($value2)...
+	 * @example $table->$prop1($val1 ...)->$prop2(...)
 	 */
-	public function __call($cell, array $arguments)
+	public function __call($prop, array $arguments = array())
 	{
-		$this->set($cell, join(null, $arguments));
+		$this->__set($prop, join(null, $arguments));
 
 		return $this;
 	}
 
 	/**
-	 * Method to move to the next row of $data array.
-	 * Increments $row, which is used in set() method
-	 * when settings data ($data[$row]).
+	 * Called whenever $table is used as a string and returns <table>
 	 *
-	 * Also sets the data for that row to an empty
-	 * array pre-set with the keys defined by $cells
+	 * @param void
+	 * @return string Table's HTML
+	 * @example echo $table
+	 * @example $var = "$table"
+	 * @todo convert to using \DOMElement
+	 */
+	public function __toString()
+	{
+		if (! empty($this->data)) {
+			$this->nextRow();
+		}
+
+		$table = is_int($this->border)
+			? "<table border=\"{$this->border}\">"
+			: '<table>';
+
+		if (is_string($this->caption)) {
+			$table .= "<caption>{$this->caption}</caption>";
+		}
+
+		$headers = $this::buildRow($this->headers, 'th');
+		$table .= "<thead>{$headers}</thead>";
+		$table .= "<tfoot>{$headers}</tfoot>";
+
+		unset($headers);
+
+		$table .= '<tbody>';
+		foreach ($this->table as $row) {
+			$table .= $this::buildRow($row);
+		}
+		$table .= '</tbody>';
+		return $table . '</table>';
+	}
+
+	/**
+	 * Sets any number of rows of data at once using func_get_args
+	 *
+	 * @param array ...
+	 * @return self
+	 * @example $table([...], ...);
+	 */
+	public function __invoke()
+	{
+		array_map(function(array $cols = array())
+		{
+			array_map([$this, '__set'], array_keys($cols), array_values($cols));
+			$this->nextRow();
+		}, func_get_args());
+		return $this;
+	}
+
+	/**
+	 * Filters $data for row and pushes to the $table array
 	 *
 	 * @param void
 	 * @return self
-	 * @example $table->next_row();
+	 * @example $table->nextRow();
+	 * @todo Throw an InvalidArgumentException for all values set incorrectly
 	 */
-	public function next_row()
+	public function nextRow()
 	{
-		$this->tbody .= '<tr>' . html_join('td', $this->data[$this->row]) . '</tr>';
-		$this->data[$this->row] = $this->empty_row;
-		$this->row++;
+		$this->data = array_merge(
+			$this->empty_row,
+			array_intersect_key($this->data, $this->empty_row)
+		);
+
+		if (!empty($this->data)) {
+			$this->table[] = $this->data;
+		}
+
+		$this->data = [];
 
 		return $this;
 	}
 
 	/**
-	 * Returns all $data as a CSV formatted string
+	 * Builds and returns a table row from an array
 	 *
-	 * Uses private build_table() method to convert $data
-	 * array into a <table>
+	 * @param array  $content   Array of content/innerHTML for child elements
+	 * @param string $tag       Tag name for child elements
+	 * @param string $parent_el Tag name for parent element
+	 * @todo convert to using \DOMElement
+	 */
+	private static function buildRow(
+		array $content = array(),
+		$tag = 'td',
+		$parent_el = 'tr'
+	)
+	{
+		return array_reduce($content, function($html, $str) use ($tag)
+		{
+			return $html .= "<{$tag}>{$str}</{$tag}>";
+		}, "<{$parent_el}>") . "</{$parent_el}>";
+	}
+
+	/**
+	 * Alias of nextRow
+	 *
+	 * @deprecated
+	 */
+	public function next_row()
+	{
+		return $this->nextRow();
+	}
+
+	/**
+	 * Returns all $data as a Table formatted string
 	 *
 	 * @param bool $echo
-	 * @return mixed (HTML formatted <table> string from $data if $echo is false)
+	 * @return mixed HTML formatted <table> string from $data if $echo is false
+	 * @deprecated
 	 */
 	public function out($echo = false, $border = false)
 	{
-		$this->build_table($border);
+		if (is_bool($border) or is_int($border)) {
+			$this->border = $border;
+		}
+
 		if ($echo) {
-			echo $this->table;
+			echo $this;
 		} else {
-			return $this->table;
+			return "$this";
 		}
-	}
-
-	/**
-	 * Does all the work for creating a <table> from variables.
-	 * This mostly adds <tfoot>, <thead>, & <tbody> to a <table>,
-	 * as well as <cpation> if $caption is set.
-	 *
-	 * Will also append the current row to $tbody if it hasn't been already
-	 *
-	 * @param bool   $border     [Whether or not to include the border attribute]
-	 * @return void
-	 */
-	private function build_table($border = false)
-	{
-		if (is_null($this->table)) {
-			if (array_key_exists($this->row, $this->data) and $this->data[$this->row] !== $this->empty_row) {
-				$this->tbody .= '<tr>' . html_join('td', $this->data[$this->row]) . '</tr>';
-			}
-			unset($this->data[$this->row]);
-			$this->table = ($border) ? '<table border="1">' : '<table>';
-			if (isset($this->caption)) {
-				$this->table .= "<caption>{$this->caption}</caption>";
-			}
-
-			$this->table .= $this->thead;
-			$this->table .= $this->tfoot;
-			$this->table .= $this->tbody;
-			$this->table .= '</tbody></table>';
-		}
-	}
-
-	/**
-	 * Private method for setting columns for the current $row
-	 *
-	 * Checks if $cell is in the array of available $headers
-	 * and that both arguments are strings.
-	 *
-	 * If these conditions are true, it sets $data[$row][$cell] to $value
-	 * and returns true.
-	 *
-	 * Otherwise returns false without setting any data
-	 *
-	 * @param string $cell (name of field to set for current row)
-	 * @param string $value (value to set it to)
-	 * @return bool (whether or not $cell is available)
-	 * @example $this->set($cell, $value)
-	 */
-	private function set($cell, $value)
-	{
-		if (is_string($cell) and in_array($cell, $this->headers)) {
-			$this->data[$this->row][$cell] = (string)$value;
-			return true;
-		}
-
-		return false;
 	}
 }
