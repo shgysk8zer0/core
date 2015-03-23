@@ -23,14 +23,20 @@ namespace shgysk8zer0\Core;
 
 /**
  * Handle Webhooks from GitHub with ease!
+ * @uses \shgysk8zer0\Core\Resources\Parser
+ * @uses \shgysk8zer0\Core_API\Traits\Magic\Get
+ * @uses \shgysk8zer0\Core_API\Traits\Magic\Is_Set
+ * @uses \shgysk8zer0\Core_API\Headers
  */
 final class GitHubWebhook
 {
+	const HOOKSHOT = '/^GitHub-Hookshot/';
+
 	/**
 	 * The headers sent
-	 * @var aray
+	 * @var \shgysk8zer0\Core\Headers
 	 */
-	protected $headers = [];
+	protected $headers = null;
 
 	/**
 	 * The body
@@ -64,9 +70,9 @@ final class GitHubWebhook
 	 */
 	public function __construct($config = null)
 	{
-		$this->headers = getallheaders();
-		if (array_key_exists('X-GitHub-Event', $this->headers)) {
-			$this->event = $this->headers['X-GitHub-Event'];
+		$this->headers = Headers::load();
+		if (isset($this->headers->{'x-github-event'})) {
+			$this->event = $this->headers->{'x-github-event'};
 		}
 
 		if (isset($config)) {
@@ -95,13 +101,13 @@ final class GitHubWebhook
 		}
 
 		if (
-			array_key_exists('Content-Length', $this->headers)
-			and array_key_exists('User-Agent', $this->headers)
-			and preg_match('/^GitHub-Hookshot/', $this->headers['User-Agent'])
-			and array_key_exists('X-Hub-Signature', $this->headers)
+			isset($this->headers->{'content-length'})
+			and isset($this->headers->{'user-agent'})
+			and preg_match(self::HOOKSHOT, $this->headers->{'user-agent'})
+			and isset($this->headers->{'x-hub-signature'})
 		) {
 			if (is_string($secret)) {
-				list($algo, $hash) = explode('=', $this->headers['X-Hub-Signature'], 2);
+				list($algo, $hash) = explode('=', $this->headers->{'x-hub-signature'}, 2);
 
 				return $hash === hash_hmac(
 					$algo,
@@ -125,12 +131,12 @@ final class GitHubWebhook
 	 */
 	private function parsePayload()
 	{
-		if (array_key_exists('content-type', $this->headers)) {
-			switch(strtolower($this->headers['content-type'])) {
+		if (isset($this->headers->{'content-type'})) {
+			switch(strtolower($this->headers->{'content-type'})) {
 				case 'application/json':
 					$this->payload = file_get_contents('php://input');
 
-					if (strlen($this->payload) === (int)$this->headers['Content-Length']) {
+					if (strlen($this->payload) === (int)$this->headers->{'content-length'}) {
 						$this->parsed = json_decode($this->payload);
 					}
 					break;
