@@ -4,7 +4,7 @@
  * @package shgysk8zer0\Core
  * @version 1.0.0
  * @link https://developer.github.com/webhooks/
- * @copyright 2014, Chris Zuber
+ * @copyright 2015, Chris Zuber
  * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,16 +23,39 @@ namespace shgysk8zer0\Core;
 
 /**
  * Handle Webhooks from GitHub with ease!
- *
- * @var array     $headers   [The headers sent]
- * @var string    $payload   [The body]
- * @var string    $event     [Event declared in X-Github-Event header]
- * @var \stdClass $parsed    [$payload parsed as an Object]
- * @var \stdClass $config    [Configuration data parsed as an Object]
  */
-class GitHubWebhook
+final class GitHubWebhook
 {
-	public $headers = [], $payload = null, $event = null, $parsed = null,  $config = null;
+	/**
+	 * The headers sent
+	 * @var aray
+	 */
+	protected $headers = [];
+
+	/**
+	 * The body
+	 * @var string
+	 */
+	protected $payload = null;
+
+	/**
+	 * Event declared in X-Github-Event header
+	 * @var string
+	 */
+	protected $event = null;
+
+	/**
+	 * $payload parsed as an Object
+	 * @var \stdClass
+	 */
+	protected $parsed = null;
+
+	/**
+	 * Configuration data parsed as an Object
+	 * @var /stdClass
+	 */
+	protected $config = null;
+
 
 	/**
 	 * Construct the class & set its variables
@@ -47,7 +70,7 @@ class GitHubWebhook
 		}
 
 		if (isset($config)) {
-			$this->parseConfig($config);
+			$this->config = Resources\Parser::parseFile($config);
 		}
 
 		$this->parsePayload();
@@ -94,34 +117,6 @@ class GitHubWebhook
 	}
 
 	/**
-	 * Parse $config, whether it be an Object or a file
-	 *
-	 * @param mixed $config Configuration data, possibly an .ini or .json
-	 * @return void
-	 * @todo Use Parser class instead
-	 */
-	private function parseConfig($config)
-	{
-		if (is_string($config) and @file_exists($config) and @is_readable($config)) {
-			switch(strtolower(pathinfo($config, PATHINFO_EXTENSION))) {
-				case 'json':
-					$this->config = json_decode(file_get_contents($config));
-					break;
-				case 'ini':
-					$this->config = (object)parse_ini_file($config);
-					break;
-			}
-		} elseif (is_string($config)) {
-			$this->config = new \stdClass();
-			$this->config->secret = $config;
-		} elseif (is_array($config)) {
-			$this->config = (object)$config;
-		} elseif (is_object($config)) {
-			$this->config = $config;
-		}
-	}
-
-	/**
 	 * Parses data from $payload into an object
 	 *
 	 * @param void
@@ -134,6 +129,7 @@ class GitHubWebhook
 			switch(strtolower($this->headers['content-type'])) {
 				case 'application/json':
 					$this->payload = file_get_contents('php://input');
+
 					if (strlen($this->payload) === (int)$this->headers['Content-Length']) {
 						$this->parsed = json_decode($this->payload);
 					}
@@ -151,6 +147,7 @@ class GitHubWebhook
 	 * @param  string $remote Remote to pull from. Default is the git:// addr
 	 * @param  string $branch Optional branch.
 	 * @return mixed          Direct return from git command. May be null
+	 * @deprecated
 	 */
 	public function pull($remote = null, $branch = null)
 	{
