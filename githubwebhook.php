@@ -48,13 +48,13 @@ final class GitHubWebhook
 	 * Event declared in X-Github-Event header
 	 * @var string
 	 */
-	protected $event = null;
+	public $event = null;
 
 	/**
 	 * $payload parsed as an Object
 	 * @var \stdClass
 	 */
-	protected $parsed = null;
+	public $parsed = null;
 
 	/**
 	 * Configuration data parsed as an Object
