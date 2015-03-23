@@ -60,7 +60,7 @@ final class GitHubWebhook
 	 * Configuration data parsed as an Object
 	 * @var /stdClass
 	 */
-	protected $config = null;
+	public $config = null;
 
 
 	/**
