@@ -24,13 +24,14 @@ namespace shgysk8zer0\Core;
 use \shgysk8zer0\Core_API as API;
 
 /**
- * Provides consistnet and accessible methods for getting and checking headers
+ * Provides consistent and accessible methods for getting and checking headers
  */
-final class Headers
+final class Headers implements API\Interfaces\Magic_Methods
 {
 	use API\Traits\Singleton;
 	use API\Traits\Magic\Get;
 	use API\Traits\Magic\Is_Set;
+	use API\Traits\Magic\Call;
 
 	const MAGIC_PROPERTY = 'headers';
 
@@ -49,6 +50,16 @@ final class Headers
 			array_map([$this, 'headersMap'], array_keys($headers)),
 			array_values($headers)
 		);
+	}
+
+	public function __set($key, $value)
+	{
+		header("$key: $value");
+	}
+
+	public function __unset($key)
+	{
+		header_remove($key);
 	}
 
 	private function headersMap($key, $lower = true)
