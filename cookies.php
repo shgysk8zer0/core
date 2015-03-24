@@ -147,7 +147,7 @@ class cookies implements \shgysk8zer0\Core_API\Interfaces\Magic_Methods
 		setcookie(
 			str_replace('_', '-', $name),
 			(string)$value,
-			$this->expires,
+			(int)$this->expires,
 			$this->path,
 			$this->domain,
 			$this->secure,
