@@ -3,7 +3,7 @@
  * @author Chris Zuber <shgysk8zer0@gmail.com>
  * @package shgysk8zer0\Core
  * @version 1.0.0
- * @copyright 2014, Chris Zuber
+ * @copyright 2015, Chris Zuber
  * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,31 +24,21 @@ use \shgysk8zer0\Core_API as API;
 
 /**
  * Since this class is using $_SESSION for all data, there are few variables
- * There are several methods to make better use of $_SESSION, and it adds the ability to chain
- * As $_SESSION is used for all storage, there is no pro or con to using __construct vs ::load()
- *
- * @var string $name
- * @var int? $expires
- * @var string $path
- * @var string $domain
- * @var boolean $secure
- * @var boolean $httponly
- * @var session $instance
+ * There are several methods to make better use of $_SESSION, and it adds the
+ * ability to chain. As $_SESSION is used for all storage, there is no pro or
+ * con to using __construct vs ::load()
 */
-class session implements API\Interfaces\Magic_Methods
+class Session implements API\Interfaces\Magic_Methods
 {
 	use API\Traits\Singleton;
-
-	private $name, $expires, $path, $domain, $secure, $httponly;
-	private static $instance = null;
-
+	use API\Traits\Magic\Call;
 
 	/**
-	 * Creates new instance of session. $name is optional, and sets session_name if session has not been started
+	 * Creates new instance of session. $name is optional, and sets session_name
+	 * if session has not been started
 	 *
-	 * @param [string $site] optional name for session
+	 * @param string $site optional name for session
 	 * @return void
-	 * @example $session = new session([$site])
 	 */
 	public function __construct($name = null)
 	{
@@ -56,26 +46,23 @@ class session implements API\Interfaces\Magic_Methods
 		if (session_status() !== PHP_SESSION_ACTIVE) {
 			//Avoid trying to figure out cookie paramaters for CLI
 			if (PHP_SAPI != 'cli') {
-				$this->expires = 0;
-				$this->path = '/' . trim(str_replace("{$_SERVER['REQUEST_SCHEME']}://{$_SERVER['SERVER_NAME']}", '/', URL), '/');
-				$this->domain = $_SERVER['HTTP_HOST'];
-				$this->secure = https();
-				$this->httponly = true;
 
-				if (is_null($name)) {
+				if (! is_string($name)) {
 					$path = explode(DIRECTORY_SEPARATOR, BASE);
 					$name = end($path);
+					unset($path);
 				}
 
-				$this->name = preg_replace('/[^\w]/', null, strtolower($name));
-				session_name($this->name);
-				if (!array_key_exists($this->name, $_COOKIE)) {
+				$name = preg_replace('/[\W]/', null, strtolower($name));
+				session_name($name);
+
+				if (! array_key_exists($name, $_COOKIE)) {
 					session_set_cookie_params(
-						$this->expires,
-						$this->path,
-						$this->domain,
-						$this->secure,
-						$this->httponly
+						0,
+						parse_url(URL, PHP_URL_PATH),
+						parse_url(URL, PHP_URL_HOST),
+						https(),
+						true
 					);
 				}
 			}
@@ -86,82 +73,51 @@ class session implements API\Interfaces\Magic_Methods
 	/**
 	 * The getter method for the class.
 	 *
-	 * @param string $key
-	 * @return mixed
+	 * @param string $key  Name of property to retrieve
+	 * @return mixed       Its value
 	 * @example "$session->key" Returns $value
 	 */
 	public function __get($key)
 	{
-		$key = strtolower(str_replace('_', '-', $key));
-		if (array_key_exists($key, $_SESSION)) {
-			return $_SESSION[$key];
+		if (isset($this->$key)) {
+			return $_SESSION[$this->getKey($key)];
 		}
-		return false;
+		return null;
 	}
 
 	/**
 	 * Setter method for the class.
 	 *
-	 * @param string $key, mixed $value
+	 * @param string $key   Name of property to set
+	 * @param mixed $value  Value to set it to
 	 * @return void
 	 * @example "$session->key = $value"
 	 */
 	public function __set($key, $value)
 	{
-		$key = strtolower(str_replace('_', '-', $key));
-		$_SESSION[$key] = trim($value);
+		$_SESSION[$this->getKey($key)] = $value;
 	}
 
 	/**
-	 * Chained magic getter and setter
-	 * @param string $name, array $arguments
-	 * @return self
-	 * @example "$session->[getName|setName]($value)"
-	 */
-	public function __call($name, array $arguments)
-	{
-		$name = strtolower($name);
-		$act = substr($name, 0, 3);
-		$key = str_replace('_', '-', substr($name, 3));
-		switch($act) {
-			case 'get':
-				if (array_key_exists($key, $_SESSION)) {
-					return $_SESSION[$key];
-				} else{
-					return false;
-				}
-				break;
-			case 'set':
-				$_SESSION[$key] = $arguments[0];
-				return $this;
-				break;
-			default:
-				die('Unknown method.');
-		}
-	}
-
-	/**
-	 * @param string $key
-	 * @return boolean
+	 * @param string $key  Name of property to check
+	 * @return bool        Whether or not it is set
 	 * @example "isset({$session->key})"
 	 */
 	public function __isset($key)
 	{
-		$key = strtolower(str_replace('_', '-', $key));
-		return array_key_exists($key, $_SESSION);
+		return array_key_exists($this->getKey($key), $_SESSION);
 	}
 
 	/**
 	 * Removes an index from the array.
 	 *
-	 * @param string $key
+	 * @param string $key  Name of property to unset/remove
 	 * @return void
 	 * @example "unset($session->key)"
 	 */
 	public function __unset($key)
 	{
-		$key = strtolower(str_replace('_', '-', $key));
-		unset($_SESSION[$key]);
+		unset($_SESSION[$this->getKey($key)]);
 	}
 
 	/**
@@ -169,15 +125,16 @@ class session implements API\Interfaces\Magic_Methods
 	*
 	* @param void
 	* @return void
-	* @todo __destruct
 	*/
 	public function destroy()
 	{
+		$name = session_name();
 		session_destroy();
 		unset($_SESSION);
-		if (array_key_exists($this->name, $_COOKIE)) {
-			unset($_COOKIE[$this->name]);
-			setcookie($this->name, null, -1, $this->path, $this->domain, $this->secure, $this->httponly);
+
+		if (array_key_exists($name, $_COOKIE)) {
+			unset($_COOKIE[$name]);
+			setcookie($name, null, -1);
 		}
 	}
 
@@ -188,9 +145,19 @@ class session implements API\Interfaces\Magic_Methods
 	 * @return self
 	 * @example $session->restart()
 	 */
-
 	public function restart() {
 		session_unset();
 		return $this;
+	}
+
+	/**
+	 * Converts array key for $_SESSION into something consistent
+	 *
+	 * @param string $key The original value
+	 * @return string     The converted value
+	 */
+	private function getKey($key)
+	{
+		return strtolower(str_replace('_', '-', $key));
 	}
 }
