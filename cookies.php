@@ -3,7 +3,7 @@
  * @author Chris Zuber <shgysk8zer0@gmail.com>
  * @package shgysk8zer0\Core
  * @version 1.0.0
- * @copyright 2014, Chris Zuber
+ * @copyright 2015, Chris Zuber
  * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,12 +22,6 @@ namespace shgysk8zer0\Core;
 /**
  * Quick and easy way of setting/getting cookies
  *
- * @var int $expires
- * @var string $path
- * @var string $domain
- * @var boolean $secure
- * @var boolean $httponly
- *
  * @example
  * $cookies = new \shgysk8zer0\Core\cookies();
  * $cookies->cookie_name = 'Value';
@@ -35,7 +29,42 @@ namespace shgysk8zer0\Core;
  */
 class cookies implements \shgysk8zer0\Core_API\Interfaces\Magic_Methods
 {
-	public $expires, $path, $domain, $secure, $httponly;
+	use \shgysk8zer0\Core_API\Traits\Magic\Call;
+
+	/**
+	 * Timestamp of when the cookie expires
+	 * @var int
+	 */
+	public $expires = 0;
+
+	/**
+	 * Path relative to DOCUMENT_ROOT/SERVER_NAME where the cookie is used
+	 * @var string
+	 */
+	public $path = '/';
+
+	/**
+	 * Name of server/domain the cookie is valid at
+	 * @var string
+	 */
+	public $domain = 'localhost';
+
+	/**
+	 * Use cookie only over HTTPS?
+	 * @var bool
+	 */
+	public $secure = false;
+
+	/**
+	 * Only send over HTTP requests (blocks access to JavaScript)
+	 * @var bool
+	 */
+	public $httponly = false;
+
+	/**
+	 * Static instance of class to prevent multiple loadings/instances
+	 * @var \shgysk8zer0\Core\Cookies
+	 */
 	private static $instance = null;
 
 	/**
@@ -66,11 +95,12 @@ class cookies implements \shgysk8zer0\Core_API\Interfaces\Magic_Methods
 
 	/**
 	 * Initializes cookies class, setting all properties (similar to arguments)
-	 * @param mixed   $expires  [Takes a variety of date formats, including timestamps]
-	 * @param string  $path     [example.com/path would be /path]
-	 * @param string  $domain   [Whether or not to limit cookie to https connections]
-	 * @param bool    $secure   [Setting to true prevents access by JavaScript, etc]
-	 * @param bool    $httponly [Setting to true prevents access by JavaScript, etc]
+	 *
+	 * @param mixed   $expires  Takes a variety of date formats, including timestamps
+	 * @param string  $path     example.com/path would be /path
+	 * @param string  $domain   Whether or not to limit cookie to https connections
+	 * @param bool    $secure   Setting to true prevents access by JavaScript, etc
+	 * @param bool    $httponly Setting to true prevents access by JavaScript, etc
 	 * @example $cookies = new cookies('Tomorrow', '/path', 'example.com', true, true);
 	 */
 	public function __construct(
@@ -81,22 +111,26 @@ class cookies implements \shgysk8zer0\Core_API\Interfaces\Magic_Methods
 		$httponly = null
 	)
 	{
-		$this->expires = (int) (preg_match('/^\d+$/', $expires))
+		$this->expires = (int) is_numeric($expires)
 			? $expires
-			: $this->data = date_timestamp_get(date_create($expires));
-		$this->path = (isset($path))
+			: strtotime($expires);
+
+		$this->path = (is_string($path))
 			? $path
-			:'/' . trim(str_replace("{$_SERVER['REQUEST_SCHEME']}://{$_SERVER['SERVER_NAME']}", '/', URL), '/');
-		if (isset($domain)) {
+			: parse_url(URL, PHP_URL_PATH);
+
+		if (is_string($domain)) {
 			$this->domain = $domain;
 		} elseif (array_key_exists('HTTP_HOST', $_SERVER)) {
 			$this->domain = $_SERVER['HTTP_HOST'];
-		} else {
+		} elseif (array_key_exists('SERVER_NAME', $_SERVER)) {
 			$this->domain = $_SERVER['SERVER_NAME'];
+		} else {
+			$this->domain = parse_url(URL, PHP_URL_HOST);
 		}
 
-		$this->secure = (isset($secure)) ? $secure : false;
-		$this->httponly = (isset($httponly)) ? $httponly : false;
+		$this->secure = (is_bool($secure)) ? $secure : false;
+		$this->httponly = (is_bool($httponly)) ? $httponly : false;
 	}
 
 	/**
@@ -104,9 +138,8 @@ class cookies implements \shgysk8zer0\Core_API\Interfaces\Magic_Methods
 	 * Sets a cookie using only $name and $value. All
 	 * other paramaters set in __construct
 	 *
-	 * @access public
-	 * @param string $name
-	 * @param string $value
+	 * @param string $name   Name of cookie to set
+	 * @param string $value  Value to set it to
 	 * @example $cookies->test = 'Works'
 	 */
 	public function __set($name, $value)
@@ -125,48 +158,23 @@ class cookies implements \shgysk8zer0\Core_API\Interfaces\Magic_Methods
 	/**
 	 * Magic getter for the class
 	 *
-	 * Returns the requested cookie's value or false
-	 * if not set
+	 * Returns the requested cookie's value or false if not set
 	 *
-	 * @access public
-	 * @param string $name
-	 * @return mixed (cookie's value or false if not set)
+	 * @param string $name   Name of cookie to get
+	 * @return mixed Value of requested cookie
 	 * @example $cookies->test // returns 'Works'
 	 */
 	public function __get($name)
 	{
 		$name = str_replace('_', '-', $name);
-		return (array_key_exists($name, $_COOKIE)) ? $_COOKIE[$name] : false;
-	}
-
-	/**
-	 * Chained magic getter and setter
-	 * @param string $name, array $arguments
-	 * @example "$cookies->[getName|setName]($value)?"
-	 */
-	public function __call($name, array $arguments)
-	{
-		$key = str_replace('_', '-', substr(strtolower($name), 3));
-		switch(substr($name, 0, 3)) {
-			case 'get':
-				return (array_key_exists($key, $_COOKIE)) ? $_COOKIE[$key] : false;
-				break;
-
-			case 'set':
-				setcookie($key, $arguments[0], (int)$this->expires, $this->path, $this->domain, $this->secure, $this->httponly);
-				return $this;
-				break;
-
-			default:
-				return $this;
-		}
+		return isset($this->$name) ? $_COOKIE[$name] : null;
 	}
 
 	/**
 	 * Checks if $_COOKIE[$name] exists
 	 *
-	 * @param string $name
-	 * @return boolean
+	 * @param string $name  Name of cookie to test if exists
+	 * @return bool
 	 * @example isset($cookies->test) (true)
 	 */
 	public function __isset($name)
@@ -175,22 +183,19 @@ class cookies implements \shgysk8zer0\Core_API\Interfaces\Magic_Methods
 	}
 
 	/**
-	 * Completely desttroys a cookie on server and client
+	 * Completely destroys a cookie on server and client
 	 *
-	 * @param string $name
-	 * @return boolean (Whether or not cookie existed)
-	 * @example unset($cookies->test) (true)
+	 * @param string $name  Name of cookie to remove
+	 * @return void
+	 * @example unset($cookies->$name)
 	 */
 	public function __unset($name)
 	{
-		$name = str_replace('_', '-', (string)$name);
-		if (array_key_exists($name, $_COOKIE)) {
+		$name = str_replace('_', '-', $name);
+		if (isset($this->$name)) {
 			unset($_COOKIE[$name]);
 			setcookie($name, null, -1, $this->path, $this->domain, $this->secure, $this->httponly);
-			return true;
 		}
-
-		return false;
 	}
 
 	/**
@@ -199,6 +204,7 @@ class cookies implements \shgysk8zer0\Core_API\Interfaces\Magic_Methods
 	 * @param void
 	 * @return array
 	 * @example $cookies->keys() (['test', ...])
+	 * @deprecated
 	 */
 	public function keys()
 	{
