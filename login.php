@@ -30,13 +30,14 @@ use \shgysk8zer0\Core_API as API;
 /**
  * Checks login status, creates or logs in with an array, and can logout as well.
  */
-class login extends API\Abstracts\PDO_Connect
+class Login extends API\Abstracts\PDO_Connect
 implements API\Interfaces\PDO, API\Interfaces\Magic_Methods
 {
 	use API\Traits\Singleton;
 	use API\Traits\Magic_Methods;
+	use API\Traits\Magic\Call;
 	use API\Traits\PDO;
-	use Traits\Legacy_Login;
+	//use Traits\Legacy_Login;
 
 	const STM_CLASS = 'PDOStatement';
 	const DEFAULT_CON = 'connect.json';
@@ -54,7 +55,7 @@ implements API\Interfaces\PDO, API\Interfaces\Magic_Methods
 		'logged_in' => false
 	];
 
-	public function __construct($con = null)
+	public function __construct($con = self::DEFAULT_CON)
 	{
 		parent::connect(
 			$con,
