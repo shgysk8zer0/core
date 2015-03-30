@@ -27,15 +27,14 @@ use \shgysk8zer0\Core_API as API;
  * Creates an XML Document for a search plugin
  * @see https://developer.mozilla.org/en-US/Add-ons/Creating_OpenSearch_plugins_for_Firefox
  */
-final class OpenSearch extends \DOMDocument //\shgysk8zer0\Core_API\Abstracts\XML_Document
+final class OpenSearch extends API\Abstracts\XML_Document //\shgysk8zer0\Core_API\Abstracts\XML_Document
 {
 	use API\Traits\Filters;
 	use API\Traits\XML_Exception;
 	use API\Traits\Path_Info;
 	use API\Traits\URL;
 
-	//const CONTENT_TYPE = 'application/opensearchdescription+xml';
-	const CONTENT_TYPE = 'application/xml';
+	const CONTENT_TYPE = 'application/opensearchdescription+xml';
 	const VERSION = '1.0';
 	const ENCODING = 'UTF-8';
 	const XMLNS = 'http://www.w3.org/2000/xmlns/';
@@ -44,7 +43,6 @@ final class OpenSearch extends \DOMDocument //\shgysk8zer0\Core_API\Abstracts\XM
 	const MOZ_NS = 'xmlns:moz';
 	const ROOT_EL = 'OpenSearchDescription';
 	const ICON = 'favicon.ico';
-	//const ICON_MIME = 'image/x-icon';
 	const SUGGESTIONS_TYPE = 'application/x-suggestions+json';
 	const ERROR_LEVEL = E_ALL;
 
@@ -52,16 +50,16 @@ final class OpenSearch extends \DOMDocument //\shgysk8zer0\Core_API\Abstracts\XM
 	 * A short name for the search engine.
 	 * @var string
 	 */
-	public $ShortName = '';
+	public $name = '';
 
 	/**
 	 * A brief description of the search engine.
 	 * @var string
 	 */
-	public $Description = '';
+	public $description = '';
 
 	/**
-	 * [$URL description]
+	 * URL to submit the search terms to
 	 * @var string
 	 */
 	public $URL = '';
@@ -69,57 +67,63 @@ final class OpenSearch extends \DOMDocument //\shgysk8zer0\Core_API\Abstracts\XM
 
 	public $suggestions_URL = '';
 
-
-	public $upadte_URL = '';
 	/**
-	 * [$Image description]
+	 * URL from which to update the plugin
 	 * @var string
 	 */
-	public $Image = '';
+	public $upadte_URL = '';
 
 	/**
-	 * [$UpdateInterval description]
-	 * @var integer
+	 * Relative path to icon
+	 * @var string
+	 */
+	public $image = '';
+
+	/**
+	 * Update Interval? Not sure, but some unit of time
+	 * @var int
 	 */
 	public $UpdateInterval = 7;
 
 	/**
-	 * [$method description]
+	 * POST or GET
 	 * @var string
 	 */
 	public $method = 'GET';
 
 
 	/**
-	 * [$template description]
+	 * Query string to use to submit search
 	 * @var string
 	 */
-	public $template = '';
+	public $template = '?q={searchTerms}';
 
 	/**
-	 * [$image_x description]
-	 * @var integer
+	 * Icon width
+	 * @var int
 	 */
 	private $image_x = 0;
 
 	/**
-	 * [$image_y description]
-	 * @var integer
+	 * Icon height
+	 * @var int
 	 */
 	private $image_y = 0;
 
 	/**
-	 * [$image_type description]
+	 * Icon MIME-Type
 	 * @var string
 	 */
 	private $image_type = '';
 
 	/**
-	 * [$body description]
-	 * @var \DOMElement
+	 * Creates a new OpenSearch instance
+	 *
+	 * @param string $name        Name of the search plugin
+	 * @param string $description Short description
+	 * @param [type] $image       Icon to use
+	 * @param string $url         URL to submit queries to
 	 */
-	private $body;
-
 	public function __construct(
 		$name = '',
 		$description = '',
@@ -127,18 +131,19 @@ final class OpenSearch extends \DOMDocument //\shgysk8zer0\Core_API\Abstracts\XM
 		$url = ''
 	)
 	{
-		error_reporting(self::ERROR_LEVEL);
-		parent::__construct(self::VERSION, self::ENCODING);
-
-
-		$this->body = $this->appendChild(
-			$this->createElementNS(self::OPENSEARCH_NS, self::ROOT_EL)
+		parent::__construct(
+			self::VERSION,
+			self::ENCODING,
+			self::ROOT_EL,
+			self::OPENSEARCH_NS
 		);
+
 		$this->getPathInfo($image);
+
 		if (! @file_exists($this->absolute_path)) {
 			$this->getPathInfo(self::ICON);
 		}
-		$this->absolute_path = preg_replace(
+		$this->absolute_path = '/' . preg_replace(
 			'/^' . preg_quote(
 				str_replace(
 					DIRECTORY_SEPARATOR,
@@ -167,84 +172,64 @@ final class OpenSearch extends \DOMDocument //\shgysk8zer0\Core_API\Abstracts\XM
 			$this->image_type = 'image/x-icon';
 		}
 
-		$this->ShortName = $name;
-		$this->Description = $description;
-		$this->Image = "{$this->URLToString([
-			'scheme',
-			'host'
-		])}/{$this->absolute_path}";
+		$this->name = $name;
+		$this->description = $description;
+		$this->image = $this->URLToString(['scheme','host'])
+		. $this->absolute_path;
 	}
 
+	/**
+	 * Builds the XML document and returns it as a string
+	 *
+	 * @return string XML Document as string
+	 * @example exit($this)
+	 */
 	public function __toString()
 	{
 		try {
-			$this->body->setAttributeNS(
+			$this->root->setAttributeNS(
 				self::XMLNS,
 				self::MOZ_NS,
 				self::MOZ_XMLNS
 			);
-			$this->body->appendChild(
-				$this->createElement('ShortName', $this->ShortName)
-			);
-			$this->body->appendChild(
-				$this->createElement('Description', $this->Description)
-			);
-			$url = $this->body->appendChild(
-				$this->createElement('Url', $this->URL)
-			);
-			$url->setAttribute('type', 'text/html');
-			$url->setAttribute('method', $this->method);
-			$url->setAttribute(
-				'template',
-				"$this->URL/tags/{searchTerms}"
-			);
-			unset($url);
+			$this->ShortName($this->name)
+				->searchTitle($this->name)
+				->Description($this->description)
+				->Url([
+					$this->URL,
+					'@type' => 'text/html',
+					'@method' => $this->method,
+					'@template' => "{$this->URL}/{$this->template}"
+				])
+				->pluginURL("$this->URL/tags/{searchTerms}")
+				->Image([
+					$this->image,
+					'@height' => $this->image_y,
+					'@width' => $this->image_x
+				])
+				->{'moz:SearchForm'}($this->URL)
+				->{'moz:UpdateUrl'}($this->URLToString())
+				->{'moz:IconUpdateUrl'}($this->image)
+				->{'moz:UpdateInterval'}($this->UpdateInterval)
+				->Url([
+					'@type' => self::CONTENT_TYPE,
+					'@rel' => 'self',
+					'@template' => $this->URLToString()
+				]);
 
-			if (
-				is_string($this->suggestions_URL)
-				and $this->isURL($this->suggestions_URL)
-			) {
-				$suggestions = $this->body->appendChild(
-					$this->createElement('Url')
-				);
-				$suggestions->setAttribute('type', self::SUGGESTIONS_TYPE);
-				$suggestions->setAttribute('template', $this->suggestions_URL);
-			}
-
-			$image = $this->body->appendChild(
-				$this->createElement('Image', $this->Image)
-			);
-
-			$image->setAttribute('width', $this->image_x);
-			$image->setAttribute('height', $this->image_y);
-			$image->setAttribute('type', $this->image_type);
-			unset($image);
-
-			$this->body->appendChild(
-				$this->createElement('InputEncoding', self::ENCODING)
-			);
-			$this->body->appendChild(
-				$this->createElement('moz:SearchForm', $this->URL)
-			);
-			$this->body->appendChild(
-				$this->createElement(
-					'moz:UpdateUrl',
-					$this->URLToString()
-				)
-			);
-			$this->body->appendChild(
-				$this->createElement('moz:IconUpdateUrl', $this->Image)
-			);
-			$this->body->appendChild(
-				$this->createElement(
-					'moz:UpdateInterval',
-					$this->UpdateInterval
-				)
-			);
+				if (
+					is_string($this->suggestions_URL)
+					and $this->isURL($this->suggestions_URL)
+				) {
+					$this->Url([
+						'@type' => self::SUGGESTIONS_TYPE,
+						'@template' => $this->suggestions_URL
+					]);
+				}
 		} catch (\DOMException $e) {
-			$this->ExceptionAsXML($e, $this->body);
+			$this->ExceptionAsXML($e, $this->root);
 		}
 
-		return $this->saveXML();
+		return parent::__toString();
 	}
 }
