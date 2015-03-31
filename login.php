@@ -37,12 +37,12 @@ implements API\Interfaces\PDO, API\Interfaces\Magic_Methods
 	use API\Traits\Magic_Methods;
 	use API\Traits\Magic\Call;
 	use API\Traits\PDO;
-	//use Traits\Legacy_Login;
 
 	const STM_CLASS = 'PDOStatement';
 	const DEFAULT_CON = 'connect.json';
 	const MAGIC_PROPERTY = 'data';
 	const USER_TABLE = '`users`';
+	const RESTRICT_SETTING = true;
 
 	/**
 	 * Array to store login data
@@ -74,7 +74,10 @@ implements API\Interfaces\PDO, API\Interfaces\Magic_Methods
 	 */
 	public function createFrom(array $source = array())
 	{
-		if (array_key_exists('user', $source) and array_key_exists('password', $source)) {
+		if (
+			array_key_exists('user', $source)
+			and array_key_exists('password', $source)
+		) {
 			$keys = array_map(function($key) {
 				return preg_replace('/\W/', null, $key);
 			}, array_keys($source));
@@ -87,16 +90,14 @@ implements API\Interfaces\PDO, API\Interfaces\Magic_Methods
 			);
 
 			return $this->prepare(
-				"INSERT INTO " . $this::USER_TABLE . "(
+				"INSERT INTO " . self::USER_TABLE . "(
 					`" . join('`, `', $keys) . "`
 				) VALUES ("
 					. join(', ', array_map(function($key) {
-						return ':' . $key;
+						return ":{$key}";
 					}, $keys)) . "
-				)"
-			)->bind(
-				$source
-			)->execute();
+				);"
+			)->execute($source);
 		} else {
 			return false;
 		}
@@ -111,16 +112,18 @@ implements API\Interfaces\PDO, API\Interfaces\Magic_Methods
 	 */
 	public function loginWith(array $source = array())
 	{
-		if (array_key_exists('user', $source) and array_key_exists('password', $source)) {
+		if (
+			array_key_exists('user', $source)
+			and array_key_exists('password', $source)
+		) {
 			array_walk($source, 'trim');
 			$results = $this->prepare(
 				"SELECT *
-				FROM " . $this::USER_TABLE . "
+				FROM " . self::USER_TABLE . "
 				WHERE `user` = :user
-				LIMIT 1"
-			)->bind([
-				'user' => $source['user']
-			])->execute()->getResults(0);
+				LIMIT 1;"
+			)->execute(['user' => $source['user']])
+			->getResults(0);
 
 			if (password_verify(
 				$source['password'],
@@ -138,7 +141,7 @@ implements API\Interfaces\PDO, API\Interfaces\Magic_Methods
 	}
 
 	/**
-	 * Undo the login. Destroy it. Removes session and cookie. Sets logged_in to false
+	 * Undo the login. Destroy it. Removes session and cookie.
 	 *
 	 * @param void
 	 * @return void
