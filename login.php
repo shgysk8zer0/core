@@ -70,7 +70,7 @@ implements API\Interfaces\PDO, API\Interfaces\Magic_Methods
 	 *
 	 * @param array $source
 	 * @return bool
-	 * @example $login->create_from($_POST|$_GET|$_REQUEST|array())
+	 * @example $login->createFrom($_POST|$_GET|$_REQUEST|array())
 	 */
 	public function createFrom(array $source = array())
 	{
@@ -107,7 +107,7 @@ implements API\Interfaces\PDO, API\Interfaces\Magic_Methods
 	 *
 	 * @param array $source
 	 * @return void
-	 * @example $login->login_with($_POST|$_GET|$_REQUEST|$_SESSION|array())
+	 * @example $login->loginWith($_POST|$_GET|$_REQUEST|$_SESSION|array())
 	 */
 	public function loginWith(array $source = array())
 	{
