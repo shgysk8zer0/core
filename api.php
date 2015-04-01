@@ -164,24 +164,26 @@ class API
 	final public function __toString()
 	{
 		try {
+			$accepts = array_map(
+				function($type)
+				{
+					return strtolower(trim(current(explode(';', $type))));
+				},
+				explode(',', $this->headers['accept'])
+			);
 			if (
-				$this->headers['accept'] !== '*/*'
+				$this->headers['accept'] === '*/*'
 				or ! in_array(
-					$this::$response_format,
-					array_map(
-						function($type)
-						{
-							return trim(current(explode(';', $type)));
-						},
-						explode(',', $this->headers['accept'])
-					)
+					static::$response_format,
+					$accepts
 				)
 			) {
-				$this::$response_format = current(
-					explode(',', $this->headers['accept'])
-				);
+				static::$response_format = current($accepts);
 			}
-			switch (strtolower($this::$response_format)) {
+
+			unset($accepts);
+
+			switch (strtolower(static::$response_format)) {
 				case 'application/json':
 					header('Content-Type: application/json');
 					return json_encode($this->{self::MAGIC_PROPERTY});
