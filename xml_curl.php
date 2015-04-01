@@ -39,7 +39,7 @@ class XML_cURL extends API\Abstracts\XML_Document
 	private $default_opts = [
 		CURLOPT_RETURNTRANSFER => true,
 		CURLOPT_HEADER         => true,
-		CURLOPT_SSL_VERIFYPEER => false,
+		CURLOPT_SSL_VERIFYPEER => true,
 		CURLOPT_POST           => true,
 		CURLOPT_CONNECTTIMEOUT => 30,
 		CURLOPT_TIMEOUT        => 30
@@ -60,7 +60,7 @@ class XML_cURL extends API\Abstracts\XML_Document
 	private $accept = [
 		'application/json',
 		'application/xml',
-		'x-www-form-urlencoded',
+		'application/x-www-form-urlencoded',
 		'application/vnd.php.serialized',
 		'text/plain'
 	];
