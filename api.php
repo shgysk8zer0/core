@@ -94,6 +94,7 @@ class API
 	{
 		$req = file_get_contents('php://input');
 
+		// Verify Content-Length of request & parse according to Content-Type
 		try {
 			if (! array_key_exists('content-length', $this->headers)) {
 				throw new \Exception(
@@ -106,6 +107,8 @@ class API
 					406
 				);
 			} elseif (strlen($req) === (int)$this->headers['content-length']) {
+				// Sanitize Content-Type, converting to lowercase and removing
+				// extra data, such as charset
 				switch (
 					strtolower(
 						current(explode(';', $this->headers['content-type']))
@@ -141,6 +144,8 @@ class API
 						);
 				}
 			} else {
+				// Content-Length is set & valid. Content-Length is set but
+				// not supported.
 				throw new \Exception(
 					sprintf(
 						'Invalid Content-Length: Expected %d but got %d',
@@ -158,12 +163,16 @@ class API
 
 	/**
 	 * Create request as a string according to the HTTP Accept header
+	 * Sets the correct Content-Type header
 	 *
+	 * @param void
 	 * @return string Request body converted to a string, varying on support
 	 */
 	final public function __toString()
 	{
 		try {
+			// $accepts array will contain lowercase entries from Accept header
+			// with any extra data such as charset removed
 			$accepts = array_map(
 				function($type)
 				{
@@ -171,6 +180,9 @@ class API
 				},
 				explode(',', $this->headers['accept'])
 			);
+
+			// Check if HTTP Accept header is all (*/*) or if $response_format
+			// is in array of Accept headers ($accepts)
 			if (
 				$this->headers['accept'] === '*/*'
 				or ! in_array(
@@ -183,6 +195,7 @@ class API
 
 			unset($accepts);
 
+			// Convert $response and set Content-Type header according to format
 			switch (strtolower(static::$response_format)) {
 				case 'application/json':
 					header('Content-Type: application/json');
@@ -235,7 +248,10 @@ class API
 	 */
 	final public function send()
 	{
+		// Clear any content from buffer, such as errors, leaving only response
 		ob_get_clean();
+
+		// exit will convert to string, so __toString will be used
 		exit($this);
 	}
 }
