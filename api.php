@@ -24,8 +24,6 @@ use \shgysk8zer0\Core_API as Core_API;
 
 /**
  * Generic API class for parsing requests & responses
- *
- * @todo Support XML as a response format
  */
 class API
 {
@@ -191,7 +189,10 @@ class API
 
 				case 'application/xml':
 					header('Content-Type: application/xml');
-					return '<resp><Error>XML is currently not supported</Error></resp>';
+					return (string) new XML_Doc(
+						'Response',
+						$this->{self::MAGIC_PROPERTY}
+					);
 					break;
 
 				case 'application/x-www-form-urlencoded':
