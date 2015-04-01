@@ -108,7 +108,11 @@ class API
 					406
 				);
 			} elseif (strlen($req) === (int)$this->headers['content-length']) {
-				switch (strtolower($this->headers['content-type'])) {
+				switch (
+					strtolower(
+						current(explode(';', $this->headers['content-type']))
+					)
+				) {
 					case 'application/xml':
 						$this->request = simplexml_load_string($req);
 						break;
@@ -157,8 +161,14 @@ class API
 			if (
 				$this->headers['accept'] !== '*/*'
 				or ! in_array(
-						$this::$response_format,
+					$this::$response_format,
+					array_map(
+						function($type)
+						{
+							return trim(current(explode(';', $type)));
+						},
 						explode(',', $this->headers['accept'])
+					)
 				)
 			) {
 				$this::$response_format = current(
@@ -204,6 +214,7 @@ class API
 	 */
 	final public function send()
 	{
+		ob_get_clean();
 		exit($this);
 	}
 }
