@@ -125,6 +125,14 @@ class API
 						parse_str($req, $this->request);
 						break;
 
+					case 'application/vnd.php.serialized':
+						$this->request = unserialize($req);
+						break;
+
+					case 'text/plain':
+						$this->request =$req;
+						break;
+
 					default:
 						throw new \Exception(
 							sprintf(
@@ -189,6 +197,16 @@ class API
 				case 'application/x-www-form-urlencoded':
 					header('Content-Type: application/x-www-form-urlencoded');
 					return http_build_query($this->{self::MAGIC_PROPERTY});
+					break;
+
+				case 'application/vnd.php.serialized':
+					header('Content-Type: application/vnd.php.serialized');
+					return serialize($this->{self::MAGIC_PROPERTY});
+					break;
+
+				case 'text/plain':
+					header('Content-Type: text/plain');
+					return print_r($this->{self::MAGIC_PROPERTY});
 					break;
 
 				default:
