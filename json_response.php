@@ -92,6 +92,7 @@ final class JSON_Response implements API\Interfaces\Magic_Methods, API\Interface
 	 */
 	public function send()
 	{
+		ob_get_clean();
 		if (! empty($this->{self::MAGIC_PROPERTY}) and ! headers_sent()) {
 			exit($this);
 		} else {
