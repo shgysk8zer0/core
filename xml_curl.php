@@ -60,8 +60,12 @@ class XML_cURL extends API\Abstracts\XML_Document
 	private $accept = [
 		'application/json',
 		'application/xml',
-		'x-www-form-urlencoded'
+		'x-www-form-urlencoded',
+		'application/vnd.php.serialized',
+		'text/plain'
 	];
+
+	public $parse_response = true;
 
 	/**
 	 * Create a new XML cURL API call instance
@@ -96,7 +100,8 @@ class XML_cURL extends API\Abstracts\XML_Document
 
 	public function send()
 	{
-		$this->curlSetOpt(CURLOPT_POSTFIELDS, "$this");
+		$this->curlSetOpt(CURLOPT_POSTFIELDS, "{$this}");
+
 		$response = new \stdClass;
 
 		try {
@@ -107,7 +112,10 @@ class XML_cURL extends API\Abstracts\XML_Document
 			);
 			$body = substr($response->body, $header_size);
 
-			if (array_key_exists('Content-Type', $response->headers)) {
+			if (
+				$this->parse_response
+				and array_key_exists('Content-Type', $response->headers)
+			) {
 				switch ($response->headers['Content-Type']) {
 					case 'application/json':
 						$response->body = json_decode($body);
@@ -119,6 +127,14 @@ class XML_cURL extends API\Abstracts\XML_Document
 
 					case 'application/x-www-form-urlencoded':
 						parse_str($body, $response->body);
+						break;
+
+					case 'application/vnd.php.serialized':
+						$response->body = unserialize($body);
+						break;
+
+					case 'text/plain':
+						$response->body = $body;
 						break;
 
 					default:
@@ -133,7 +149,7 @@ class XML_cURL extends API\Abstracts\XML_Document
 			$response->error = $this->curlError();
 			return $response;
 		} catch(\Exception $e) {
-
+			exit($e);
 		}
 	}
 }
