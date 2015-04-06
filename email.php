@@ -53,6 +53,7 @@ class email implements API\Interfaces\Magic_Methods
 {
 	use API\Traits\Filters;
 	use API\Traits\Magic_Methods;
+	use API\Traits\Magic\Call;
 
 	/**
 	 * Email address to send to
@@ -94,7 +95,13 @@ class email implements API\Interfaces\Magic_Methods
 	 * Default array of headers
 	 * @var array
 	 */
-	protected $default_headers = [];
+	protected $default_headers = [
+		'MIME-Version' => self::MIME_VERSION,
+		'Content-Type' => [
+			self::CONTENT_TYPE,
+			'charset' => self::CHARSET
+		]
+	];
 
 	const WRAP_AT = 70;
 	const MAX_LENGTH = 1000;
@@ -127,23 +134,15 @@ class email implements API\Interfaces\Magic_Methods
 		$this->to = $to;
 		$this->subject = $subject;
 		$this->message = $message;
-		$this->default_headers = [
-			'MIME-Version' => $this::MIME_VERSION,
-			'Content-Type' => [
-				$this::CONTENT_TYPE,
-				'charset' => $this::CHARSET
-			],
-			//'To' => $this->recepients(),
-			'From' => array_key_exists('SERVER_ADMIN', $_SERVER) ? $_SERVER['SERVER_ADMIN'] : null,
-			'X-Mailer' => 'PHP/' . PHP_VERSION
-		];
-		if (is_array($additional_headers)) {
-			$this->additional_headers = $additional_headers;
+		$this->{'X-Mailer'} = 'PHP/' . PHP_VERSION;
+
+		if (array_key_exists('SERVER_ADMIN', $_SERVER)) {
+			$this->From = $_SERVER['SERVER_ADMIN'];
 		}
 
-		if (is_array($additional_paramaters)) {
-			$this->additional_paramaters = $additional_paramaters;
-		}
+		$this->additional_headers = $additional_headers;
+
+		$this->additional_paramaters = $additional_paramaters;
 	}
 
 	/**
@@ -161,11 +160,14 @@ class email implements API\Interfaces\Magic_Methods
 			$this->default_headers, $this->additional_headers
 		));
 
-		return join($this::NL, array_map(function($key, $value) {
-			$key = preg_replace('/[' . $this::HEADER_FILTER . ']/', '-', strtoupper($key));
+		return join(self::NL, array_map(function($key, $value) {
+			$key = preg_replace('/[' . self::HEADER_FILTER . ']/', '-', strtoupper($key));
 			if (is_array($value)) {
-				return "{$key}:" .  join('; ', array_map(function($sub_key, $sub_value) {
-					return (is_string($sub_key)) ? "{$sub_key}={$sub_value}" : "{$sub_value}";
+				return "{$key}:" .  join('; ', array_map(function($sub_key, $sub_value)
+				{
+					return (is_string($sub_key))
+					? "{$sub_key}={$sub_value}"
+					: "{$sub_value}";
 				}, array_keys($value), array_values($value)));
 			} elseif (is_string($value)) {
 				return "{$key}: $value";
@@ -222,16 +224,16 @@ class email implements API\Interfaces\Magic_Methods
 	{
 		return str_replace(
 			PHP_EOL,
-			$this::NL,
+			self::NL,
 			($html) ?
 				wordwrap(
 					$this->asHTML(),
-					$this::MAX_LENGTH,
-					$this::NL
+					self::MAX_LENGTH,
+					self::NL
 				) : wordwrap(
 					strip_tags($this->message),
-					$this::WRAP_AT,
-					$this::NL
+					self::WRAP_AT,
+					self::NL
 				)
 		);
 	}
@@ -246,8 +248,8 @@ class email implements API\Interfaces\Magic_Methods
 	{
 		return wordwrap(
 			strip_tags($this->subject),
-			$this::WRAP_AT,
-			$this::NL
+			self::WRAP_AT,
+			self::NL
 		);
 	}
 
@@ -259,17 +261,15 @@ class email implements API\Interfaces\Magic_Methods
 	 */
 	protected function asHTML()
 	{
-		$dom = new \DOMDocument('1.0', $this::CHARSET);
-		$dom->loadHTML($this::HTML_DOCTYPE . $this->message);
+		$dom = new \DOMDocument('1.0', self::CHARSET);
+		$dom->loadHTML(self::HTML_DOCTYPE . $this->message);
 		$html = $dom->getElementsByTagName('html')->item(0);
 		$body = $dom->getElementsByTagName('body')->item(0);
 		$head = $dom->createElement('head');
 		$html->insertBefore($head, $body);
 		$meta = $dom->createElement('meta');
 		$head->appendChild($meta);
-		$charset = $dom->createAttribute('charset');
-		$charset->value = $this::CHARSET;
-		$meta->appendChild($charset);
+		$meta->setAttribute('charset', self::CHARSET);
 		$title = $dom->createElement('title', $this->trimSubject());
 		$head->appendChild($title);
 		return $dom->saveHTML();
@@ -290,7 +290,7 @@ class email implements API\Interfaces\Magic_Methods
 		if ($html) {
 			$this->additional_headers['Content-Type'] = [
 				'text/html',
-				'charset' => $this::CHARSET
+				'charset' => self::CHARSET
 			];
 		}
 
