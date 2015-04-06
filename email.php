@@ -22,6 +22,8 @@
  */
 
 namespace shgysk8zer0\Core;
+
+use \shgysk8zer0\Core_API as API;
 /**
  * Simple PHP mail class using mail()
  *
@@ -48,6 +50,8 @@ namespace shgysk8zer0\Core;
  */
 class email
 {
+	use API\Traits\Filters;
+
 	public $to = null, $from = null, $subject = null, $message = null;
 	protected $additional_headers = [], $additional_paramaters = [],
 	$default_headers = null;
@@ -207,23 +211,12 @@ class email
 	protected function recepients()
 	{
 		if (is_string($this->to)) {
-			return join(', ', array_filter(explode(', ', $this->to), [$this ,'is_email']));
+			return join(', ', array_filter(explode(', ', $this->to), [$this ,'isEmail']));
 		} elseif (is_array($this->to)) {
-			return join(', ', array_filter($this->to, [$this, 'is_email']));
+			return join(', ', array_filter($this->to, [$this, 'isEmail']));
 		} elseif (is_object($this->to)) {
-			return join(', ', array_filter(get_object_vars($this->to), [$this, 'is_email']));
+			return join(', ', array_filter(get_object_vars($this->to), [$this, 'isEmail']));
 		}
-	}
-
-	/**
-	 * Verify that $address is a valid email address
-	 *
-	 * @param  string  $address [Text which should be an email address]
-	 * @return boolean          [Whether or not it matches the specification]
-	 */
-	public function isEmail($address)
-	{
-		return filter_var($address, FILTER_VALIDATE_EMAIL);
 	}
 
 	/**
