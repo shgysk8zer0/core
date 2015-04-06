@@ -32,6 +32,7 @@ use \shgysk8zer0\Core_API as API;
  *
  * You should verify that you have an email service installed.
  * On Ubuntu, I use ssmtp (see link for manpage)
+ * @see https://php.net/manual/en/function.mail.php
  * @example
  * //Can be either a comma separated string or an array
  * $to = ['user1@domain.com', 'user2@domain.com'];
@@ -48,39 +49,79 @@ use \shgysk8zer0\Core_API as API;
  *
  * $success = $mail->send(true);
  */
-class email
+class email implements API\Interfaces\Magic_Methods
 {
 	use API\Traits\Filters;
+	use API\Traits\Magic_Methods;
 
-	public $to = null, $from = null, $subject = null, $message = null;
-	protected $additional_headers = [], $additional_paramaters = [],
-	$default_headers = null;
+	/**
+	 * Email address to send to
+	 * @var string
+	 */
+	public $to = null;
 
-	const WRAP_AT = 70,
-		MAX_LENGTH = 1000,
-		HEADER_FILTER = '^A-z\-',
-		NL = "\r\n",
-		CHARSET = 'UTF-8',
-		CONTENT_TYPE = 'text/plain',
-		MIME_VERSION = '1.0',
-		HTML_DOCTYPE = '<!doctype html>';
+	/**
+	 * Email address to send from
+	 * @var string
+	 */
+	public $from = null;
+
+	/**
+	 * Subject of the email
+	 * @var string
+	 */
+	public $subject = null;
+
+	/**
+	 * Email body
+	 * @var string
+	 */
+	public $message = null;
+
+	/**
+	 * Array of additional headers, such as Reply-To
+	 * @var array
+	 */
+	protected $additional_headers = [];
+
+	/**
+	 * Can be used to pass additional flags as command line options
+	 * @var array
+	 */
+	protected $additional_paramaters = [];
+
+	/**
+	 * Default array of headers
+	 * @var array
+	 */
+	protected $default_headers = [];
+
+	const WRAP_AT = 70;
+	const MAX_LENGTH = 1000;
+	const HEADER_FILTER = '^A-z\-';
+	const NL = "\r\n";
+	const CHARSET = 'UTF-8';
+	const CONTENT_TYPE = 'text/plain';
+	const MIME_VERSION = '1.0';
+	const HTML_DOCTYPE = '<!doctype html>';
+	const MAGIC_PROPERTY = 'additional_headers';
 
 	/**
 	 * Initialize the class and set its default variable from arguments
 	 * $default_headers is built dynamically based on SERVER_ADMIN and
 	 *
-	 * @param mixed $to                     [String of array of recipients]
-	 * @param string $subject               [The subject of the email]
-	 * @param string $message               [Email body text]
-	 * @param array  $additional_headers    [Things like 'From', 'To', etc]
-	 * @param array  $additional_paramaters [Additional command line arguments]
+	 * @param mixed $to                     String of array of recipients
+	 * @param string $subject               The subject of the email
+	 * @param string $message               Email body text
+	 * @param array  $additional_headers    Things like 'From', 'To', etc
+	 * @param array  $additional_paramaters Additional command line arguments
 	 */
 	public function __construct(
 		$to = null,
 		$subject = null,
 		$message = null,
-		array $additional_headers = null,
-		array $additional_paramaters = null
+		array $additional_headers = array(),
+		array $additional_paramaters = array()
 	)
 	{
 		$this->to = $to;
@@ -102,63 +143,6 @@ class email
 
 		if (is_array($additional_paramaters)) {
 			$this->additional_paramaters = $additional_paramaters;
-		}
-	}
-
-	/**
-	 * Set a value in $additional_headers using Magic Method
-	 *
-	 * @param string $key  [Key in $additional_headers]
-	 * @param mixed $value [Value to set it to]
-	 * @return void
-	 *
-	 * @example $mail->From = 'user@domain.com';
-	 */
-	public function __set($key, $value)
-	{
-		$this->additional_headers[str_replace('_', '-', $key)] = $value;
-	}
-
-	/**
-	 * Retrieve a value from $additional_headers using Magic Method
-	 *
-	 * @param string $key [Key in $additional_headers]
-	 * @return mixed      [The value of $additional_headers[$key]]
-	 *
-	 * @example echo $mail->From;
-	 */
-	public function __get($key)
-	{
-		return ($this->__isset($key))
-			? $this->additional_headers[str_replace('_', '-', $key)]
-			: null;
-	}
-
-	/**
-	 * Check existance of $key in $additional_headers using Magic Method
-	 *
-	 * @param string $key [Key in $additional_headers]
-	 * @return boolean
-	 *
-	 * @example isset($mail->From)
-	 */
-	public function __isset($key)
-	{
-		return (array_key_exists(str_replace('_', '-', $key), $this->additional_headers));
-	}
-
-	/**
-	 * Remove from $additional_headers using Magic Method
-	 *
-	 * @param string $key [Key in $additional_headers]
-	 * @return void
-	 *
-	 * @example unset($mail->From)
-	 */
-	public function __unset($key)
-	{
-		if ($this->__isset($key)) {
-			unset($this->additional_headers[str_replace('_', '-', $key)]);
 		}
 	}
 
@@ -231,7 +215,7 @@ class email
 	 * In both cases, the only valid newline charter is "\r\n", so replace
 	 * default newline with that.
 	 *
-	 * @param  bool $html   [Whether or not HTML output is desired]
+	 * @param  bool $html   Whether or not HTML output is desired
 	 * @return string
 	 */
 	protected function convertMessage($html = false)
@@ -298,8 +282,8 @@ class email
 	 * this, the class variables are their original values. None are updated
 	 * in this method, mail() only gets the output of the conversions.
 	 *
-	 * @param  boolean $html [Is this an HTML email?]
-	 * @return boolean       [Success of mail()]
+	 * @param  boolean $html Is this an HTML email?
+	 * @return boolean       Success of mail()
 	 */
 	public function send($html = false)
 	{
