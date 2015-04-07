@@ -20,7 +20,7 @@ trait PDO
 	*/
 	public static function load($con = 'connect')
 	{
-		trigger_error(__METHOD__ . 'is deprecated', E_USER_DEPRECATED);
+		trigger_error(__METHOD__ . ' is deprecated', E_USER_DEPRECATED);
 		if (!array_key_exists($con, self::$instances)) {
 			self::$instances[$con] = new self($con);
 		}
@@ -41,7 +41,7 @@ trait PDO
 
 	public function prepare($query)
 	{
-		trigger_error(__METHOD__ . 'is deprecated', E_USER_DEPRECATED);
+		trigger_error(__METHOD__ . ' is deprecated', E_USER_DEPRECATED);
 		$this->prepared = $this->pdo->prepare($query);
 		return $this;
 	}
@@ -58,7 +58,7 @@ trait PDO
 	*/
 	public function bind(array $array)
 	{
-		trigger_error(__METHOD__ . 'is deprecated', E_USER_DEPRECATED);
+		trigger_error(__METHOD__ . ' is deprecated', E_USER_DEPRECATED);
 		foreach($array as $paramater => $value) {
 			$this->prepared->bindValue(':' . $paramater, $value);
 		}
@@ -74,7 +74,7 @@ trait PDO
 
 	public function execute()
 	{
-		trigger_error(__METHOD__ . 'is deprecated', E_USER_DEPRECATED);
+		trigger_error(__METHOD__ . ' is deprecated', E_USER_DEPRECATED);
 		if ($this->prepared->execute()) {
 			return $this;
 		}
@@ -89,7 +89,7 @@ trait PDO
 	*/
 	public function get_results($n = null)
 	{
-		trigger_error(__METHOD__ . 'is deprecated', E_USER_DEPRECATED);
+		trigger_error(__METHOD__ . ' is deprecated', E_USER_DEPRECATED);
 		$results = $this->prepared->fetchAll(\PDO::FETCH_CLASS);
 		//If $n is set, return $results[$n] (row $n of results) Else return all
 		if (empty($results)) {
@@ -109,7 +109,7 @@ trait PDO
 	*/
 	public function close()
 	{
-		trigger_error(__METHOD__ . 'is deprecated', E_USER_DEPRECATED);
+		trigger_error(__METHOD__ . ' is deprecated', E_USER_DEPRECATED);
 		unset($this->pdo);
 		unset($this);
 	}
@@ -122,7 +122,7 @@ trait PDO
 	*/
 	public function query($query)
 	{
-		trigger_error(__METHOD__ . 'is deprecated', E_USER_DEPRECATED);
+		trigger_error(__METHOD__ . ' is deprecated', E_USER_DEPRECATED);
 		return $this->pdo->query((string)$query);
 	}
 
@@ -135,7 +135,7 @@ trait PDO
 	*/
 	public function fetch_array($query = null, $n = null)
 	{
-		trigger_error(__METHOD__ . 'is deprecated', E_USER_DEPRECATED);
+		trigger_error(__METHOD__ . ' is deprecated', E_USER_DEPRECATED);
 		$data = $this->query($query)->fetchAll(\PDO::FETCH_CLASS);
 		if (is_array($data)) {
 			return (is_int($n)) ? $data[$n] : $data;
@@ -153,7 +153,7 @@ trait PDO
 	*/
 	public function get_table($table, $these = '*')
 	{
-		trigger_error(__METHOD__ . 'is deprecated', E_USER_DEPRECATED);
+		trigger_error(__METHOD__ . ' is deprecated', E_USER_DEPRECATED);
 		if ($these !== '*') {
 			$these ="`{$these}`";
 		}
@@ -174,7 +174,7 @@ trait PDO
 	*/
 	public function sql_table($query = null, $caption = null)
 	{
-		trigger_error(__METHOD__ . 'is deprecated', E_USER_DEPRECATED);
+		trigger_error(__METHOD__ . ' is deprecated', E_USER_DEPRECATED);
 		$results = $this->fetch_array($query);
 
 		if (is_array($results) and count($results)) {
@@ -227,7 +227,7 @@ trait PDO
 	*/
 	public function table_headers($table = null)
 	{
-		trigger_error(__METHOD__ . 'is deprecated', E_USER_DEPRECATED);
+		trigger_error(__METHOD__ . ' is deprecated', E_USER_DEPRECATED);
 		$query = "DESCRIBE {$this->escape($table)}";
 		$results = $this->pdo->query($query);
 		$headers = $results->fetchAll(\PDO::FETCH_COLUMN, 0);
@@ -242,7 +242,7 @@ trait PDO
 	*/
 	public function name_value($table = null)
 	{
-		trigger_error(__METHOD__ . 'is deprecated', E_USER_DEPRECATED);
+		trigger_error(__METHOD__ . ' is deprecated', E_USER_DEPRECATED);
 		$data = $this->fetch_array("
 			SELECT
 			`name`,
@@ -266,7 +266,7 @@ trait PDO
 	*/
 	public function reset_table($table = null)
 	{
-		trigger_error(__METHOD__ . 'is deprecated', E_USER_DEPRECATED);
+		trigger_error(__METHOD__ . ' is deprecated', E_USER_DEPRECATED);
 		$this->escape($table);
 		$this->query("DELETE FROM `{$table}`");
 		$this->query("ALTER TABLE `{$table}` AUTO_INCREMENT = 1");
@@ -284,7 +284,7 @@ trait PDO
 	*/
 	public function insert_into($table, array $values)
 	{
-		trigger_error(__METHOD__ . 'is deprecated', E_USER_DEPRECATED);
+		trigger_error(__METHOD__ . ' is deprecated', E_USER_DEPRECATED);
 		return $this->prepare(
 		"INSERT INTO `{$this->escape($table)}` (
 		{$this->columns($values)}

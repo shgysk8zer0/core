@@ -10,7 +10,7 @@ trait Legacy_PDO
 	*/
 	public function __call($name, array $arguments)
 	{
-		trigger_error(__METHOD__ . 'is deprecated', E_USER_DEPRECATED);
+		trigger_error(__METHOD__ . ' is deprecated', E_USER_DEPRECATED);
 		$name = strtolower((string)$name);
 		$act = substr($name, 0, 3);
 		$key = str_replace(' ', '-', substr($name, 3));
@@ -39,7 +39,7 @@ trait Legacy_PDO
 	*/
 	final public function keys()
 	{
-		trigger_error(__METHOD__ . 'is deprecated', E_USER_DEPRECATED);
+		trigger_error(__METHOD__ . ' is deprecated', E_USER_DEPRECATED);
 		return array_keys($this->data);
 	}
 
@@ -52,7 +52,7 @@ trait Legacy_PDO
 	*/
 	final public function columns(array $arr)
 	{
-		trigger_error(__METHOD__ . 'is deprecated', E_USER_DEPRECATED);
+		trigger_error(__METHOD__ . ' is deprecated', E_USER_DEPRECATED);
 		return join(', ', array_map(function($key) {
 			return "`{$key}`";
 		}, array_map([$this, 'escape'], array_keys($arr))));
@@ -67,7 +67,7 @@ trait Legacy_PDO
 	*/
 	final public function prepare_keys(array $arr = array())
 	{
-		trigger_error(__METHOD__ . 'is deprecated', E_USER_DEPRECATED);
+		trigger_error(__METHOD__ . ' is deprecated', E_USER_DEPRECATED);
 		return array_map(function($key) {
 			return ':' . preg_replace('/\s/', '_', $key);
 		}, array_map([$this, 'escape'], array_keys($arr)));
@@ -75,7 +75,7 @@ trait Legacy_PDO
 
 	final public function name_value($table)
 	{
-		trigger_error(__METHOD__ . 'is deprecated', E_USER_DEPRECATED);
+		trigger_error(__METHOD__ . ' is deprecated', E_USER_DEPRECATED);
 		return $this->nameValue($table);
 	}
 
@@ -87,7 +87,7 @@ trait Legacy_PDO
 	*/
 	final public function bind_keys(array $arr = array())
 	{
-		trigger_error(__METHOD__ . 'is deprecated', E_USER_DEPRECATED);
+		trigger_error(__METHOD__ . ' is deprecated', E_USER_DEPRECATED);
 		return array_map(function($key) {
 			return preg_replace('/\s/', '_', $key);
 		}, array_map([$this, 'escape'], array_keys($arr)));
@@ -101,7 +101,7 @@ trait Legacy_PDO
 	*/
 	final public function show_tables()
 	{
-		trigger_error(__METHOD__ . 'is deprecated', E_USER_DEPRECATED);
+		trigger_error(__METHOD__ . ' is deprecated', E_USER_DEPRECATED);
 		return $this->showTables();
 	}
 
@@ -113,7 +113,7 @@ trait Legacy_PDO
 	*/
 	final public function show_databases()
 	{
-		trigger_error(__METHOD__ . 'is deprecated', E_USER_DEPRECATED);
+		trigger_error(__METHOD__ . ' is deprecated', E_USER_DEPRECATED);
 		return $this('SHOW DATABASES');
 	}
 
@@ -130,7 +130,7 @@ trait Legacy_PDO
 	*/
 	final public function columns_from(array $array = array())
 	{
-		trigger_error(__METHOD__ . 'is deprecated', E_USER_DEPRECATED);
+		trigger_error(__METHOD__ . ' is deprecated', E_USER_DEPRECATED);
 		$keys = array_keys($array);
 		$key_walker = function(&$key) {
 			$this->escape($key);
@@ -150,7 +150,7 @@ trait Legacy_PDO
 	 */
 	final public function fetch_array($query, $n = null)
 	{
-		trigger_error(__METHOD__ . 'is deprecated', E_USER_DEPRECATED);
+		trigger_error(__METHOD__ . ' is deprecated', E_USER_DEPRECATED);
 		return $this->fetchArray($query);
 	}
 }
