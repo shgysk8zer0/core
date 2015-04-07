@@ -14,11 +14,15 @@ trait PDO
 	 */
 	final public function nameValue($table)
 	{
-		$results = new \stdClass();
-		foreach ($this("SELECT `name`, `value` FROM `{$table}`") as $row) {
-			$results->{$row->name} = $row->value;
-		}
-		return $results;
+		return array_reduce(
+			$this("SELECT `name`, `value` FROM `{$table}`"),
+			function(\stdClass $carry, \stdClass $item)
+			{
+				$carry->{$item->name} = $item->value;
+				return $carry;
+			},
+			new \stdClass()
+		);
 	}
 
 	/**
@@ -35,7 +39,7 @@ trait PDO
 
 	/**
 	 * Clears all data in a table, possibly resetting auto_increment
-	 * 
+	 *
 	 * @param string $table    Name of the table
 	 * @param bool   $auto_inc Whether or not to reset auto_increment
 	 * @return self
