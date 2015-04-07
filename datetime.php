@@ -29,7 +29,7 @@ use \shgysk8zer0\Core_API as API;
  * time fomats easier to use and remember.
  * @uses \shgysk8zer0\Core_API\Abstracts\DateTime_Formats
  */
-class DateTime extends API\Abstracts\DateTime_Formats implements API\Interfaces\DateTime
+class DateTime extends API\Abstracts\DateTime_Formats
 {
 	use API\Traits\DateTime;
 }
