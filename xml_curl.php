@@ -80,7 +80,12 @@ class XML_cURL extends API\Abstracts\XML_Document
 		array $headers = array()
 	)
 	{
-		parent::__construct();
+		parent::__construct(
+			$this::VERSION,
+			$this::ENCODING,
+			$this::ROOT_EL,
+			$this::XMLNS
+		);
 		$this->curlInit($url);
 		$this->headers['Accept'] = join(',', $this->accept);
 		$headers = array_merge($this->headers, $headers);
