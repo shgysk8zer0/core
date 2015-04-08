@@ -48,7 +48,7 @@ class File implements API\Interfaces\File_Resources
 		$mode             = self::DEFAULT_MODE
 	)
 	{
-		$this->fopen($filename, $mode, $use_include_path);
+		$this->fopen($filename, $use_include_path, $mode);
 		$this->flock(LOCK_EX);
 	}
 
