@@ -44,8 +44,8 @@ class File implements API\Interfaces\File_Resources
 	 */
 	public function __construct(
 		$filename         = self::TEMP_FILE,
-		$mode             = self::DEFAULT_MODE,
-		$use_include_path = false
+		$use_include_path = false,
+		$mode             = self::DEFAULT_MODE
 	)
 	{
 		$this->fopen($filename, $mode, $use_include_path);
@@ -69,7 +69,7 @@ class File implements API\Interfaces\File_Resources
 	 */
 	final public function __invoke($string)
 	{
-		return $this->fwrite($string . PHP_EOL);
+		return $this->filePutContents($string . PHP_EOL, FILE_APPEND);
 	}
 
 	/**
@@ -79,11 +79,6 @@ class File implements API\Interfaces\File_Resources
 	 */
 	final public function __toString()
 	{
-		$this->rewind();
-		$contents = '';
-		while (! $this->feof()) {
-			$contents .= $this->fgets();
-		}
-		return $contents;
+		return $this->fileGetContents();
 	}
 }
