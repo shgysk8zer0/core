@@ -179,7 +179,7 @@ class Pages implements API\Interfaces\Magic_Methods
 				}
 
 				foreach (explode(',', $this->data->keywords) as $tag) {
-					$post->tags .= '<a href="' . URL . '/tags/' . urlencode(trim($tag)) . '" rel="tag">' . trim($tag) . "</a>";
+					$post->tags .= '<a href="' . URL . 'tags/' . urlencode(trim($tag)) . '" rel="tag">' . trim($tag) . "</a>";
 				}
 
 				$time = strtotime($this->data->created);
@@ -218,7 +218,7 @@ class Pages implements API\Interfaces\Magic_Methods
 						->description($post->description)
 						->author($post->author)
 						->author_url($post->author_url)
-						->url(($post->url === '')? URL : URL .'/posts/' . $post->url)
+						->url(($post->url === '')? URL : URL .'posts/' . $post->url)
 						->date(date('D M jS, Y \a\t h:iA', strtotime($post->created)));
 					$this->content .= "{$template}";
 				}, array_filter($this->data, 'is_object'));
