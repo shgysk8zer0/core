@@ -53,7 +53,8 @@ use \shgysk8zer0\Core_API as API;
  * echo $table
  * @todo Extend DOMDocument and use that for building HTML
  */
-final class Table implements Interfaces\Table, API\Interfaces\Magic_Methods
+final class Table
+implements Interfaces\Table, API\Interfaces\Magic_Methods, API\Interfaces\String
 {
 	use API\Traits\Magic_Methods;
 

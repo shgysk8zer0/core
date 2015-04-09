@@ -39,7 +39,8 @@ use \shgysk8zer0\Core_API as API;
  * )->wait(1)
  * }
  */
-final class Server_Event implements API\Interfaces\Magic_Methods, API\Interfaces\AJAX_DOM
+final class Server_Event
+implements API\Interfaces\Magic_Methods, API\Interfaces\AJAX_DOM, API\Interfaces\String
 {
 	use API\Traits\Singleton;
 	use API\Traits\Magic_Methods;

@@ -27,7 +27,7 @@ use \shgysk8zer0\Core_API as API;
  * Creates an XML Document for a search plugin
  * @see https://developer.mozilla.org/en-US/Add-ons/Creating_OpenSearch_plugins_for_Firefox
  */
-final class OpenSearch extends API\Abstracts\XML_Document //\shgysk8zer0\Core_API\Abstracts\XML_Document
+final class OpenSearch extends API\Abstracts\XML_Document implements API\Interfaces\String
 {
 	use API\Traits\Filters;
 	use API\Traits\XML_Exception;

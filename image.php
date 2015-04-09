@@ -32,7 +32,7 @@ namespace shgysk8zer0\Core;
  * @var string   $extension  [Extension with leading "."]
  * @var string   $mime_type  [image/jpeg|gif|png]
  */
-class Image
+class Image implements API\Interfaces\String
 {
 	const JPG = IMAGETYPE_JPEG, PNG = IMAGETYPE_PNG, GIF = IMAGETYPE_GIF;
 	protected $image, $fname, $type, $extension, $width, $height;
