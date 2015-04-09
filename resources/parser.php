@@ -38,13 +38,13 @@ final class Parser implements
 	use API\Traits\Magic_Methods;
 	use API\Traits\Singleton;
 
-	const MAGIC_PROPERTY = 'data';
+	const MAGIC_PROPERTY = '_data';
 
 	/**
 	 * Private var to store parsed data
 	 * @var array
 	 */
-	private $data = [];
+	private $_data = [];
 
 	/**
 	 * Static method to parse file & return parsed contents
@@ -54,7 +54,7 @@ final class Parser implements
 	 */
 	public static function parseFile($file)
 	{
-		return static::load($file)->data;
+		return static::load($file)->{self::MAGIC_PROPERTY};
 	}
 
 	/**
@@ -64,6 +64,6 @@ final class Parser implements
 	 */
 	public function __construct($file)
 	{
-		$this->data = $this->parse($file, true);
+		$this->{$this::MAGIC_PROPERTY} = $this->parse($file, true);
 	}
 }
