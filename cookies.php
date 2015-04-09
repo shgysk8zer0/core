@@ -19,6 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 namespace shgysk8zer0\Core;
+
+use \shgysk8zer0\Core_API as API;
 /**
  * Quick and easy way of setting/getting cookies
  *
@@ -27,9 +29,10 @@ namespace shgysk8zer0\Core;
  * $cookies->cookie_name = 'Value';
  * $cookie->existing_cookie //Returns value of $_COOKIES['existing-cookie']
  */
-class cookies implements \shgysk8zer0\Core_API\Interfaces\Magic_Methods
+final class Cookies implements API\Interfaces\Magic_Methods, \Iterator
 {
-	use \shgysk8zer0\Core_API\Traits\Magic\Call;
+	use API\Traits\Magic\Call;
+	use API\Traits\Singleton;
 
 	/**
 	 * Timestamp of when the cookie expires
@@ -47,7 +50,7 @@ class cookies implements \shgysk8zer0\Core_API\Interfaces\Magic_Methods
 	 * Name of server/domain the cookie is valid at
 	 * @var string
 	 */
-	public $domain = 'localhost';
+	protected $domain = 'localhost';
 
 	/**
 	 * Use cookie only over HTTPS?
@@ -62,57 +65,31 @@ class cookies implements \shgysk8zer0\Core_API\Interfaces\Magic_Methods
 	public $httponly = false;
 
 	/**
-	 * Static instance of class to prevent multiple loadings/instances
-	 * @var \shgysk8zer0\Core\Cookies
+	 * Current position of the Iterator. Incremented by `next` & reset by `rewind`
+	 * @var integer
 	 */
-	private static $instance = null;
-
-	/**
-	 * Static method for creating class
-	 *
-	 * See __construct documentation
-	 */
-	public static function load(
-		$expires = 0,
-		$path = null,
-		$domain = null,
-		$secure = null,
-		$httponly = null
-	)
-	{
-		if (is_null(self::$instance)) {
-			self::$instance = new self(
-				$expires = 0,
-				$path = null,
-				$domain = null,
-				$secure = null,
-				$httponly = null
-			);
-		}
-
-		return self::$instance;
-	}
+	private $_iterator_position = 0;
 
 	/**
 	 * Initializes cookies class, setting all properties (similar to arguments)
 	 *
-	 * @param mixed   $expires  Takes a variety of date formats, including timestamps
-	 * @param string  $path     example.com/path would be /path
 	 * @param string  $domain   Whether or not to limit cookie to https connections
+	 * @param string  $path     example.com/path would be /path
+	 * @param mixed   $expires  Takes a variety of date formats, including timestamps
 	 * @param bool    $secure   Setting to true prevents access by JavaScript, etc
 	 * @param bool    $httponly Setting to true prevents access by JavaScript, etc
 	 * @example $cookies = new cookies('Tomorrow', '/path', 'example.com', true, true);
 	 */
 	public function __construct(
-		$expires = 0,
-		$path = null,
-		$domain = null,
-		$secure = null,
-		$httponly = null
+		$domain   = 'localhost',
+		$path     = '/',
+		$expires  = 0,
+		$secure   = false,
+		$httponly = false
 	)
 	{
 		$this->expires = (int) is_numeric($expires)
-			? $expires
+			? (int)$expires
 			: strtotime($expires);
 
 		$this->path = (is_string($path))
@@ -138,16 +115,18 @@ class cookies implements \shgysk8zer0\Core_API\Interfaces\Magic_Methods
 	 * Sets a cookie using only $name and $value. All
 	 * other paramaters set in __construct
 	 *
-	 * @param string $name   Name of cookie to set
+	 * @param string $key   Name of cookie to set
 	 * @param string $value  Value to set it to
 	 * @example $cookies->test = 'Works'
 	 */
-	public function __set($name, $value)
+	public function __set($key, $value)
 	{
+		$this->_convertKey($key);
+		$_COOKIE[$key] = $value;
 		setcookie(
-			str_replace('_', '-', $name),
+			$key,
 			(string)$value,
-			(int)$this->expires,
+			$this->expires,
 			$this->path,
 			$this->domain,
 			$this->secure,
@@ -160,42 +139,106 @@ class cookies implements \shgysk8zer0\Core_API\Interfaces\Magic_Methods
 	 *
 	 * Returns the requested cookie's value or false if not set
 	 *
-	 * @param string $name   Name of cookie to get
+	 * @param string $key   Name of cookie to get
 	 * @return mixed Value of requested cookie
 	 * @example $cookies->test // returns 'Works'
 	 */
-	public function __get($name)
+	public function __get($key)
 	{
-		$name = str_replace('_', '-', $name);
-		return isset($this->$name) ? $_COOKIE[$name] : null;
+		$this->_convertKey($key);
+		return isset($this->$key) ? $_COOKIE[$key] : null;
 	}
 
 	/**
-	 * Checks if $_COOKIE[$name] exists
+	 * Checks if $_COOKIE[$key] exists
 	 *
-	 * @param string $name  Name of cookie to test if exists
+	 * @param string $key  Name of cookie to test if exists
 	 * @return bool
-	 * @example isset($cookies->test) (true)
+	 * @example isset($cookies->$key) (true)
 	 */
-	public function __isset($name)
+	public function __isset($key)
 	{
-		return array_key_exists(str_replace('_', '-', $name), $_COOKIE);
+		$this->_convertKey($key);
+		return array_key_exists($key, $_COOKIE);
 	}
 
 	/**
 	 * Completely destroys a cookie on server and client
 	 *
-	 * @param string $name  Name of cookie to remove
+	 * @param string $key  Name of cookie to remove
 	 * @return void
-	 * @example unset($cookies->$name)
+	 * @example unset($cookies->$key)
 	 */
-	public function __unset($name)
+	public function __unset($key)
 	{
-		$name = str_replace('_', '-', $name);
-		if (isset($this->$name)) {
-			unset($_COOKIE[$name]);
-			setcookie($name, null, -1, $this->path, $this->domain, $this->secure, $this->httponly);
+		$this->_convertKey($key);
+		if (isset($this->$key)) {
+			unset($_COOKIE[$key]);
+			setcookie(
+				$key,
+				null,
+				-1,
+				$this->path,
+				$this->domain,
+				$this->secure,
+				$this->httponly
+			);
 		}
+	}
+
+	/**
+	 * Gets the value @ $_iterator_position
+	 *
+	 * @param void
+	 * @return mixed Whatever the current value is
+	 */
+	public function current()
+	{
+		return $_COOKIE[$this->key()];
+	}
+
+	/**
+	 * Returns the original key (not $_iterator_position) at the current position
+	 *
+	 * @param void
+	 * @return mixed  Probably a string, but could be an integer.
+	 */
+	public function key()
+	{
+		return @array_keys($_COOKIE)[$this->_iterator_position];
+	}
+
+	/**
+	 * Increment $_iterator_position
+	 *
+	 * @param void
+	 * @return void
+	 */
+	public function next()
+	{
+		++$this->_iterator_position;
+	}
+
+	/**
+	 * Reset $_iterator_position to 0
+	 *
+	 * @param void
+	 * @return void
+	 */
+	public function rewind()
+	{
+		$this->_iterator_position = 0;
+	}
+
+	/**
+	 * Checks if data is set for current $_iterator_position
+	 *
+	 * @param void
+	 * @return bool Whether or not there is data set at current position
+	 */
+	public function valid()
+	{
+		return count($_COOKIE) > $this->_iterator_position;
 	}
 
 	/**
@@ -211,4 +254,16 @@ class cookies implements \shgysk8zer0\Core_API\Interfaces\Magic_Methods
 		return array_keys($_COOKIE);
 	}
 
+	/**
+	 * Provides a single & consistent method to convert keys in magic methods
+	 *
+	 * @param string $key Reference to the key given.
+	 * @return self
+	 * @example $this->_convertKey($key);
+	 */
+	private function _convertKey(&$key)
+	{
+		$key = str_replace('_', '-', $key);
+		return $this;
+	}
 }
