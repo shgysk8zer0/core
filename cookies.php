@@ -65,12 +65,6 @@ final class Cookies implements API\Interfaces\Magic_Methods, \Iterator
 	public $httponly = false;
 
 	/**
-	 * Current position of the Iterator. Incremented by `next` & reset by `rewind`
-	 * @var integer
-	 */
-	private $_iterator_position = 0;
-
-	/**
 	 * Initializes cookies class, setting all properties (similar to arguments)
 	 *
 	 * @param string  $domain   Whether or not to limit cookie to https connections
@@ -205,7 +199,7 @@ final class Cookies implements API\Interfaces\Magic_Methods, \Iterator
 	 */
 	public function key()
 	{
-		return @array_keys($_COOKIE)[$this->_iterator_position];
+		return key($_COOKIE);
 	}
 
 	/**
@@ -216,7 +210,7 @@ final class Cookies implements API\Interfaces\Magic_Methods, \Iterator
 	 */
 	public function next()
 	{
-		++$this->_iterator_position;
+		next($_COOKIE);
 	}
 
 	/**
@@ -227,7 +221,7 @@ final class Cookies implements API\Interfaces\Magic_Methods, \Iterator
 	 */
 	public function rewind()
 	{
-		$this->_iterator_position = 0;
+		reset($_COOKIE);
 	}
 
 	/**
@@ -238,7 +232,7 @@ final class Cookies implements API\Interfaces\Magic_Methods, \Iterator
 	 */
 	public function valid()
 	{
-		return count($_COOKIE) > $this->_iterator_position;
+		return $this->key() !== null;
 	}
 
 	/**
