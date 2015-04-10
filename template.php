@@ -38,7 +38,8 @@ class Template implements API\Interfaces\Magic_Methods, API\Interfaces\String
 {
 	use API\Traits\Singleton;
 	use API\Traits\Magic_Methods;
-	use API\Traits\File_IO;
+	use API\Traits\Files;
+	use API\Traits\Path_Info;
 
 	/**
 	 * Contents of template file
@@ -67,7 +68,7 @@ class Template implements API\Interfaces\Magic_Methods, API\Interfaces\String
 	 */
 	public function __construct($tpl, $minify = true)
 	{
-		$this->openFile(
+		$this->fopen(
 			defined('THEME')
 				? join(
 					DIRECTORY_SEPARATOR,
@@ -88,9 +89,10 @@ class Template implements API\Interfaces\Magic_Methods, API\Interfaces\String
 						$tpl . $this::TEMPLATES_EXTENSION
 					]
 				)
+			, false
 		);
 
-		$this->source = $this->readFile();
+		$this->source = $this->fileGetContents();
 
 		if ($minify) {
 			$this->minify($this->source);
