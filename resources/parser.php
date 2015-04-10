@@ -30,7 +30,7 @@ namespace shgysk8zer0\Core\Resources;
 use \shgysk8zer0\Core_API as API;
 
 final class Parser implements
-	API\Interfaces\File_IO,
+	API\Interfaces\File_Resources,
 	API\Interfaces\Magic_Methods,
 	API\Interfaces\Path_Info
 {
@@ -54,7 +54,7 @@ final class Parser implements
 	 */
 	public static function parseFile($file)
 	{
-		return static::load($file)->{self::MAGIC_PROPERTY};
+		return (object)static::load($file)->{self::MAGIC_PROPERTY};
 	}
 
 	/**
