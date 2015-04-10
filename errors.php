@@ -24,6 +24,7 @@ use \shgysk8zer0\Core_API as API;
 
 /**
  * Provides easy implementation of error reporting though several methods
+ * @deprecated
  */
 final class Errors extends PDO implements API\Interfaces\Errors
 {

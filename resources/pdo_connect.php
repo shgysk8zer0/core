@@ -104,6 +104,7 @@
 		 *
 		 * @param string $filename
 		 * @return boolean
+		 * @deprecated
 		 */
 		public function dump($filename = null)
 		{

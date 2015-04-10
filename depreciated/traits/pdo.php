@@ -27,6 +27,7 @@ namespace shgysk8zer0\Core\Depreciated\Traits;
 * @todo Remove Prepared methods and move to another class.
 * @todo Move methods into traits.
 * @todo Remove bloat methods.
+* @deprecated
 */
 trait PDO
 {

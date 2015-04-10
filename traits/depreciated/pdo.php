@@ -1,6 +1,9 @@
 <?php
 namespace shgysk8zer0\Core\Traits\Depreciated;
 
+/**
+ * @deprecated
+ */
 trait PDO
 {
 	protected $pdo, $prepared, $connect;

@@ -1,6 +1,8 @@
 <?php
 namespace shgysk8zer0\Core\Traits;
-
+/**
+ * @deprecated
+ */
 trait Legacy_Login
 {
 	final public function create_from(array $source = array())

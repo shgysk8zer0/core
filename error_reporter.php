@@ -23,7 +23,7 @@
 	 * Custom error handling.
 	 * Catch errors using custom function using set_error_handler($callback_function, ERROR_LEVEL)
 	 * @see http://us3.php.net/set_error_handler
-	 * @depricated
+	 * @deprecated
 	 */
 	class error_reporter extends PDO
 	{

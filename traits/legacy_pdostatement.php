@@ -1,6 +1,8 @@
 <?php
 namespace shgysk8zer0\Core\Traits;
-
+/**
+ * @deprecated
+ */
 trait Legacy_PDOStatement
 {
 	final public function get_results($col = null)

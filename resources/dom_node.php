@@ -18,6 +18,7 @@
 	* along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	* @version 0.9.0
 	* @package shgysk8zer0\Core
+	* @deprecated
 	*/
 	abstract class DOM_Node extends \DOMDocument
 	{

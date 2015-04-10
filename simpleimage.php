@@ -20,7 +20,7 @@ namespace shgysk8zer0\Core;
 * @var resource $image [handle for image]
 * @var int $image_type [Constant representing image type - JPEG, etc]
 * @var string $fname   [filename]
-* @depreciated
+* @deprecated
 */
 
 class SimpleImage {

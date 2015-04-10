@@ -20,6 +20,9 @@
  */
 namespace shgysk8zer0\Core;
 
+/**
+ * @deprecated
+ */
 use shgysk8zer0\Core\Resources as Resources;
 
 /**
