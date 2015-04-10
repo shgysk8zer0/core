@@ -28,11 +28,10 @@ use \shgysk8zer0\Core_API as API;
  */
 class PDO
 extends API\Abstracts\PDO_Connect
-implements API\Interfaces\PDO, API\Interfaces\File_IO, Interfaces\Legacy_PDO
+implements API\Interfaces\PDO, API\Interfaces\File_Resources
 {
 	use API\Traits\PDO;
 	use Traits\PDO;
-	use Traits\Legacy_PDO;
 	use API\Traits\Singleton;
 	use API\Traits\PDO_Backups;
 
