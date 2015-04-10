@@ -28,10 +28,10 @@ use \shgysk8zer0\Core_API as API;
  *
  * Only sets headers. No HTML or other output is created
  */
-class Magic_Cache implements API\Interfaces\File_IO, API\Interfaces\Path_Info
+class Magic_Cache implements API\Interfaces\Path_Info, API\Interfaces\File_Resources
 {
-	use API\Traits\File_IO;
-	//use API\Traits\File_Info;
+	use API\Traits\Files;
+	use API\Traits\Path_Info;
 
 	const DATE_FORMAT = 'D, d M Y H:i:s T';
 
@@ -83,15 +83,16 @@ class Magic_Cache implements API\Interfaces\File_IO, API\Interfaces\Path_Info
 	 */
 	public function __construct($file, $use_include_path = false)
 	{
-		$this->openFile($file, $use_include_path);
+		$this->getPathInfo($file, $use_include_path);
 		if (@is_string($this->absolute_path)) {
+			$this->fopen($this->absolute_path, false);
 			$this->etag = md5_file($this->absolute_path);
-			$this->mod_time = filemtime($this->absolute_path);
-			$this->size = filesize($this->absolute_path);
+			$this->mod_time = $this->filemtime();
+			$this->size = $this->filesize();
 			$this->typeByExtension();
 			$this->cacheControl();
 			$this->makeHeaders();
-			readfile($this->absolute_path);
+			$this->readfile();
 			exit();
 		} else {
 			$this->status = 404;
