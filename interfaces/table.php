@@ -21,26 +21,16 @@
 namespace shgysk8zer0\Core\Interfaces;
 
 /**
-* Class for quickly and easily creating HTML <table>s
-*
-* The arguments in the constructor become the valid cells & headers, in order.
-*
-* After that, magic __get() method appends to a $data array
-* if the $key is present in $cells.
-*
-* If you want to continue onto the next row (leaving any unset fileds
-* blank), simply call next_row(). Can also be chained using the magic __call()
-* method, which only sets $data, similarly to __set().
+ * Class for quickly and easily creating HTML <table>s
  *
- * @var array $data
- * @var array $headers
- * @var int $row
- * @var array $empty_row
- * @var string $table
- * @var string $thead
- * @var string $tfoot
- * @var string $tbody
- * @var string $captioin
+ * The arguments in the constructor become the valid cells & headers, in order.
+ *
+ * After that, magic __get() method appends to a $data array
+ * if the $key is present in $cells.
+ *
+ * If you want to continue onto the next row (leaving any unset fileds
+ * blank), simply call next_row(). Can also be chained using the magic __call()
+ * method, which only sets $data, similarly to __set().
  *
  * @example
  * $table = new table('first_name', 'last_name');
@@ -60,24 +50,6 @@ namespace shgysk8zer0\Core\Interfaces;
 interface Table
 {
 	/**
-	 * Sets up default values for class
-	 *
-	 * $data needs to be a multi-dimenstional associative array
-	 *
-	 * $row is the current row (integer) to be working on. Incremented
-	 * by next_row() method.
-	 *
-	 * $empty_row as an associative array with its keys defined by $headers,
-	 * but all of its values null
-	 *
-	 * $thead, $tfoot, & $caption are strings for those elements in a table
-	 *
-	 * @param mixed arguments (will take arguments as an array or comma separated list, either results in an array)
-	 * @example $table = new table($cells[] | 'field1'[, ...])
-	 */
-	public function __construct();
-
-	/**
 	 * Chaninable magic method, in this case only to set values
 	 *
 	 * Also calls the private set() method too add a value to a field
@@ -88,28 +60,6 @@ interface Table
 	 * @example $table->$cell[1]($value1)->$cell[2]($value2)...
 	 */
 	public function __call($cell, array $arguments);
-
-	/**
-	 * Called whenever $table is used as a string
-	 *
-	 * @return string Table's HTML
-	 */
-	public function __toString();
-
-	/**
-	 * Method to move to the next row of $data array.
-	 * Increments $row, which is used in set() method
-	 * when settings data ($data[$row]).
-	 *
-	 * Also sets the data for that row to an empty
-	 * array pre-set with the keys defined by $cells
-	 *
-	 * @param void
-	 * @return self
-	 * @example $table->next_row();
-	 * @deprecated
-	 */
-	public function next_row();
 
 	/**
 	 * Method to move to the next row of $data array.
