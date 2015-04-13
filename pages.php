@@ -184,7 +184,7 @@ class Pages implements API\Interfaces\Magic_Methods
 				$license              = new Creative_Commons_License;
 				$license->title       = $this->data->title;
 				$license->author      = $this->data->author;
-				$license->author_url  = $this->data->author_url;
+				$license->author_url  = "{$this->data->author_url}?rel=author";
 				$license->time        = $this->data->created;
 				$license->use_svg     = true;
 				$license->share_alike = true;
