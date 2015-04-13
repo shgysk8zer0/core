@@ -54,7 +54,7 @@ use \shgysk8zer0\Core_API as API;
  * @todo Extend DOMDocument and use that for building HTML
  */
 final class Table
-implements Interfaces\Table, API\Interfaces\Magic_Methods, API\Interfaces\String
+implements Interfaces\Table
 {
 	use API\Traits\Magic_Methods;
 
