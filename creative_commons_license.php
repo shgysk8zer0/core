@@ -1,72 +1,139 @@
 <?php
-
+/**
+ * @author Chris Zuber <shgysk8zer0@gmail.com>
+ * @package shgysk8zer0\Core
+ * @version 1.0.0
+ * @copyright 2015, Chris Zuber
+ * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 namespace shgysk8zer0\Core;
 
 use \shgysk8zer0\Core_API as API;
 
+/**
+ * Creative Commons License generator
+ * @uses \DOMDocument
+ * @uses \DOMElement
+ * @uses \DateTime
+ * @see https://creativecommons.org/choose/
+ */
 final class Creative_Commons_License implements API\Interfaces\String
 {
-	public $url = 'https://localhost/url';
+	const VERSION              = '1.1';
+	const ENCODING             = 'UTF-8';
+	const SVG_NS               = 'http://www.w3.org/2000/svg';
+	const XLINK_NS             = 'http://www.w3.org/1999/xlink';
+	const CC_NS                = 'http://creativecommons.org/ns#';
+	const DCT_NS               = 'http://purl.org/dc/terms/';
+	const SVG_USE              = 'images/icons/combined.svg#CreativeCommons';
+	const TIME_FORMAT          = 'l, F jS Y h:i A';
+	const ERROR_CHECKING       = true;
+	const FORMAT_OUTPUT        = true;
+	const PRESERVE_WHITETSPACE = true;
+	const CC_BASE_URL          = 'https://creativecommons.org/licenses/';
+	const CC_VERSION           = '4.0';
 
-	public $title = 'TITLLE';
+	/**
+	 * Title of work
+	 * @var string
+	 */
+	public $title = null;
 
-	public $author_url = 'htps://localhost/author_url';
+	/**
+	 * Attribute work to name
+	 * @var string
+	 */
+	public $author = null;
 
-	const TEMPLATE = '<a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
-		<img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" />
-	</a>
-	<br />
-	<span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">TITLE</span>
-	by <a xmlns:cc="http://creativecommons.org/ns#" href="http://WORK_URL" property="cc:attributionName" rel="cc:attributionURL">
-		WORK_NAME
-	</a> is licensed under a
-	<a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
-	Creative Commons Attribution 4.0 International License</a>.
-	<br />
-	Based on a work at
-	<a xmlns:dct="http://purl.org/dc/terms/" href="http://SOURCE_URL" rel="dct:source">
-		http://SOURCE_URL
-	</a>.
-	<br />
-	Permissions beyond the scope of this license may be available at
-	<a xmlns:cc="http://creativecommons.org/ns#" href="http://PERMISSIONS_URL" rel="cc:morePermissions">
-		http://PERMISSIONS_URL
-	</a>.';
+	/**
+	 * Attribute work to URL
+	 * @var string
+	 */
+	public $author_url = null;
 
-	const USED = '<details>
-		<summary>
-			<svg><use xlink:href="images/icons/combined.svg#CreativeCommons"></use></svg>
-		</summary>
-		<div>
-			<span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">
-				Hello World
-			</span> by
-			<a xmlns:cc="http://creativecommons.org/ns#" href="https://plus.google.com/+ChrisZuber?rel=author" property="cc:attributionName" rel="cc:attributionURL author" itemprop="author">
-				Chris Zuber
-			</a>
-			is licensed under a
-			<a rel="license" itemprop="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
-				Creative Commons Attribution-ShareAlike 4.0 International License
-			</a>.
-			<time datetime="1399184356" itemprop="datePublished">05/04/2014</time>
-		</div>
-	</details>';
-	const VERSION = '1.1';
-	const ENCODING = 'UTF-8';
-	const CC_IMAGE = 'https://i.creativecommons.org/l/by/4.0/88x31.png';
-	const SVG_NS = 'http://www.w3.org/2000/svg';
-	const XLINK_NS = 'http://www.w3.org/1999/xlink';
-	const CC_NS = 'http://creativecommons.org/ns#';
-	const DCT_NS = 'http://purl.org/dc/terms/';
-	const SVG_USE = 'images/icons/combined.svg#CreativeCommons';
+	/**
+	 * Source work URL
+	 * @var string
+	 */
+	public $source_url = null;
+
+	/**
+	 * More permissions URL
+	 * @var string
+	 */
+	public $permissions_url = null;
+
+	/**
+	 * Time work was created (timestamp or formatted date)
+	 * @var mixed
+	 */
+	public $time = 0;
+
+	/**
+	 * Allow adaptations of your work to be shared?
+	 * @var bool
+	 */
+	public $allow_adaptation = true;
+
+	/**
+	 * If adaptation is allowed, require "share alike"
+	 * @var bool
+	 */
+	public $share_alike = false;
+
+	/**
+	 * Allow commercial uses of your work?
+	 * @var bool
+	 */
+	public $allow_commercial_use = true;
+
+	/**
+	 * Array of all supported licenses with name and URL (segments)
+	 * @var array
+	 */
+	private $_licenses = array(
+		'Attribution'                             => 'by/',
+		'Attribution-NoDerivatives'               => 'by-nd/',
+		'Attribution-ShareAlike'                  => 'by-sa/',
+		'Attribution-NonCommercial'               => 'by-nc/',
+		'Attribution-NonCommercial-NoDerivatives' => 'by-nc-nd/',
+		'Attribution-NonCommercial-ShareAlike'    => 'by-nc-sa/'
+	);
 
 	public function __toString()
 	{
+		$type = 'Attribution';
+		if (! $this->allow_commercial_use) {
+			$type .= '-NonCommercial';
+		}
+		if (! $this->allow_adaptation) {
+			$type .= '-NoDerivatives';
+		} elseif ($this->allow_adaptation and $this->share_alike) {
+			$type .= '-ShareAlike';
+		}
+		if (is_numeric($this->time)) {
+			$this->time = date(self::TIME_FORMAT, $this->time);
+		} elseif (is_string($this->time)) {
+			$this->time = date(self::TIME_FORMAT, strtotime($this->time));
+		}
 		try{
 			$dom = new \DOMDocument('1.0', self::ENCODING);
-			$dom->strictErrorChecking = false;
-			$dom->formatOutput = true;
-			$dom->preserveWhiteSpace = true;
+			$dom->strictErrorChecking = self::ERROR_CHECKING;
+			$dom->formatOutput        = self::FORMAT_OUTPUT;
+			$dom->preserveWhiteSpace  = self::PRESERVE_WHITETSPACE;
+
 			$details = $dom->appendChild($dom->createElement('details'));
 			$summary = $details->appendChild($dom->createElement('summary'));
 			$svg = $summary->appendChild($dom->createElementNS(self::SVG_NS, 'svg'));
@@ -74,11 +141,79 @@ final class Creative_Commons_License implements API\Interfaces\String
 			$svg->setAttribute('version', self::VERSION);
 			$use = $svg->appendChild($dom->createElement('use'));
 			$use->setAttribute('xlink:href', self::SVG_USE);
+
 			unset($summary, $svg, $use);
+
 			$div = $details->appendChild($dom->createElement('div'));
-			$title = $div->appendChild($dom->createElement('span', $this->title));
-			$title->setAttribute('xmlns:dct', self::DCT_NS);
-			$title->setAttribute('property', 'dct:title');
+
+			if (is_string($this->title)) {
+				$title = $div->appendChild($dom->createElement('span', $this->title));
+				$title->setAttribute('xmlns:dct', self::DCT_NS);
+				$title->setAttribute('property', 'dct:title');
+			} else {
+				$div->appendChild($dom->createTextNode('This work'));
+			}
+
+			if (is_string($this->author) or filter_var($this->author_url, FILTER_VALIDATE_URL)) {
+				$div->appendChild($dom->createTextNode(' by '));
+
+				if (filter_var($this->author_url, FILTER_VALIDATE_URL)) {
+					if (is_string($this->author)) {
+						$author = $div->appendChild($dom->createElement('a', $this->author));
+					} else {
+						$author = $div->appendChild($dom->createElement('a', $this->author_url));
+					}
+					$author->setAttribute('href', $this->author_url);
+					$author->setAttribute('rel', 'cc:attributionURL author');
+				} else {
+					$author = $div->appendChild($dom->createElement('span', $this->author));
+				}
+
+				$author->setAttribute('property', 'cc:attributionName');
+				$author->setAttribute('itemprop', 'author');
+				$author->setAttribute('xmlns:cc', self::CC_NS);
+
+				unset($author);
+			}
+
+			$div->appendChild($dom->createTextNode(' is licensed under a '));
+			$license = $div->appendChild(
+				$dom->createElement(
+					'a',
+					'Creative Commons ' . $type . ' ' . self::CC_VERSION . ' International License'
+				)
+			);
+			$license->setAttribute('rel', 'license');
+			$license->setAttribute('itemprop', 'license');
+			$license->setAttribute('href', self::CC_BASE_URL . $this->_licenses[$type] . self::CC_VERSION . '/');
+			unset($license);
+
+			if (filter_var($this->source_url, FILTER_VALIDATE_URL)) {
+				$div->appendChild($dom->createElement('br'));
+				$div->appendChild($dom->createTextNode('Based on a work at '));
+				$source = $div->appendChild($dom->createElement('a', $this->source_url));
+				$source->setAttribute('xmlns:dct', self::DCT_NS);
+				$source->setAttribute('href', $this->source_url);
+				$source->setAttribute('rel', 'dct:source');
+				unset($source);
+			}
+
+			if (filter_var($this->permissions_url, FILTER_VALIDATE_URL)) {
+				$div->appendChild($dom->createElement('br'));
+				$div->appendChild($dom->createTextNode('Permissions beyond the scope of this license may be available at '));
+				$permissions = $div->appendChild($dom->createElement('a', $this->permissions_url));
+				$permissions->setAttribute('href', $this->source_url);
+				$permissions->setAttribute('xmlns:cc', self::CC_NS);
+				$permissions->setAttribute('rel', 'cc:morePermissions');
+
+				unset($permissions);
+			}
+
+			$div->appendChild($dom->createElement('br'));
+
+			$time = $div->appendChild($dom->createElement('time', $this->time));
+			$time->setAttribute('datetime', date(\DateTime::W3C, strtotime($this->time)));
+			$time->setAttribute('itemprop', 'datePublished');
 
 			return $dom->saveHTML($details);
 		} catch (\Exception $e) {
