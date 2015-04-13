@@ -32,18 +32,24 @@ use \shgysk8zer0\Core_API as API;
 final class Creative_Commons_License implements API\Interfaces\String
 {
 	const VERSION              = '1.1';
-	const ENCODING             = 'UTF-8';
 	const SVG_NS               = 'http://www.w3.org/2000/svg';
 	const XLINK_NS             = 'http://www.w3.org/1999/xlink';
+	const ENCODING             = 'UTF-8';
+	const CC_ALT               = 'Creative Commons License';
+	const CC_WIDTH             = 88;
+	const CC_HEIGHT            = 33;
+	const CC_BORDER            = 0;
 	const CC_NS                = 'http://creativecommons.org/ns#';
 	const DCT_NS               = 'http://purl.org/dc/terms/';
 	const SVG_USE              = 'images/icons/combined.svg#CreativeCommons';
-	const TIME_FORMAT          = 'l, F jS Y h:i A';
 	const ERROR_CHECKING       = true;
 	const FORMAT_OUTPUT        = true;
 	const PRESERVE_WHITETSPACE = true;
 	const CC_BASE_URL          = 'https://creativecommons.org/licenses/';
+	const CC_CDN               = 'https://i.creativecommons.org/l/';
+	const CC_IMG               = '/88x31.png';
 	const CC_VERSION           = '4.0';
+	const TIME_FORMAT          = 'l, F jS Y h:i A';
 
 	/**
 	 * Title of work
@@ -100,6 +106,13 @@ final class Creative_Commons_License implements API\Interfaces\String
 	public $allow_commercial_use = true;
 
 	/**
+	 * Switch over to SVG image (requires SVG use library to be self-hosted).
+	 * These images are not included and require SVG's <use>
+	 * @var bool
+	 */
+	public $use_svg = false;
+
+	/**
 	 * Array of all supported licenses with name and URL (segments)
 	 * @var array
 	 */
@@ -148,13 +161,27 @@ final class Creative_Commons_License implements API\Interfaces\String
 			// Create <details>, <summary>, & <svg>
 			$details = $dom->appendChild($dom->createElement('details'));
 			$summary = $details->appendChild($dom->createElement('summary'));
-			$svg = $summary->appendChild($dom->createElementNS(self::SVG_NS, 'svg'));
-			$svg->setAttribute('xmlns:xlink', self::XLINK_NS);
-			$svg->setAttribute('version', self::VERSION);
-			$use = $svg->appendChild($dom->createElement('use'));
-			$use->setAttribute('xlink:href', self::SVG_USE);
+			if ($this->use_svg) {
+				$svg = $summary->appendChild($dom->createElementNS(self::SVG_NS, 'svg'));
+				$svg->setAttribute('xmlns:xlink', self::XLINK_NS);
+				$svg->setAttribute('version', self::VERSION);
+				$use = $svg->appendChild($dom->createElement('use'));
+				$use->setAttribute('xlink:href', self::SVG_USE);
+				unset($svg, $use);
+			} else {
+				$image = $summary->appendChild($dom->createElement('img'));
+				$image->setAttribute('alt', self::CC_ALT);
+				$image->setAttribute('width', self::CC_WIDTH);
+				$image->setAttribute('height', self::CC_HEIGHT);
+				$image->setAttribute('border', self::CC_BORDER);
+				$image->setAttribute(
+					'src',
+					self::CC_CDN . $this->_licenses[$type] . self::CC_VERSION . self::CC_IMG
+				);
+				unset($image);
+			}
 
-			unset($summary, $svg, $use);
+			unset($summary);
 
 			// $div will serve as a container for the rest
 			$div = $details->appendChild($dom->createElement('div'));
