@@ -143,7 +143,6 @@ class Pages implements API\Interfaces\Magic_Methods
 				$post = Template::load('posts');
 				$comments = Template::load('comments');
 				$comments_section = Template::load('comments_section');
-				$license = Template::load('creative_commons');
 
 				$comments_section->title($this->data->title)
 					->home(URL)
@@ -182,20 +181,20 @@ class Pages implements API\Interfaces\Magic_Methods
 					$post->tags .= '<a href="' . URL . 'tags/' . urlencode(trim($tag)) . '" rel="tag">' . trim($tag) . "</a>";
 				}
 
-				$time = strtotime($this->data->created);
-
-				$license->title($this->data->title)
-					->author($this->data->author)
-					->author_url($this->data->author_url)
-					->date(date('m/d/Y', $time))
-					->datetime($time);
+				$license              = new Creative_Commons_License;
+				$license->title       = $this->data->title;
+				$license->author      = $this->data->author;
+				$license->author_url  = $this->data->author_url;
+				$license->time        = $this->data->created;
+				$license->use_svg     = true;
+				$license->share_alike = true;
 
 				$post->title($this->data->title)
 					->content($this->data->content)
 					->home(URL)
 					->comments("{$comments_section}")
 					->url($this->data->url)
-					->license("{$license}");
+					->license($license);
 
 				$this->content = "{$post}";
 
