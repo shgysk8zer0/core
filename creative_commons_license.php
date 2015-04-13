@@ -188,7 +188,7 @@ final class Creative_Commons_License implements API\Interfaces\String
 
 			// Create elements and attributes for title
 			if (is_string($this->title)) {
-				$title = $div->appendChild($dom->createElement('span', $this->title));
+				$title = $div->appendChild($dom->createElement('q', $this->title));
 				$title->setAttribute('xmlns:dct', self::DCT_NS);
 				$title->setAttribute('property', 'dct:title');
 			} else {
