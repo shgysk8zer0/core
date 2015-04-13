@@ -112,8 +112,15 @@ final class Creative_Commons_License implements API\Interfaces\String
 		'Attribution-NonCommercial-ShareAlike'    => 'by-nc-sa/'
 	);
 
+	/**
+	 * Dynamically build HTML string from class properties
+	 *
+	 * @param void
+	 * @return string HTML formatted license
+	 */
 	public function __toString()
 	{
+		// Build license name and key for $_licenses array
 		$type = 'Attribution';
 		if (! $this->allow_commercial_use) {
 			$type .= '-NonCommercial';
@@ -123,17 +130,22 @@ final class Creative_Commons_License implements API\Interfaces\String
 		} elseif ($this->allow_adaptation and $this->share_alike) {
 			$type .= '-ShareAlike';
 		}
+
+		// Create time from either formated date or int datetime
 		if (is_numeric($this->time)) {
 			$this->time = date(self::TIME_FORMAT, $this->time);
 		} elseif (is_string($this->time)) {
 			$this->time = date(self::TIME_FORMAT, strtotime($this->time));
 		}
+
 		try{
+			// Cerate DOMDocument and set options
 			$dom = new \DOMDocument('1.0', self::ENCODING);
 			$dom->strictErrorChecking = self::ERROR_CHECKING;
 			$dom->formatOutput        = self::FORMAT_OUTPUT;
 			$dom->preserveWhiteSpace  = self::PRESERVE_WHITETSPACE;
 
+			// Create <details>, <summary>, & <svg>
 			$details = $dom->appendChild($dom->createElement('details'));
 			$summary = $details->appendChild($dom->createElement('summary'));
 			$svg = $summary->appendChild($dom->createElementNS(self::SVG_NS, 'svg'));
@@ -144,8 +156,10 @@ final class Creative_Commons_License implements API\Interfaces\String
 
 			unset($summary, $svg, $use);
 
+			// $div will serve as a container for the rest
 			$div = $details->appendChild($dom->createElement('div'));
 
+			// Create elements and attributes for title
 			if (is_string($this->title)) {
 				$title = $div->appendChild($dom->createElement('span', $this->title));
 				$title->setAttribute('xmlns:dct', self::DCT_NS);
@@ -154,21 +168,27 @@ final class Creative_Commons_License implements API\Interfaces\String
 				$div->appendChild($dom->createTextNode('This work'));
 			}
 
+			// Create author info, validating data
 			if (is_string($this->author) or filter_var($this->author_url, FILTER_VALIDATE_URL)) {
 				$div->appendChild($dom->createTextNode(' by '));
 
 				if (filter_var($this->author_url, FILTER_VALIDATE_URL)) {
 					if (is_string($this->author)) {
+						// author is set & author_url is a valid URL
 						$author = $div->appendChild($dom->createElement('a', $this->author));
 					} else {
+						// author is not set but author_url is a valid URL
 						$author = $div->appendChild($dom->createElement('a', $this->author_url));
 					}
+					// Set URL attributes on author node
 					$author->setAttribute('href', $this->author_url);
 					$author->setAttribute('rel', 'cc:attributionURL author');
 				} else {
+					// Author is set but author_url is not set or is not valid
 					$author = $div->appendChild($dom->createElement('span', $this->author));
 				}
 
+				// Properties set on any type of author node
 				$author->setAttribute('property', 'cc:attributionName');
 				$author->setAttribute('itemprop', 'author');
 				$author->setAttribute('xmlns:cc', self::CC_NS);
@@ -177,6 +197,8 @@ final class Creative_Commons_License implements API\Interfaces\String
 			}
 
 			$div->appendChild($dom->createTextNode(' is licensed under a '));
+
+			// Create license link and set attributes (will always be set)
 			$license = $div->appendChild(
 				$dom->createElement(
 					'a',
@@ -188,6 +210,7 @@ final class Creative_Commons_License implements API\Interfaces\String
 			$license->setAttribute('href', self::CC_BASE_URL . $this->_licenses[$type] . self::CC_VERSION . '/');
 			unset($license);
 
+			// if $source_url is a valid URL, create node & set attributes
 			if (filter_var($this->source_url, FILTER_VALIDATE_URL)) {
 				$div->appendChild($dom->createElement('br'));
 				$div->appendChild($dom->createTextNode('Based on a work at '));
@@ -198,6 +221,7 @@ final class Creative_Commons_License implements API\Interfaces\String
 				unset($source);
 			}
 
+			// if $permissions_url is a valid URL, create node & set attributes
 			if (filter_var($this->permissions_url, FILTER_VALIDATE_URL)) {
 				$div->appendChild($dom->createElement('br'));
 				$div->appendChild($dom->createTextNode('Permissions beyond the scope of this license may be available at '));
@@ -211,10 +235,12 @@ final class Creative_Commons_License implements API\Interfaces\String
 
 			$div->appendChild($dom->createElement('br'));
 
+			// Create <time> and set attributes
 			$time = $div->appendChild($dom->createElement('time', $this->time));
 			$time->setAttribute('datetime', date(\DateTime::W3C, strtotime($this->time)));
 			$time->setAttribute('itemprop', 'datePublished');
 
+			// Return the HTML as a string
 			return $dom->saveHTML($details);
 		} catch (\Exception $e) {
 			return "$e";
