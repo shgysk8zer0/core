@@ -30,10 +30,33 @@ class Pages implements API\Interfaces\Magic_Methods
 {
 	use API\Traits\Singleton;
 	use API\Traits\Magic_Methods;
+	use API\Traits\URL;
 
-	const MAGIC_PROPERTY = 'data';
-	private $data, $path, $url, $status, $parsed;
-	public $content, $type;
+	const MAGIC_PROPERTY = 'url_data';
+
+	/**
+	 * Data retrieved from PDO query
+	 * @var \stdClass
+	 */
+	private $data   = null;
+
+	/**
+	 * HTTP response code
+	 * @var int
+	 */
+	private $status = 200;
+
+	/**
+	 * Content of page
+	 * @var string
+	 */
+	public $content = '';
+
+	/**
+	 * Type of page to display (posts, tags)
+	 * @var string
+	 */
+	public $type    = 'posts';
 
 	/**
 	 * Construct the class based on $url (defaulting to the current URL)
@@ -49,32 +72,13 @@ class Pages implements API\Interfaces\Magic_Methods
 
 		$pdo = PDO::load('connect.json');
 
-		if (is_string($url)) {
-			$this->url = $url;
-		} else {
-			$this->url = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'];
-			if (array_key_exists('REDIRECT_URL', $_SERVER)) {
-				$this->url .= $_SERVER['REDIRECT_URL'];
-			} elseif (array_key_exists('REQUEST_URI', $_SERVER)) {
-				$this->url .= $_SERVER['REQUEST_URI'];
-			}
-		}
-
-		$this->parsed = (object)parse_url(strtolower(urldecode($this->url)));
-		$this->path = explode('/', trim($this->parsed->path, '/'));
-		if (str_replace('/', DIRECTORY_SEPARATOR, rtrim($_SERVER['DOCUMENT_ROOT'], '/')) !== BASE) {
-			unset($this->path[0]);
-			$this->path = array_values($this->path);
-
-			if (empty($this->path)) {
-				$this->path = [''];
-			}
-		}
+		$this->parseURL($url);
+		$this->path = array_map('urldecode', explode('/', ltrim($this->path, '/')));
 
 		if ($pdo->connected) {
 			switch(current($this->path)) {
 				case 'tags':
-					if (isset($this->path[1])) {
+					if (count($this->path) > 1) {
 						$this->type = 'tags';
 						$this->data = $pdo->prepare(
 							"SELECT
@@ -94,17 +98,16 @@ class Pages implements API\Interfaces\Magic_Methods
 					break;
 
 				case 'posts':
-				case '/':
 				case '':
 					$this->type = 'posts';
-					if (count($this->path) === 1 and $this->path[0] === '') {
+					if (empty($this->path)) {
 						$this->data = $pdo->fetchArray(
 							'SELECT *
 							FROM `posts`
 							WHERE `url` = ""
 							LIMIT 1;'
 						, 0);
-					} elseif (count($this->path) >= 2) {
+					} elseif (count($this->path) >= 1) {
 						$this->data = $pdo->prepare(
 							'SELECT *
 							FROM `posts`
@@ -136,12 +139,12 @@ class Pages implements API\Interfaces\Magic_Methods
 	private function getContent()
 	{
 		$login = Login::load();
-		$DB = PDO::load('connect.json');
+		$DB    = PDO::load('connect.json');
 
 		switch($this->type) {
 			case 'posts':
-				$post = Template::load('posts');
-				$comments = Template::load('comments');
+				$post             = Template::load('posts');
+				$comments         = Template::load('comments');
 				$comments_section = Template::load('comments_section');
 
 				$comments_section->title($this->data->title)
@@ -157,7 +160,7 @@ class Pages implements API\Interfaces\Magic_Methods
 					FROM `comments`
 					WHERE `post` = :post;'
 				)->execute([
-					'post' => $this->data->url
+					'post' => $this->path
 				])->getResults();
 
 				if (is_array($results)) {
@@ -243,17 +246,18 @@ class Pages implements API\Interfaces\Magic_Methods
 	{
 		http_response_code($code);
 		$this->status = $code;
-		$this->description = 'No results for ' . $this->url;
+		$this->path = '/' . join('/', $this->path);
+		$this->description = 'No results for ' . $this->URLToString();
 		$this->keywords = '';
 		$this->title = $title_prefix .  ' (' . $code . ')';
 
-		$template = Template::load('error_page');
-		$template->home = URL;
-		$template->message = "Nothing found for <wbr /><var>{$this->url}</var>";
-		$template->link = $this->url;
+		$template          = Template::load('error_page');
+		$template->home    = URL;
+		$template->message = "Nothing found for <wbr /><var>{$this->URLToString()}</var>";
+		$template->link    = $this->url;
 
 		if ($dump) {
-			$template->dump = print_r($this->parsed, true);
+			$template->dump = print_r(parse_url($this->URLToString()), true);
 		} else {
 			$template->dump = null;
 		}
