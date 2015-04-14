@@ -239,9 +239,9 @@ class Pages implements API\Interfaces\Magic_Methods
 	 * @return void
 	 */
 	private function errorPage(
-		$code = 404,
+		$code         = 404,
 		$title_prefix = 'Woops! Not found',
-		$dump = true
+		$dump         = true
 	)
 	{
 		http_response_code($code);
