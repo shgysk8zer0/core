@@ -58,6 +58,13 @@ class Pages implements API\Interfaces\Magic_Methods
 	 */
 	public $type    = 'posts';
 
+	public $title,
+	$description,
+	$author,
+	$author_url,
+	$url,
+	$created;
+
 	/**
 	 * Construct the class based on $url (defaulting to the current URL)
 	 * Aside from other magic methods, this is the only public method.
@@ -143,6 +150,16 @@ class Pages implements API\Interfaces\Magic_Methods
 
 		switch($this->type) {
 			case 'posts':
+				$data = get_object_vars($this->data);
+				array_map(
+					function($name, $value)
+					{
+						$this->{$name} = $value;
+					},
+					array_keys($data),
+					array_values($data)
+				);
+				unset($data);
 				$post             = Template::load('posts');
 				$comments         = Template::load('comments');
 				$comments_section = Template::load('comments_section');
