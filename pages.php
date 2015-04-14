@@ -58,17 +58,47 @@ class Pages implements API\Interfaces\Magic_Methods
 	 */
 	public $type    = 'posts';
 
-	public $title,
-	$description,
-	$author,
-	$author_url,
-	$url,
-	$created;
+	/**
+	 * What appears in the <title>
+	 * @var string
+	 */
+	public $title;
+
+	/**
+	 * What appears in such things as <meta name="description">
+	 * @var string
+	 */
+	public $description;
+
+	/**
+	 * Author name (for licensing, etc)
+	 * @var string
+	 */
+	public $author;
+
+	/**
+	 * Author URL (URL for some profile)
+	 * @var string
+	 */
+	public $author_url;
+
+	/**
+	 * The URL for the post
+	 * @var string
+	 */
+	public $url;
+
+	/**
+	 * Date created
+	 * @var string
+	 */
+	public $created;
 
 	/**
 	 * Construct the class based on $url (defaulting to the current URL)
 	 * Aside from other magic methods, this is the only public method.
 	 * All else is handled during construction.
+	 *
 	 * @param string $url Any valid relative or absolute URL... Or null
 	 */
 	public function __construct($url = null)
