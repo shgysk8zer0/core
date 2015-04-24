@@ -37,32 +37,52 @@ implements API\Interfaces\PDO, API\Interfaces\Magic_Methods
 	use API\Traits\Magic_Methods;
 	use API\Traits\Magic\Call;
 	use API\Traits\PDO;
+	use API\Traits\Passwords;
 
-	const STM_CLASS = 'PDOStatement';
-	const DEFAULT_CON = 'connect.json';
-	const MAGIC_PROPERTY = 'data';
-	const USER_TABLE = '`users`';
+	const STM_CLASS        = 'PDOStatement';
+	const DEFAULT_CON      = 'connect.json';
+	const MAGIC_PROPERTY   = '_login_data';
 	const RESTRICT_SETTING = true;
+	const PASSWORD_ALGO    = PASSWORD_DEFAULT;
+	const HASH_COST        = 10;
 
 	/**
 	 * Array to store login data
 	 * @var array
 	 */
-	private $data = [
-		'user' => null,
-		'password' => null,
-		'role' => null,
+	private $_login_data = [
+		'user'      => null,
+		'password'  => null,
+		'role'      => null,
 		'logged_in' => false
 	];
 
-	public function __construct($con = self::DEFAULT_CON)
+	/**
+	 * Array for crypto cost & salt. Setting salt is a *bad* idea
+	 * @var array
+	 */
+	private $_options = array('cost' => self::HASH_COST);
+
+	/**
+	 * Table in database containing user data
+	 * @var string
+	 */
+	private $users_table = 'users';
+
+	/**
+	 * Create class instance, connect to database, and set cryptographic options
+	 * @param mixed $con     Database credentials object or file
+	 * @param array  $options Options array for passsword hashing
+	 */
+	public function __construct($con = self::DEFAULT_CON, array $options = array())
 	{
 		parent::connect(
 			$con,
 			[
-				self::ATTR_STATEMENT_CLASS => ['\\' . __NAMESPACE__ . '\\' . self::STM_CLASS]
+				\PDO::ATTR_STATEMENT_CLASS => ['\\' . __NAMESPACE__ . '\\' . self::STM_CLASS]
 			]
 		);
+		$this->_options = array_merge($this->_options, $options);
 	}
 
 	/**
@@ -84,13 +104,10 @@ implements API\Interfaces\PDO, API\Interfaces\Magic_Methods
 
 			$source = array_combine($keys, array_values($source));
 
-			$source['password'] = password_hash(
-				$source['password'],
-				PASSWORD_DEFAULT
-			);
+			$source['password'] = $this->_passwordHash($source['password'], $this::PASSWORD_ALGO, $this->_options);
 
 			return $this->prepare(
-				"INSERT INTO " . self::USER_TABLE . "(
+				"INSERT INTO `{$this->users_table}` (
 					`" . join('`, `', $keys) . "`
 				) VALUES ("
 					. join(', ', array_map(function($key) {
@@ -116,22 +133,25 @@ implements API\Interfaces\PDO, API\Interfaces\Magic_Methods
 			array_key_exists('user', $source)
 			and array_key_exists('password', $source)
 		) {
-			array_walk($source, 'trim');
 			$results = $this->prepare(
 				"SELECT *
-				FROM " . self::USER_TABLE . "
+				FROM `{$this->users_table}`
 				WHERE `user` = :user
 				LIMIT 1;"
 			)->execute(['user' => $source['user']])
 			->getResults(0);
 
-			if (password_verify(
+			if ($this->_passwordVerify(
 				$source['password'],
 				$results->password
 			) and $results->role !== 'new') {
+
+				if ($this->_passwordNeedsRehash($results->password, $this::PASSWORD_ALGO, $this->_options)) {
+					$results->password = $this->_updatePassword($source['user'], $source['password']);
+				}
 				$results->logged_in = true;
-				$this->data = array_merge(
-					$this->data,
+				$this->{$this::MAGIC_PROPERTY} = array_merge(
+					$this->{$this::MAGIC_PROPERTY},
 					get_object_vars($results)
 				);
 				return true;
@@ -141,16 +161,60 @@ implements API\Interfaces\PDO, API\Interfaces\Magic_Methods
 	}
 
 	/**
-	 * Undo the login. Destroy it. Removes session and cookie.
+	 * Undo the login. Destroy it.
 	 *
 	 * @param void
 	 * @return void
 	 */
 	public function logout()
 	{
-		$this->data = array_combine(
-			array_keys($this->data),
-			array_pad([], count($this->data), null)
+		$this->{$this::MAGIC_PROPERTY} = array_combine(
+			array_keys($this->{$this::MAGIC_PROPERTY}),
+			array_pad([], count($this->{$this::MAGIC_PROPERTY}), null)
 		);
+	}
+
+	/**
+	 * Executes query to update password for username and returns password hash
+	 *
+	 * @param string $username User to update
+	 * @param string $password New password to hash
+	 * @return string          New password hash
+	 */
+	protected function _updatePassword($username, $password)
+	{
+		$password = $this->_passwordHash($password, $this::PASSWORD_ALGO, $this->_options);
+		$update = $this->prepare(
+			"UPDATE `{$this->users_table}`
+			SET `password` = :password
+			WHERE `user`   = :username;"
+		);
+		$update->username = $username;
+		$update->pasword  =  $password;
+		$update->execute();
+		return $password;
+	}
+
+	/**
+	 * This code will benchmark your server to determine how high of a cost you can
+	 * afford. You want to set the highest cost that you can without slowing down
+	 * you server too much. 8-10 is a good baseline, and more is good if your servers
+	 * are fast enough. The code below aims for ≤ 50 milliseconds stretching time,
+	 * which is a good baseline for systems handling interactive logins.
+	 *
+	 * Based on Example #4 from password_hash documentation
+	 *
+	 * @param float $timeTarget Target hash times in seconds
+	 * @return int              Caclulated cost to use
+	 */
+	protected function _hashCostBenchmark($timeTarget = 0.05)
+	{
+		$cost = 8;
+		do {
+			$start = microtime(true);
+			password_hash("test", $this::PASSWORD_ALGO, ["cost" => ++$cost]);
+			$end = microtime(true);
+		} while (($end - $start) < $timeTarget);
+		return $cost;
 	}
 }
