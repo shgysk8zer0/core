@@ -34,36 +34,37 @@ use \shgysk8zer0\Core_API as API;
  * 	$template->$placeholder = $value;
  * 	echo $template;
  */
-class Template implements API\Interfaces\Magic_Methods, API\Interfaces\String
+class Template extends API\Abstracts\RegExp implements API\Interfaces\Magic_Methods, API\Interfaces\String
 {
 	use API\Traits\Singleton;
 	use API\Traits\Magic_Methods;
+	use API\Traits\Magic\Call_Setter;
 	use API\Traits\Files;
 	use API\Traits\Path_Info;
+
+	const MAGIC_PROPERTY      = '_replacements';
+	const SUFFIX              = '%';
+	const PREFIX              = '%';
+	const TEMPLATES_EXTENSION = '.tpl';
+	const TEMPLATES_DIR       = 'templates';
 
 	/**
 	 * Contents of template file
 	 * @var string
 	 */
-	private $source = '';
+	private $_source = '';
 
 	/**
 	 * Array containing replacements to make in template
 	 * @var array
 	 */
-	private $replacements = [];
-	const MAGIC_PROPERTY = 'replacements';
-	const MINIFY_EXPRESSION = '/<!--(?!\s*(?:\[if [^\]]+]|<!|>))(?:(?!-->).)*-->/';
-	const SUFFIX = '%';
-	const PREFIX = '%';
-	const TEMPLATES_EXTENSION = '.tpl';
-	const TEMPLATES_DIR = 'templates';
+	private $_replacements = [];
 
 	/**
 	 * Reads the template specified by $tpl
 	 *
 	 * @param string $tpl     Path of template, no extension
-	 * @param boolean $minify Whether or not to eliminate tabs and newlines
+	 * @param bool   $minify Whether or not to eliminate tabs and newlines
 	 * @example $template = new template($template_file)
 	 */
 	public function __construct($tpl, $minify = true)
@@ -92,25 +93,32 @@ class Template implements API\Interfaces\Magic_Methods, API\Interfaces\String
 			, false
 		);
 
-		$this->source = $this->fileGetContents();
+		$this->_source = $this->fileGetContents();
 
 		if ($minify) {
-			$this->minify($this->source);
+			$this->_minify($this->_source);
 		}
 	}
 
 	/**
-	 * Magic Call method that acts as a chained setter only
+	 * Magic method to call when class is used a string
 	 *
-	 * @param  string $key  $property to set
-	 * @param  array  $args $value(s) to set it to
-	 * @return self
-	 * @example $template->$prop1($val1, $val2)->$prop2(null);
+	 * @return string Modified content of template file
+	 * @example echo $template
 	 */
-	public function __call($key, array $args = array())
+	public function __toString()
 	{
-		$this->__set($key, join(null, $args));
-		return $this;
+		$mod = str_replace(
+			array_map(
+				[$this, '_replacementsMap'],
+				array_keys($this->{$this::MAGIC_PROPERTY})
+			),
+			array_values($this->{$this::MAGIC_PROPERTY}),
+			$this->_source
+		);
+
+		$this->{$this::MAGIC_PROPERTY} = [];
+		return $mod;
 	}
 
 	/**
@@ -122,6 +130,7 @@ class Template implements API\Interfaces\Magic_Methods, API\Interfaces\String
 	 */
 	public function out($print = false)
 	{
+		trigger_error(__METHOD__, ' is deprecaited', E_USER_DEPRECATED);
 		if ($print) {
 			echo "{$this}";
 			return $this;
@@ -138,12 +147,12 @@ class Template implements API\Interfaces\Magic_Methods, API\Interfaces\String
 	 *
 	 * @param string $string Pointer to string to minify
 	 * @return self
-	 * @example $this->minify()
+	 * @example $this->_minify()
 	 */
-	private function minify(&$string = null)
+	private function _minify(&$string = null)
 	{
 		$string = str_replace(["\r", "\n", "\t"], null, $string);
-		$string = preg_replace($this::MINIFY_EXPRESSION, null, $string);
+		$string = preg_replace('/' . $this::HTML_COMMENT . '/', null, $string);
 		return $this;
 	}
 
@@ -152,30 +161,8 @@ class Template implements API\Interfaces\Magic_Methods, API\Interfaces\String
 	 *
 	 * @param string $key array key in replacements array
 	 */
-	private function replacementsMap($key)
+	private function _replacementsMap($key)
 	{
 		return $this::PREFIX . strtoupper($key) . $this::SUFFIX;
 	}
-
-	/**
-	 * Magic method to call when class is used a string
-	 *
-	 * @return string Modified content of template file
-	 * @example echo $template
-	 */
-	public function __toString()
-	{
-		$mod = str_replace(
-			array_map(
-				[$this, 'replacementsMap'],
-				array_keys($this->{$this::MAGIC_PROPERTY})
-			),
-			array_values($this->{$this::MAGIC_PROPERTY}),
-			$this->source
-		);
-
-		$this->{$this::MAGIC_PROPERTY} = [];
-		return $mod;
-	}
 }
-?>
