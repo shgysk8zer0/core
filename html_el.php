@@ -30,4 +30,25 @@ class HTML_El extends \DOMElement implements API\Interfaces\Magic_Methods, API\I
 	use API\Traits\Magic\DOMElement;
 	use API\Traits\Magic\Call;
 	use API\Traits\MAgic\HTML_String;
+
+	/**
+	 * Created a new HTML Element
+	 *
+	 * @param string $name         The tag name of the element
+	 * @param string $value        The value of the element.
+	 * @param string $namespaceURI A namespace URI to create the element within a specific namespace.
+	 * @param bool   $createDoc    Whether or not to create parent document and append to
+	 */
+	public function __construct(
+		$name         = 'div',
+		$value        = null,
+		$namespaceURI = null,
+		$createDoc    = false
+	)
+	{
+		parent::__construct($name, $value, $namespaceURI);
+		if ($createDoc) {
+			(new \DOMDocument)->appendChild($this);
+		}
+	}
 }
