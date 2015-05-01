@@ -104,7 +104,7 @@ implements API\Interfaces\PDO, API\Interfaces\Magic_Methods
 
 			$source = array_combine($keys, array_values($source));
 
-			$source['password'] = $this->_passwordHash($source['password'], $this::PASSWORD_ALGO, $this->_options);
+			$this->_passwordHash($source['password'], $this::PASSWORD_ALGO, $this->_options);
 
 			return $this->prepare(
 				"INSERT INTO `{$this->users_table}` (
@@ -183,14 +183,14 @@ implements API\Interfaces\PDO, API\Interfaces\Magic_Methods
 	 */
 	protected function _updatePassword($username, $password)
 	{
-		$password = $this->_passwordHash($password, $this::PASSWORD_ALGO, $this->_options);
+		$this->_passwordHash($password, $this::PASSWORD_ALGO, $this->_options);
 		$update = $this->prepare(
 			"UPDATE `{$this->users_table}`
 			SET `password` = :password
 			WHERE `user`   = :username;"
 		);
-		$update->username = $username;
-		$update->pasword  =  $password;
+		$update->username  = $username;
+		$update->password  =  $password;
 		$update->execute();
 		return $password;
 	}
