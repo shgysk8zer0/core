@@ -25,26 +25,40 @@ use \shgysk8zer0\Core_API as API;
 /**
  * Provides easy implementation of error reporting though several methods
  */
-final class Errors
+final class Errors implements API\Interfaces\File_Resources
 {
 	use API\Traits\Singleton;
+	use API\Traits\File_Resources;
 
 	// List of methods available for a variety of uses
 	const LOG_METHOD     = 'logErrorException';
 	const DB_METHOD      = 'DBErrorException';
 	const CONSOLE_METHOD = 'consoleErrorException';
 
+	// Constants useful for creating file handles and database queries
+	const LOG_FILE = 'errors.log';
+	const FILE_MODE = 'a+';
+	const PDO_QUERY = 'INSERT INTO `errors` (
+		`message`,
+		`code`,
+		`severity`,
+		`file`,
+		`line`,
+		`trace`
+	) VALUES (
+		:message,
+		:code,
+		:severity,
+		:file,
+		:line,
+		:trace
+	);';
+
 	/**
 	 * Prepared statement to execute with ErrorException data
 	 * @var \PDOStatement
 	 */
 	private $error_stm;
-
-	/**
-	 * File logger class
-	 * @var mixed
-	 */
-	private $log_file;
 
 	/**
 	 * Array of keys to bind to when executing $error_stm
@@ -76,6 +90,18 @@ final class Errors
 			$this->__invoke_method = [$this, $default_method];
 		} else {
 			$this->__invoke_method = [$this, self::DB_METHOD];
+			trigger_error(sprintf('No method %s exists in %s', $default_method, __CLASS__));
+		}
+	}
+
+	/**
+	 * Release lock and close file when class is destroyed
+	 */
+	public function __destruct()
+	{
+		if (is_resource($this->fhandle)) {
+			$this->flock(LOCK_UN);
+			$this->fclose();
 		}
 	}
 
@@ -86,9 +112,13 @@ final class Errors
 	 * @param array        $binders Array or keys to bind to when executing $stm
 	 * @return self
 	 */
-	public function registerPDOStatement(\PDOStatement $stm, array $binders = array())
+	public function registerPDOStatement(\PDOStatement $stm = null, array $binders = array())
 	{
-		$this->error_stm = $stm;
+		if (is_null($stm)) {
+			$this->error_stm = PDO::load(PDO::DEFAULT_CON)->prepare(self::PDO_QUERY);
+		} else {
+			$this->error_stm = $stm;
+		}
 		if (
 			is_array($binders) and array_keys($binders) === array_keys($this->binders)
 		) {
@@ -103,9 +133,17 @@ final class Errors
 	 * @param API\Interfaces\File_Resources $file Class to use when logging errors to file
 	 * @return self
 	 */
-	public function registerLogFile(API\Interfaces\File_Resources $file)
+	public function registerLogFile(
+		$filename         = self::LOG_FILE,
+		$use_include_path = false
+	)
 	{
-		$this->log_file = $file;
+		if (is_resource($this->fhandle)) {
+			$this->flock(LOCK_UN);
+			$this->fclose();
+		}
+		$this->fopen($filename, $use_include_path, self::FILE_MODE);
+		$this->flock(LOCK_EX);
 		return $this;
 	}
 
@@ -117,8 +155,10 @@ final class Errors
 	 */
 	public function logErrorException(\ErrorException $err_exc)
 	{
-		if (isset($this->log_file)) {
-			$this->log_file->filePutContents(PHP_EOL . $err_exc . PHP_EOL, FILE_APPEND);
+		if (! is_resource($this->fhandle)) {
+			$this->registerLogFile();
+		} else {
+			$this->filePutContents(PHP_EOL . $err_exc . PHP_EOL, FILE_APPEND);
 		}
 	}
 
@@ -130,15 +170,16 @@ final class Errors
 	 */
 	public function DBErrorException(\ErrorException $err_exc)
 	{
-		if ($this->error_stm instanceof \PDOStatement) {
-			$this->error_stm->{$this->binders['message']}  = $err_exc->getMessage();
-			$this->error_stm->{$this->binders['code']}     = $err_exc->getCode();
-			$this->error_stm->{$this->binders['severity']} = $err_exc->getSeverity();
-			$this->error_stm->{$this->binders['file']}     = $err_exc->getFile();
-			$this->error_stm->{$this->binders['line']}     = $err_exc->getLine();
-			$this->error_stm->{$this->binders['trace']}    = $err_exc->getTraceAsString();
-			$this->error_stm->execute();
+		if (! $this->error_stm instanceof \PDOStatement) {
+			$this->registerPDOStatement();
 		}
+		$this->error_stm->{$this->binders['message']}  = $err_exc->getMessage();
+		$this->error_stm->{$this->binders['code']}     = $err_exc->getCode();
+		$this->error_stm->{$this->binders['severity']} = $err_exc->getSeverity();
+		$this->error_stm->{$this->binders['file']}     = $err_exc->getFile();
+		$this->error_stm->{$this->binders['line']}     = $err_exc->getLine();
+		$this->error_stm->{$this->binders['trace']}    = $err_exc->getTraceAsString();
+		$this->error_stm->execute();
 	}
 
 	/**
