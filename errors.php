@@ -119,9 +119,7 @@ final class Errors implements API\Interfaces\File_Resources
 		} else {
 			$this->error_stm = $stm;
 		}
-		if (
-			is_array($binders) and array_keys($binders) === array_keys($this->binders)
-		) {
+		if (array_keys($binders) === array_keys($this->binders)) {
 			$this->binders = $binders;
 		}
 		return $this;
