@@ -24,184 +24,188 @@ use \shgysk8zer0\Core_API as API;
 
 /**
  * Provides easy implementation of error reporting though several methods
- * @deprecated
  */
-final class Errors extends PDO implements API\Interfaces\Errors
+final class Errors implements API\Interfaces\File_Resources
 {
-	use API\Traits\Errors;
+	use API\Traits\Singleton;
+	use API\Traits\File_Resources;
 
-	const DEFAULT_METHOD = 'reportError';
+	// List of methods available for a variety of uses
+	const LOG_METHOD     = 'logErrorException';
+	const DB_METHOD      = 'DBErrorException';
+	const CONSOLE_METHOD = 'consoleErrorException';
 
-	const DATE_FORMAT = 'Y-m-d H:i:s';
+	// Constants useful for creating file handles and database queries
+	const LOG_FILE = 'errors.log';
+	const FILE_MODE = 'a+';
+	const PDO_QUERY = 'INSERT INTO `errors` (
+		`message`,
+		`code`,
+		`severity`,
+		`file`,
+		`line`,
+		`trace`
+	) VALUES (
+		:message,
+		:code,
+		:severity,
+		:file,
+		:line,
+		:trace
+	);';
 
 	/**
-	 * Table to use when reporting errors to database
-	 * @var string
+	 * Prepared statement to execute with ErrorException data
+	 * @var \PDOStatement
 	 */
-	private $error_table = 'PHP_errors';
+	private $error_stm;
 
 	/**
-	 * Credentials file for database
-	 * @var string
-	 */
-	public static $con = 'connect.json';
-
-	/**
-	 * Array of tables to use when reporting to database
+	 * Array of keys to bind to when executing $error_stm
 	 * @var array
 	 */
-	private static $table_cols = [
-		'error_type',
-		'datetime',
-		'error_message',
-		'file',
-		'line'
-	];
+	private $binders = array(
+		'message'  => 'message',
+		'code'     => 'code',
+		'severity' => 'severity',
+		'file'     => 'file',
+		'line'     => 'line',
+		'trace'    => 'trace'
+	);
 
 	/**
-	 * Prepared statement to execute to save errors to database
-	 * @var \PDOStatement;
+	 * Method to use when class used as function in __invoke
+	 * @var Callable/array
 	 */
-	private static $error_stm;
+	private $__invoke_method;
 
 	/**
-	 * Directory to use for logError
-	 * @var string
-	 */
-	public static $LOG_DIR = 'logs';
-
-	/**
-	 * Filename to use for logError
-	 * @var string
-	 */
-	public static $LOG_FILE = 'errors.log';
-
-	/**
-	 * Sets $this::{$method} as error handler
+	 * Creates a new instance of Errors class
 	 *
-	 * @param string $method Name of method to call on errors
-	 * @param int    $level  E_* constant(s)
+	 * @param string $default_method Method to call in __invoke
 	 */
-	public function __construct($method = self::DEFAULT_METHOD, $level = null)
+	public function __construct($default_method = self::DB_METHOD)
 	{
-		if ($method === 'DBError') {
-			parent::__construct(static::$con);
-			$this::$error_stm = $this->prepare(
-				"INSERT INTO `{$this->error_table}` (
-					{$this->columns(array_flip(static::$table_cols))}
-				) VALUES (
-					:" . join(', :', static::$table_cols) . "
-				);"
-			);
+		if (method_exists($this, $default_method)) {
+			$this->__invoke_method = [$this, $default_method];
+		} else {
+			$this->__invoke_method = [$this, self::DB_METHOD];
+			trigger_error(sprintf('No method %s exists in %s', $default_method, __CLASS__));
 		}
-
-		if (! is_int($level)) {
-			$level = error_reporting();
-		}
-		if ( ! is_string($method) or ! method_exists($this, $method)) {
-			$method = self::DEFAULT_METHOD;
-		}
-		set_error_handler([$this, $method], $level);
 	}
 
 	/**
-	 * Prints an error
-	 *
-	 * @param int    $level   Any of the error levels (E_*)
-	 * @param string $message Message given with the error
-	 * @param string $file    File generating the error
-	 * @param int    $line    Line on which the error occured
-	 * @param array  $context All set variables in scope
-	 * @return void
+	 * Release lock and close file when class is destroyed
 	 */
-	public static function reportError(
-		$level,
-		$message,
-		$file,
-		$line,
-		array $context = array()
+	public function __destruct()
+	{
+		if (is_resource($this->fhandle)) {
+			$this->flock(LOCK_UN);
+			$this->fclose();
+		}
+	}
+
+	/**
+	 * Registers the PDOStatement to execute in DBErrorException
+	 *
+	 * @param PDOStatement $stm     Prepared statement to store errors to database
+	 * @param array        $binders Array or keys to bind to when executing $stm
+	 * @return self
+	 */
+	public function registerPDOStatement(\PDOStatement $stm = null, array $binders = array())
+	{
+		if (is_null($stm)) {
+			$this->error_stm = PDO::load(PDO::DEFAULT_CON)->prepare(self::PDO_QUERY);
+		} else {
+			$this->error_stm = $stm;
+		}
+		if (array_keys($binders) === array_keys($this->binders)) {
+			$this->binders = $binders;
+		}
+		return $this;
+	}
+
+	/**
+	 * Sets the file to record ErrorExceptions to
+	 *
+	 * @param API\Interfaces\File_Resources $file Class to use when logging errors to file
+	 * @return self
+	 */
+	public function registerLogFile(
+		$filename         = self::LOG_FILE,
+		$use_include_path = false
 	)
 	{
-		echo static::errorToException($level, $message, $file, $line, $context) . PHP_EOL;
+		if (is_resource($this->fhandle)) {
+			$this->flock(LOCK_UN);
+			$this->fclose();
+		}
+		$this->fopen($filename, $use_include_path, self::FILE_MODE);
+		$this->flock(LOCK_EX);
+		return $this;
 	}
 
 	/**
-	 * Saves error to database
+	 * Log ErrorExceptions to file
 	 *
-	 * @param int    $level   Any of the error levels (E_*)
-	 * @param string $message Message given with the error
-	 * @param string $file    File generating the error
-	 * @param itn    $line    Line on which the error occured
-	 * @param array  $context All set variables in scope
+	 * @param ErrorException $err_exc The error exception
 	 * @return void
 	 */
-	public static function DBError(
-		$level,
-		$message,
-		$file,
-		$line,
-		array $context = array()
-	)
+	public function logErrorException(\ErrorException $err_exc)
 	{
-		static::$error_stm->execute(array_combine(
-			static::$table_cols,
-			[$level, date(self::DATE_FORMAT), $message, $file, $line]
-		));
+		if (! is_resource($this->fhandle)) {
+			$this->registerLogFile();
+		} else {
+			$this->filePutContents(PHP_EOL . $err_exc . PHP_EOL, FILE_APPEND);
+		}
 	}
 
 	/**
-	 * Sends an error to console.error
+	 * Store Error exceptions to database from prepared statement
 	 *
-	 * @param int    $level   Any of the error levels (E_*)
-	 * @param string $message Message given with the error
-	 * @param string $file    File generating the error
-	 * @param int    $line    Line on which the error occured
-	 * @param array  $context All set variables in scope
+	 * @param ErrorException $err_exc The error exception
 	 * @return void
 	 */
-	static public function AJAXError(
-		$level,
-		$message,
-		$file,
-		$line,
-		array $context = array()
-	)
+	public function DBErrorException(\ErrorException $err_exc)
 	{
-		ob_get_clean();
-		header('Content-Type: application/json');
-		exit(json_encode([
-			'error' => [
-				'level' => static::errorLevelAsString($level),
-				'file' => $file,
-				'line' => $line,
-				'message' => $message,
-				'trace' => @array_splice(debug_backtrace(), 1),
-				'scope' => $context
-			],
-			'notify' => [
-				'title' => 'Error reported',
-				'body' => 'Check your developer console for details',
-				'icon' => 'images/octicons/svg/terminal.svg'
-			]
-		]));
+		if (! $this->error_stm instanceof \PDOStatement) {
+			$this->registerPDOStatement();
+		}
+		$this->error_stm->{$this->binders['message']}  = $err_exc->getMessage();
+		$this->error_stm->{$this->binders['code']}     = $err_exc->getCode();
+		$this->error_stm->{$this->binders['severity']} = $err_exc->getSeverity();
+		$this->error_stm->{$this->binders['file']}     = $err_exc->getFile();
+		$this->error_stm->{$this->binders['line']}     = $err_exc->getLine();
+		$this->error_stm->{$this->binders['trace']}    = $err_exc->getTraceAsString();
+		$this->error_stm->execute();
 	}
 
 	/**
-	 * Saves an error to file
+	 * Log error exceptions to user console using JSON_Response::error
 	 *
-	 * @param int    $level   Any of the error levels (E_*)
-	 * @param string $message Message given with the error
-	 * @param string $file    File generating the error
-	 * @param int    $line    Line on which the error occured
-	 * @param array  $context All set variables in scope
+	 * @param ErrorException $err_exc The error exception
+	 * @uses JSON_Response
+	 */
+	public function consoleErrorException(\ErrorException $err_exc)
+	{
+		JSON_Response::load()->error([
+			'message'   => $err_exc->getMessage(),
+			'code'      => $err_exc->getCode(),
+			'severity'  => $err_exc->getSeverity(),
+			'line'      => $err_exc->getLine(),
+			'file'      => $err_exc->getFile(),
+			'trace'     => $err_exc->getTrace()
+		]);
+	}
+
+	/**
+	 * When class called as function, pass arguments along to $this->__invoke_method
+	 *
+	 * @param  ErrorException $error_exc The error exception
 	 * @return void
 	 */
-	public static function logError($level, $message, $file, $line, $scope)
+	public function __invoke(\ErrorException $error_exc)
 	{
-		file_put_contents(
-			BASE . DIRECTORY_SEPARATOR . static::$LOG_DIR . DIRECTORY_SEPARATOR . static::$LOG_FILE,
-			static::errorToException($level, $message, $file, $line, $scope) . PHP_EOL,
-			LOCK_EX | FILE_APPEND
-		);
+		call_user_func($this->__invoke_method, $error_exc);
 	}
 }
