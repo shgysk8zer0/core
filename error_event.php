@@ -32,6 +32,8 @@ final class Error_Event
 	use API\Traits\Errors;
 
 	const ERROR_HANDLER = 'reportError';
+	const PREFIX        = 'E_';
+	const E_LEVEL       = E_ALL;
 
 	/**
 	 * Array of callbacks for each error level/event
@@ -47,11 +49,34 @@ final class Error_Event
 
 	/**
 	 * Creates instance and sets up error handling.
-	 * @param void
+	 *
+	 * @param string $error_method    Method to call when error reported
+	 * @param int    $lvl             E_* level to set as handler for
+	 * @param array  $callbacks       Array of callbacks to register
+	 * @param bool   $disable_default
 	 */
-	public function __construct()
+	public function __construct(
+		$error_method    = self::ERROR_HANDLER,
+		$lvl             = self::E_LEVEL,
+		array $callbacks = array(),
+		$disable_default = true
+	)
 	{
-		set_error_handler([$this, self::ERROR_HANDLER], error_reporting());
+		if (! is_int($lvl)) {
+			$lvl = self::E_LEVEL;
+		}
+		if (is_string($error_method) and method_exists(__CLASS__, $error_method)) {
+			set_error_handler([__CLASS__, $error_method], $lvl);
+		} else {
+			set_error_handler([__CLASS__, self::ERROR_HANDLER], $lvl);
+		}
+
+		if ($disable_default) {
+			error_reporting(0);
+		}
+
+		$callbacks = array_filter($callbacks, 'is_callable');
+		array_map([$this, '__set'], array_keys($callbacks), array_values($callbacks));
 	}
 
 	/**
@@ -63,8 +88,25 @@ final class Error_Event
 	 */
 	public function __set($level, Callable $callback)
 	{
-		$level = 'E_' . strtoupper($level);
+		$this->_ELevel($level);
 		static::$error_handlers[$level][] = $callback;
+	}
+
+	/**
+	 * Chainable setter capable of setting multiple callbacks per event
+	 *
+	 * @param  string $level String version of E_* constants (E_ is optional)
+	 * @param  array  $args  Array of callbacks given to the function call
+	 * @return self
+	 * @example $this->fatal($callback1, ...)->...
+	 * @example $this->E_FATAL($callback1, ...)->...
+	 */
+	public function __call($level, array $args = array())
+	{
+		foreach (array_filter($args, 'is_callable') as $arg) {
+			$this->__set($level, $arg);
+		}
+		return $this;
 	}
 
 	/**
@@ -105,14 +147,33 @@ final class Error_Event
 			call_user_func(static::$default_handler, $error_exception);
 		}
 		if (array_key_exists($level, static::$error_handlers)) {
-			array_map(function($handler) use ($error_exception)
-			{
-				call_user_func($handler, $error_exception);
-			}, static::$error_handlers[$level]);
+			array_map(
+				function($handler) use ($error_exception)
+				{
+					call_user_func($handler, $error_exception);
+				},
+				static::$error_handlers[$level]
+			);
 			return true;
 		} else {
 			return false;
 		}
+	}
 
+	/**
+	 * Converts strings into E_* constant names (does not verify them)
+	 *
+	 * @param string $lvl E_* constant level as string (E_ prefix optional)
+	 * @return void
+	 * @example $this->ELevel($lvl = 'fatal'); // Converts $lvl to 'E_FATAL'
+	 */
+	private function _ELevel(&$lvl)
+	{
+		if (is_string($lvl)) {
+			$lvl = strtoupper($lvl);
+			if (! substr($lvl, 0, 2) === self::PREFIX) {
+				$lvl = self::PREFIX . $lvl;
+			}
+		}
 	}
 }
