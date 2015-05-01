@@ -36,14 +36,13 @@ implements API\Interfaces\PDO, API\Interfaces\File_Resources
 	use API\Traits\PDO_Backups;
 
 	const STM_CLASS = 'PDOStatement';
-	const DEFAULT_CON = 'connect.json';
 
 	/**
 	 * Creates a new Databse connection/PDO instance
 	 *
 	 * @param mixed $con Credentials as filename, object, array.
 	 */
-	public function __construct($con = null)
+	public function __construct($con = self::DEFAULT_CON)
 	{
 		parent::connect(
 			$con,
