@@ -31,6 +31,7 @@ class File implements API\Interfaces\File_Resources, API\Interfaces\String
 {
 	use API\Traits\File_Resources;
 	use API\Traits\Singleton;
+	use API\Traits\Syntax_Highlighter;
 
 	const TEMP_FILE    = 'php://temp';
 	const DEFAULT_MODE = 'a+';
