@@ -32,6 +32,7 @@ class Magic_Cache implements API\Interfaces\Path_Info, API\Interfaces\File_Resou
 {
 	use API\Traits\Files;
 	use API\Traits\Path_Info;
+	use API\Traits\Mime;
 
 	const DATE_FORMAT = 'D, d M Y H:i:s T';
 
@@ -89,7 +90,7 @@ class Magic_Cache implements API\Interfaces\Path_Info, API\Interfaces\File_Resou
 			$this->etag = md5_file($this->absolute_path);
 			$this->mod_time = $this->filemtime();
 			$this->size = $this->filesize();
-			$this->typeByExtension();
+			$this->type = $this->_typeByExtension($this->absolute_path);
 			$this->cacheControl();
 			$this->makeHeaders();
 			$this->readfile();
@@ -145,86 +146,6 @@ class Magic_Cache implements API\Interfaces\Path_Info, API\Interfaces\File_Resou
 		) {
 			$this->status = 304;
 			$this->HTTPStatus();
-		}
-	}
-
-	/**
-	 * Get mime-type from extension or finfo()
-	 *
-	 * First, try go through a list of unrecognized extensions.
-	 * If not one of those, use the default finfo() method
-	 *
-	 * @param void
-	 * @return void
-	 */
-	protected function typeByExtension()
-	{
-		/*
-		 * PHP does a fairly poor job of getting MIME-type correct.
-		 * Switch on the extension to get MIME-type for unsupported
-		 * types. If not one of these, use finfo to guess.
-		 */
-		switch($this->extension) { //Start by matching file extensions
-			case 'svg':
-			case 'svgz':
-				$this->type = 'image/svg+xml';
-				break;
-
-			case 'woff':
-				$this->type = 'application/font-woff';
-				break;
-
-			case 'otf':
-				$this->type = 'application/x-font-opentype';
-				break;
-
-			case 'sql':
-				$this->type = 'text/x-sql';
-				break;
-
-			case 'appcache':
-				$this->type = 'text/cache-manifest';
-				break;
-
-			case 'mml':
-				$this->type = 'application/xhtml+xml';
-				break;
-
-			case 'ogv':
-				$this->type = 'video/ogg';
-				break;
-
-			case 'webm':
-				$this->type = 'video/webm';
-				break;
-
-			case 'ogg':
-			case 'oga':
-			case 'opus':
-				$this->type = 'audio/ogg';
-				break;
-
-			case 'flac':
-				$this->type = 'audio/flac';
-				break;
-
-			case 'm4a':
-				$this->type = 'audio/mp4';
-				break;
-
-			case 'css':
-			case 'cssz':
-				$this->type = 'text/css';
-				break;
-
-			case 'js':
-			case 'jsz':
-				$this->type = 'text/javascript';
-				break;
-
-			default:		//If not found, try the file's default
-				$finfo = new \finfo(FILEINFO_MIME);
-				$this->type = preg_replace('/\;.*$/', null, (string)$finfo->file($this->absolute_path));
 		}
 	}
 
