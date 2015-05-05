@@ -52,7 +52,8 @@ final class Headers implements API\Interfaces\Magic_Methods
 		$headers = getallheaders();
 		$keys = array_keys($headers);
 		array_walk($keys, [$this, 'magicPropConvert']);
-		$this->{self::MAGIC_PROPERTY} = array_combine($keys, array_values($headers));
+		$headers = array_combine($keys, array_values($headers));
+		$this->{self::MAGIC_PROPERTY} = $headers;
 	}
 
 	/**
@@ -66,7 +67,7 @@ final class Headers implements API\Interfaces\Magic_Methods
 	public function __set($key, $value)
 	{
 		$this->magicPropConvert($key);
-		if (is_array($value)) {
+		if (is_array($value) or (is_object($value) and $value = get_object_vars($value))) {
 			$value = join('; ', array_map(function($key, $val)
 			{
 				if (is_string($key)) {
@@ -84,7 +85,7 @@ final class Headers implements API\Interfaces\Magic_Methods
 	 *
 	 * @param string $key The header key to remove
 	 * @return void
-	 * @example unset($headers->key);
+	 * @example unset($headers->$key);
 	 */
 	public function __unset($key)
 	{
