@@ -36,8 +36,6 @@ final class Headers implements API\Interfaces\Magic_Methods
 
 	const MAGIC_PROPERTY = 'headers';
 
-	const HEADER_KEY_PATTERN = '/[^a-z\-]/';
-
 	/**
 	 * Array of headers received
 	 * @var array
@@ -52,10 +50,9 @@ final class Headers implements API\Interfaces\Magic_Methods
 	public function __construct()
 	{
 		$headers = getallheaders();
-		$this->{self::MAGIC_PROPERTY} = array_combine(
-			array_map([$this, 'headersMap'], array_keys($headers)),
-			array_values($headers)
-		);
+		$keys = array_keys($headers);
+		array_walk($keys, [$this, 'magicPropConvert']);
+		$this->{self::MAGIC_PROPERTY} = array_combine($keys, array_values($headers));
 	}
 
 	/**
@@ -68,6 +65,7 @@ final class Headers implements API\Interfaces\Magic_Methods
 	 */
 	public function __set($key, $value)
 	{
+		$this->magicPropConvert($key);
 		if (is_array($value)) {
 			$value = join('; ', array_map(function($key, $val)
 			{
@@ -90,21 +88,19 @@ final class Headers implements API\Interfaces\Magic_Methods
 	 */
 	public function __unset($key)
 	{
+		$this->magicPropConvert($key);
 		header_remove($key);
 	}
 
 	/**
-	 * Private method to convert client-sent header keys into something consistent
+	 * Makes headers more consistent
 	 *
-	 * @param string $key   The original key
-	 * @param bool   $lower Whether or not to convert to lower case
-	 * @return string The converted key
+	 * @param string $prop  Key for header
+	 * @return void         Works by reference
+	 * @example $this->magicPropConvert($key) // 'content_type' becomes 'Content-Type'
 	 */
-	private function headersMap($key, $lower = true)
+	final protected function magicPropConvert(&$prop)
 	{
-		if ($lower) {
-			$key = strtolower($key);
-		}
-		return preg_replace(self::HEADER_KEY_PATTERN, null, $key);
+		$prop = str_replace(' ', '-', ucwords(str_replace(['-', '_'], ' ', strtolower($prop))));
 	}
 }
