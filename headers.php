@@ -49,11 +49,15 @@ final class Headers implements API\Interfaces\Magic_Methods
 	 */
 	public function __construct()
 	{
-		$headers = getallheaders();
-		$keys = array_keys($headers);
-		array_walk($keys, [$this, 'magicPropConvert']);
-		$headers = array_combine($keys, array_values($headers));
-		$this->{self::MAGIC_PROPERTY} = $headers;
+		if (function_exists('getallheaders')) {
+			$headers = getallheaders();
+			$keys = array_keys($headers);
+			array_walk($keys, [$this, 'magicPropConvert']);
+			$headers = array_combine($keys, array_values($headers));
+			$this->{self::MAGIC_PROPERTY} = $headers;
+		} else {
+			$this->{self::MAGIC_PROPERTY} = array();
+		}
 	}
 
 	/**
