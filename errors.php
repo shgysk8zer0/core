@@ -140,8 +140,10 @@ final class Errors implements API\Interfaces\File_Resources
 			$this->flock(LOCK_UN);
 			$this->fclose();
 		}
-		$this->fopen($filename, $use_include_path, self::FILE_MODE);
-		$this->flock(LOCK_EX);
+		if (is_string($filename)) {
+			$this->fopen($filename, $use_include_path, self::FILE_MODE);
+			$this->flock(LOCK_EX);
+		}
 		return $this;
 	}
 
@@ -155,9 +157,8 @@ final class Errors implements API\Interfaces\File_Resources
 	{
 		if (! is_resource($this->fhandle)) {
 			$this->registerLogFile();
-		} else {
-			$this->filePutContents(PHP_EOL . $err_exc . PHP_EOL, FILE_APPEND);
 		}
+		$this->filePutContents(PHP_EOL . $err_exc . PHP_EOL, FILE_APPEND);
 	}
 
 	/**
