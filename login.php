@@ -95,7 +95,8 @@ implements API\Interfaces\PDO, API\Interfaces\Magic_Methods
 	public function createFrom(array $source = array())
 	{
 		if (
-			array_key_exists('user', $source)
+			$this->connected
+			and array_key_exists('user', $source)
 			and array_key_exists('password', $source)
 		) {
 			$keys = array_map(function($key) {
@@ -130,7 +131,8 @@ implements API\Interfaces\PDO, API\Interfaces\Magic_Methods
 	public function loginWith(array $source = array())
 	{
 		if (
-			array_key_exists('user', $source)
+			$this->connected
+			and array_key_exists('user', $source)
 			and array_key_exists('password', $source)
 		) {
 			$results = $this->prepare(
@@ -183,15 +185,17 @@ implements API\Interfaces\PDO, API\Interfaces\Magic_Methods
 	 */
 	protected function _updatePassword($username, $password)
 	{
-		$this->_passwordHash($password, $this::PASSWORD_ALGO, $this->_options);
-		$update = $this->prepare(
-			"UPDATE `{$this->users_table}`
-			SET `password` = :password
-			WHERE `user`   = :username;"
-		);
-		$update->username  = $username;
-		$update->password  =  $password;
-		$update->execute();
+		if ($this->connected) {
+			$this->_passwordHash($password, $this::PASSWORD_ALGO, $this->_options);
+			$update = $this->prepare(
+				"UPDATE `{$this->users_table}`
+				SET `password` = :password
+				WHERE `user`   = :username;"
+			);
+			$update->username  = $username;
+			$update->password  =  $password;
+			$update->execute();
+		}
 		return $password;
 	}
 
