@@ -20,8 +20,8 @@
  */
 namespace shgysk8zer0\Core;
 
-use \shgysk8zer0\Core_API as API;
 use \shgysk8zer0\Core as Core;
+use \shgysk8zer0\Core_API as API;
 
 /**
  * Class for quickly and easily creating HTML <table>s
@@ -52,8 +52,6 @@ use \shgysk8zer0\Core as Core;
  * $table([...], ...);
  *
  * echo $table
- * @todo Extend DOMDocument and use that for building HTML
- * @todo Set array_keys of $_data and preserve them
  */
 final class Table
 implements Core\Interfaces\Table
@@ -63,7 +61,7 @@ implements Core\Interfaces\Table
 
 	const MAGIC_PROPERTY   = '_data';
 
-	//const RESTRICT_SETTING = true;
+	const RESTRICT_SETTING = true;
 
 	/**
 	 * Array to contain data for current row
@@ -102,30 +100,6 @@ implements Core\Interfaces\Table
 	public $border = false;
 
 	/**
-	 * <table> element
-	 * @var HTML_El
-	 */
-	private $_table;
-
-	/**
-	 * <thead> element
-	 * @var HTML_El
-	 */
-	private $_thead;
-
-	/**
-	 * <tfoot> element
-	 * @var HTML_El
-	 */
-	private $_tfoot;
-
-	/**
-	 * <tbody> element
-	 * @var HTML_El
-	 */
-	private $_tbody;
-
-	/**
 	 * Sets up default values for class
 	 *
 	 * $empty_row as an associative array with its keys defined by $headers,
@@ -141,7 +115,7 @@ implements Core\Interfaces\Table
 			$this->headers,
 			array_pad([], count($this->headers), null)
 		);
-		$this->_table = new Core\HTML_El('table', null, null, true);
+		$this->{self::MAGIC_PROPERTY} = $this->empty_row;
 	}
 
 	/**
@@ -151,34 +125,57 @@ implements Core\Interfaces\Table
 	 * @return string Table's HTML
 	 * @example echo $table
 	 * @example $var = "$table"
-	 * @todo convert to using \DOMElement
 	 */
 	public function __toString()
 	{
-		if (! empty($this->_data)) {
+		if (! empty($this->{self::MAGIC_PROPERTY})) {
 			$this->nextRow();
 		}
 
-		$table = is_int($this->border)
-			? "<table border=\"{$this->border}\">"
-			: '<table>';
+		$table = new Core\HTML_El('table', null, null, true);
+
+		if (is_int($this->border)) {
+			$table->{'@border'} = $this->border;
+		} elseif ($this->border === true) {
+			$table->{'@border'} = 1;
+		}
 
 		if (is_string($this->caption)) {
-			$table .= "<caption>{$this->caption}</caption>";
+			$table->caption = $this->caption;
 		}
 
-		$headers = $this::buildRow($this->headers, 'th');
-		$table .= "<thead>{$headers}</thead>";
-		$table .= "<tfoot>{$headers}</tfoot>";
+		$thead   = $table->appendChild(new Core\HTML_El('thead'));
+		$tfoot   = $table->appendChild(new Core\HTML_El('tfoot'));
 
-		unset($headers);
+		$headers = array_reduce(
+			$this->headers,
+			function(Core\HTML_EL $headers, $content)
+			{
+				$headers->th = $content;
+				return $headers;
+			},
+			$thead->appendChild(new Core\HTML_El('tr'))
+		);
 
-		$table .= '<tbody>';
-		foreach ($this->_table_data as $row) {
-			$table .= $this::buildRow($row);
-		}
-		$table .= '</tbody>';
-		return $table . '</table>';
+		$tfoot->appendChild($headers->cloneNode(true));
+
+		unset($headers, $thead, $tfoot);
+
+		array_reduce(
+			$this->_table_data,
+			function(Core\HTML_El $tbody, array $row = array())
+			{
+				if (! empty($row)) {
+					$tr = $tbody->appendChild(new Core\HTML_El('tr'));
+					foreach ($row as $value) {
+						$tr->td = $value;
+					}
+				}
+				return $tbody;
+			},
+			$table->appendChild(new Core\HTML_El('tbody'))
+		);
+		return "{$table}";
 	}
 
 	/**
@@ -199,7 +196,7 @@ implements Core\Interfaces\Table
 				);
 				$this->nextRow();
 			},
-			func_get_args()
+			array_filter(func_get_args(), 'is_array')
 		);
 		return $this;
 	}
@@ -214,43 +211,18 @@ implements Core\Interfaces\Table
 	 */
 	public function nextRow()
 	{
-		$this->data = array_merge(
+		$this->{self::MAGIC_PROPERTY} = array_merge(
 			$this->empty_row,
-			array_intersect_key($this->_data, $this->empty_row)
+			array_intersect_key($this->{self::MAGIC_PROPERTY}, $this->empty_row)
 		);
 
-		if (! empty($this->data)) {
-			$this->_table_data[] = $this->data;
+		if (! empty($this->{self::MAGIC_PROPERTY})) {
+			$this->_table_data[] = $this->{self::MAGIC_PROPERTY};
 		}
 
-		$this->_data = [];
+		$this->{self::MAGIC_PROPERTY} = $this->empty_row;
 
 		return $this;
-	}
-
-	/**
-	 * Builds and returns a table row from an array
-	 *
-	 * @param array  $content   Array of content/innerHTML for child elements
-	 * @param string $tag       Tag name for child elements
-	 * @param string $parent_el Tag name for parent element
-	 * @todo convert to using \DOMElement
-	 * @deprecated
-	 */
-	private static function buildRow(
-		array $content = array(),
-		$tag = 'td',
-		$parent_el = 'tr'
-	)
-	{
-		return array_reduce(
-			$content,
-			function($html, $str) use ($tag)
-			{
-				return $html .= "<{$tag}>{$str}</{$tag}>";
-			},
-			"<{$parent_el}>"
-		) . "</{$parent_el}>";
 	}
 
 	/**
