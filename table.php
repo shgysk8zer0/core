@@ -144,16 +144,12 @@ implements Core\Interfaces\Table
 			$table->caption = $this->caption;
 		}
 
-		$thead   = $table->appendChild(new Core\HTML_El('thead'));
-		$tfoot   = $table->appendChild(new Core\HTML_El('tfoot'));
+		$thead = $table->appendChild(new Core\HTML_El('thead'));
+		$tfoot = $table->appendChild(new Core\HTML_El('tfoot'));
 
 		$headers = array_reduce(
 			$this->headers,
-			function(Core\HTML_EL $headers, $content)
-			{
-				$headers->th = $content;
-				return $headers;
-			},
+			[$this, '_buildHeaders'],
 			$thead->appendChild(new Core\HTML_El('tr'))
 		);
 
@@ -163,18 +159,10 @@ implements Core\Interfaces\Table
 
 		array_reduce(
 			$this->_table_data,
-			function(Core\HTML_El $tbody, array $row = array())
-			{
-				if (! empty($row)) {
-					$tr = $tbody->appendChild(new Core\HTML_El('tr'));
-					foreach ($row as $value) {
-						$tr->td = $value;
-					}
-				}
-				return $tbody;
-			},
+			[$this, '_buildBody'],
 			$table->appendChild(new Core\HTML_El('tbody'))
 		);
+
 		return "{$table}";
 	}
 
@@ -253,5 +241,36 @@ implements Core\Interfaces\Table
 		} else {
 			return "$this";
 		}
+	}
+
+	/**
+	 * Build the <tbody> from an array
+	 *
+	 * @param Core\HTML_El  $tbody The <table>'s <tbody> element
+	 * @param array         $row   Array of cells to add
+	 * @return Core\HTML_EL <tbody> with the row appended
+	 */
+	private function _buildBody(Core\HTML_El $tbody, array $row = array())
+	{
+		if (! empty($row)) {
+			$tr = $tbody->appendChild(new Core\HTML_El('tr'));
+			foreach ($row as $value) {
+				$tr->td = $value;
+			}
+		}
+		return $tbody;
+	}
+
+	/**
+	 * Build <thead> or <tfoot> row
+	 *
+	 * @param Core\HTML_EL  $headers <thead> or <tfoot>
+	 * @param string        $content Text content for <th> element
+	 * @return Core\HTML_El <tr> with <th> appended
+	 */
+	private function _buildHeaders(Core\HTML_EL $headers, $content)
+	{
+		$headers->th = $content;
+		return $headers;
 	}
 }
