@@ -20,6 +20,7 @@
  */
 namespace shgysk8zer0\Core;
 
+use \shgysk8zer0\Core as Core;
 use \shgysk8zer0\Core_API as API;
 
 /**
@@ -51,20 +52,22 @@ use \shgysk8zer0\Core_API as API;
  * $table([...], ...);
  *
  * echo $table
- * @todo Extend DOMDocument and use that for building HTML
  */
 final class Table
-implements Interfaces\Table
+implements Core\Interfaces\Table
 {
 	use API\Traits\Magic_Methods;
+	use API\Traits\Magic\Call_Setter;
 
-	const MAGIC_PROPERTY = 'data';
+	const MAGIC_PROPERTY   = '_data';
+
+	const RESTRICT_SETTING = true;
 
 	/**
 	 * Array to contain data for current row
 	 * @var array
 	 */
-	protected $data = [];
+	protected $_data = [];
 
 	/**
 	 * Array for valid keys for arrays. Becomes table's header & footer <th>'s
@@ -82,7 +85,7 @@ implements Interfaces\Table
 	 * Array of $data arrays, filtered to only include those in $headers
 	 * @var array
 	 */
-	protected $table = [];
+	protected $_table_data = [];
 
 	/**
 	 * Optional table caption (if set & string)
@@ -112,21 +115,7 @@ implements Interfaces\Table
 			$this->headers,
 			array_pad([], count($this->headers), null)
 		);
-	}
-
-	/**
-	 * Chainable magic method to set values using magic __set method
-	 *
-	 * @param  string $prop      Column to set data on
-	 * @param  array  $arguments Array of arguments passed to method
-	 * @return self
-	 * @example $table->$prop1($val1 ...)->$prop2(...)
-	 */
-	public function __call($prop, array $arguments = array())
-	{
-		$this->__set($prop, join(null, $arguments));
-
-		return $this;
+		$this->{self::MAGIC_PROPERTY} = $this->empty_row;
 	}
 
 	/**
@@ -136,34 +125,45 @@ implements Interfaces\Table
 	 * @return string Table's HTML
 	 * @example echo $table
 	 * @example $var = "$table"
-	 * @todo convert to using \DOMElement
 	 */
 	public function __toString()
 	{
-		if (! empty($this->data)) {
+		if (! empty($this->{self::MAGIC_PROPERTY})) {
 			$this->nextRow();
 		}
 
-		$table = is_int($this->border)
-			? "<table border=\"{$this->border}\">"
-			: '<table>';
+		$table = new Core\HTML_El('table', null, null, true);
+
+		if (is_int($this->border)) {
+			$table->{'@border'} = $this->border;
+		} elseif ($this->border === true) {
+			$table->{'@border'} = 1;
+		}
 
 		if (is_string($this->caption)) {
-			$table .= "<caption>{$this->caption}</caption>";
+			$table->caption = $this->caption;
 		}
 
-		$headers = $this::buildRow($this->headers, 'th');
-		$table .= "<thead>{$headers}</thead>";
-		$table .= "<tfoot>{$headers}</tfoot>";
+		$thead = $table->appendChild(new Core\HTML_El('thead'));
+		$tfoot = $table->appendChild(new Core\HTML_El('tfoot'));
 
-		unset($headers);
+		$headers = array_reduce(
+			$this->headers,
+			[$this, '_buildHeaders'],
+			$thead->appendChild(new Core\HTML_El('tr'))
+		);
 
-		$table .= '<tbody>';
-		foreach ($this->table as $row) {
-			$table .= $this::buildRow($row);
-		}
-		$table .= '</tbody>';
-		return $table . '</table>';
+		$tfoot->appendChild($headers->cloneNode(true));
+
+		unset($headers, $thead, $tfoot);
+
+		array_reduce(
+			$this->_table_data,
+			[$this, '_buildBody'],
+			$table->appendChild(new Core\HTML_El('tbody'))
+		);
+
+		return "{$table}";
 	}
 
 	/**
@@ -175,11 +175,17 @@ implements Interfaces\Table
 	 */
 	public function __invoke()
 	{
-		array_map(function(array $cols = array())
-		{
-			array_map([$this, '__set'], array_keys($cols), array_values($cols));
-			$this->nextRow();
-		}, func_get_args());
+		array_map(
+			function(array $cols = array())
+			{
+				array_map([$this, '__set'],
+					array_keys($cols),
+					array_values($cols)
+				);
+				$this->nextRow();
+			},
+			array_filter(func_get_args(), 'is_array')
+		);
 		return $this;
 	}
 
@@ -193,38 +199,18 @@ implements Interfaces\Table
 	 */
 	public function nextRow()
 	{
-		$this->data = array_merge(
+		$this->{self::MAGIC_PROPERTY} = array_merge(
 			$this->empty_row,
-			array_intersect_key($this->data, $this->empty_row)
+			array_intersect_key($this->{self::MAGIC_PROPERTY}, $this->empty_row)
 		);
 
-		if (!empty($this->data)) {
-			$this->table[] = $this->data;
+		if (! empty($this->{self::MAGIC_PROPERTY})) {
+			$this->_table_data[] = $this->{self::MAGIC_PROPERTY};
 		}
 
-		$this->data = [];
+		$this->{self::MAGIC_PROPERTY} = $this->empty_row;
 
 		return $this;
-	}
-
-	/**
-	 * Builds and returns a table row from an array
-	 *
-	 * @param array  $content   Array of content/innerHTML for child elements
-	 * @param string $tag       Tag name for child elements
-	 * @param string $parent_el Tag name for parent element
-	 * @todo convert to using \DOMElement
-	 */
-	private static function buildRow(
-		array $content = array(),
-		$tag = 'td',
-		$parent_el = 'tr'
-	)
-	{
-		return array_reduce($content, function($html, $str) use ($tag)
-		{
-			return $html .= "<{$tag}>{$str}</{$tag}>";
-		}, "<{$parent_el}>") . "</{$parent_el}>";
 	}
 
 	/**
@@ -255,5 +241,36 @@ implements Interfaces\Table
 		} else {
 			return "$this";
 		}
+	}
+
+	/**
+	 * Build the <tbody> from an array
+	 *
+	 * @param Core\HTML_El  $tbody The <table>'s <tbody> element
+	 * @param array         $row   Array of cells to add
+	 * @return Core\HTML_EL <tbody> with the row appended
+	 */
+	private function _buildBody(Core\HTML_El $tbody, array $row = array())
+	{
+		if (! empty($row)) {
+			$tr = $tbody->appendChild(new Core\HTML_El('tr'));
+			foreach ($row as $value) {
+				$tr->td = $value;
+			}
+		}
+		return $tbody;
+	}
+
+	/**
+	 * Build <thead> or <tfoot> row
+	 *
+	 * @param Core\HTML_EL  $headers <thead> or <tfoot>
+	 * @param string        $content Text content for <th> element
+	 * @return Core\HTML_El <tr> with <th> appended
+	 */
+	private function _buildHeaders(Core\HTML_EL $headers, $content)
+	{
+		$headers->th = $content;
+		return $headers;
 	}
 }
