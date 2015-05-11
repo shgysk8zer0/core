@@ -103,9 +103,13 @@ final class Error_Event
 	 */
 	public function __call($level, array $args = array())
 	{
-		foreach (array_filter($args, 'is_callable') as $arg) {
-			$this->__set($level, $arg);
-		}
+		$args = array_filter($args, 'is_callable');
+		$this->ELevel($level);
+		array_map(
+			[$this, '__set'],
+			array_pad(array(), count($args), $level),
+			array_values($args)
+		);
 		return $this;
 	}
 
@@ -171,7 +175,7 @@ final class Error_Event
 	{
 		if (is_string($lvl)) {
 			$lvl = strtoupper($lvl);
-			if (! substr($lvl, 0, 2) === self::PREFIX) {
+			if (substr($lvl, 0, strlen(self::PREFIX)) !== self::PREFIX) {
 				$lvl = self::PREFIX . $lvl;
 			}
 		}
