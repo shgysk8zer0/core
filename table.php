@@ -21,6 +21,7 @@
 namespace shgysk8zer0\Core;
 
 use \shgysk8zer0\Core_API as API;
+use \shgysk8zer0\Core as Core;
 
 /**
  * Class for quickly and easily creating HTML <table>s
@@ -52,19 +53,23 @@ use \shgysk8zer0\Core_API as API;
  *
  * echo $table
  * @todo Extend DOMDocument and use that for building HTML
+ * @todo Set array_keys of $_data and preserve them
  */
 final class Table
-implements Interfaces\Table
+implements Core\Interfaces\Table
 {
 	use API\Traits\Magic_Methods;
+	use API\Traits\Magic\Call_Setter;
 
-	const MAGIC_PROPERTY = 'data';
+	const MAGIC_PROPERTY   = '_data';
+
+	//const RESTRICT_SETTING = true;
 
 	/**
 	 * Array to contain data for current row
 	 * @var array
 	 */
-	protected $data = [];
+	protected $_data = [];
 
 	/**
 	 * Array for valid keys for arrays. Becomes table's header & footer <th>'s
@@ -82,7 +87,7 @@ implements Interfaces\Table
 	 * Array of $data arrays, filtered to only include those in $headers
 	 * @var array
 	 */
-	protected $table = [];
+	protected $_table_data = [];
 
 	/**
 	 * Optional table caption (if set & string)
@@ -95,6 +100,30 @@ implements Interfaces\Table
 	 * @var mixed
 	 */
 	public $border = false;
+
+	/**
+	 * <table> element
+	 * @var HTML_El
+	 */
+	private $_table;
+
+	/**
+	 * <thead> element
+	 * @var HTML_El
+	 */
+	private $_thead;
+
+	/**
+	 * <tfoot> element
+	 * @var HTML_El
+	 */
+	private $_tfoot;
+
+	/**
+	 * <tbody> element
+	 * @var HTML_El
+	 */
+	private $_tbody;
 
 	/**
 	 * Sets up default values for class
@@ -112,21 +141,7 @@ implements Interfaces\Table
 			$this->headers,
 			array_pad([], count($this->headers), null)
 		);
-	}
-
-	/**
-	 * Chainable magic method to set values using magic __set method
-	 *
-	 * @param  string $prop      Column to set data on
-	 * @param  array  $arguments Array of arguments passed to method
-	 * @return self
-	 * @example $table->$prop1($val1 ...)->$prop2(...)
-	 */
-	public function __call($prop, array $arguments = array())
-	{
-		$this->__set($prop, join(null, $arguments));
-
-		return $this;
+		$this->_table = new Core\HTML_El('table', null, null, true);
 	}
 
 	/**
@@ -140,7 +155,7 @@ implements Interfaces\Table
 	 */
 	public function __toString()
 	{
-		if (! empty($this->data)) {
+		if (! empty($this->_data)) {
 			$this->nextRow();
 		}
 
@@ -159,7 +174,7 @@ implements Interfaces\Table
 		unset($headers);
 
 		$table .= '<tbody>';
-		foreach ($this->table as $row) {
+		foreach ($this->_table_data as $row) {
 			$table .= $this::buildRow($row);
 		}
 		$table .= '</tbody>';
@@ -175,11 +190,17 @@ implements Interfaces\Table
 	 */
 	public function __invoke()
 	{
-		array_map(function(array $cols = array())
-		{
-			array_map([$this, '__set'], array_keys($cols), array_values($cols));
-			$this->nextRow();
-		}, func_get_args());
+		array_map(
+			function(array $cols = array())
+			{
+				array_map([$this, '__set'],
+					array_keys($cols),
+					array_values($cols)
+				);
+				$this->nextRow();
+			},
+			func_get_args()
+		);
 		return $this;
 	}
 
@@ -195,14 +216,14 @@ implements Interfaces\Table
 	{
 		$this->data = array_merge(
 			$this->empty_row,
-			array_intersect_key($this->data, $this->empty_row)
+			array_intersect_key($this->_data, $this->empty_row)
 		);
 
-		if (!empty($this->data)) {
-			$this->table[] = $this->data;
+		if (! empty($this->data)) {
+			$this->_table_data[] = $this->data;
 		}
 
-		$this->data = [];
+		$this->_data = [];
 
 		return $this;
 	}
@@ -214,6 +235,7 @@ implements Interfaces\Table
 	 * @param string $tag       Tag name for child elements
 	 * @param string $parent_el Tag name for parent element
 	 * @todo convert to using \DOMElement
+	 * @deprecated
 	 */
 	private static function buildRow(
 		array $content = array(),
@@ -221,10 +243,14 @@ implements Interfaces\Table
 		$parent_el = 'tr'
 	)
 	{
-		return array_reduce($content, function($html, $str) use ($tag)
-		{
-			return $html .= "<{$tag}>{$str}</{$tag}>";
-		}, "<{$parent_el}>") . "</{$parent_el}>";
+		return array_reduce(
+			$content,
+			function($html, $str) use ($tag)
+			{
+				return $html .= "<{$tag}>{$str}</{$tag}>";
+			},
+			"<{$parent_el}>"
+		) . "</{$parent_el}>";
 	}
 
 	/**
