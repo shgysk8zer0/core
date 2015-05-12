@@ -128,42 +128,7 @@ implements Core\Interfaces\Table
 	 */
 	public function __toString()
 	{
-		if (! empty($this->{self::MAGIC_PROPERTY})) {
-			$this->nextRow();
-		}
-
-		$table = new Core\HTML_El('table', null, null, true);
-
-		if (is_int($this->border)) {
-			$table->{'@border'} = $this->border;
-		} elseif ($this->border === true) {
-			$table->{'@border'} = 1;
-		}
-
-		if (is_string($this->caption)) {
-			$table->caption = $this->caption;
-		}
-
-		$thead = $table->appendChild(new Core\HTML_El('thead'));
-		$tfoot = $table->appendChild(new Core\HTML_El('tfoot'));
-
-		$headers = array_reduce(
-			$this->headers,
-			[$this, '_buildHeaders'],
-			$thead->appendChild(new Core\HTML_El('tr'))
-		);
-
-		$tfoot->appendChild($headers->cloneNode(true));
-
-		unset($headers, $thead, $tfoot);
-
-		array_reduce(
-			$this->_table_data,
-			[$this, '_buildBody'],
-			$table->appendChild(new Core\HTML_El('tbody'))
-		);
-
-		return "{$table}";
+		return "{$this->buildTable()}";
 	}
 
 	/**
@@ -221,6 +186,53 @@ implements Core\Interfaces\Table
 	public function next_row()
 	{
 		return $this->nextRow();
+	}
+
+	/**
+	 * Build the <table> element from $_table_data, $caption & $headers
+	 *
+	 * @param void
+	 * @return \DOMElement   $_table_data converted to an HTML <table>
+	 * @uses Core\HTML_El
+	 */
+	public function buildTable()
+	{
+		if (! empty($this->{self::MAGIC_PROPERTY})) {
+			$this->nextRow();
+		}
+
+		$table = new Core\HTML_El('table', null, null, true);
+
+		if (is_int($this->border)) {
+			$table->{'@border'} = $this->border;
+		} elseif ($this->border === true) {
+			$table->{'@border'} = 1;
+		}
+
+		if (is_string($this->caption)) {
+			$table->caption = $this->caption;
+		}
+
+		$thead = $table->appendChild(new Core\HTML_El('thead'));
+		$tfoot = $table->appendChild(new Core\HTML_El('tfoot'));
+
+		$headers = array_reduce(
+			$this->headers,
+			[$this, '_buildHeaders'],
+			$thead->appendChild(new Core\HTML_El('tr'))
+		);
+
+		$tfoot->appendChild($headers->cloneNode(true));
+
+		unset($headers, $thead, $tfoot);
+
+		array_reduce(
+			$this->_table_data,
+			[$this, '_buildBody'],
+			$table->appendChild(new Core\HTML_El('tbody'))
+		);
+
+		return $table;
 	}
 
 	/**
