@@ -27,20 +27,21 @@ use \shgysk8zer0\Core_API as API;
  * Provides consistent and accessible methods for getting and checking headers.
  * Setter and unset work with headers client-side
  */
-final class Headers implements API\Interfaces\Magic_Methods
+final class Headers implements API\Interfaces\Magic_Methods, \Iterator
 {
 	use API\Traits\Singleton;
 	use API\Traits\Magic\Get;
 	use API\Traits\Magic\Is_Set;
-	use API\Traits\Magic\Call;
+	use API\Traits\Magic\Call_Setter;
+	use API\Traits\Magic\Iterator;
 
-	const MAGIC_PROPERTY = 'headers';
+	const MAGIC_PROPERTY = '_headers';
 
 	/**
 	 * Array of headers received
 	 * @var array
 	 */
-	protected $headers = [];
+	protected $_headers = [];
 
 	/**
 	 * Class constructor sets the $headers array
@@ -104,7 +105,7 @@ final class Headers implements API\Interfaces\Magic_Methods
 	 * @return void         Works by reference
 	 * @example $this->magicPropConvert($key) // 'content_type' becomes 'Content-Type'
 	 */
-	final protected function magicPropConvert(&$prop)
+	protected function magicPropConvert(&$prop)
 	{
 		$prop = str_replace(' ', '-', ucwords(str_replace(['-', '_'], ' ', strtolower($prop))));
 	}
