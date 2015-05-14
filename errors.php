@@ -21,6 +21,7 @@
 namespace shgysk8zer0\Core;
 
 use \shgysk8zer0\Core_API as API;
+use \shgysk8zer0\Core as Core;
 
 /**
  * Provides easy implementation of error reporting though several methods
@@ -36,7 +37,7 @@ final class Errors implements API\Interfaces\File_Resources
 	const CONSOLE_METHOD = 'consoleErrorException';
 
 	// Constants useful for creating file handles and database queries
-	const LOG_FILE = 'errors.log';
+	const LOG_FILE  = 'errors.log';
 	const FILE_MODE = 'a+';
 	const PDO_QUERY = 'INSERT INTO `errors` (
 		`message`,
@@ -86,7 +87,7 @@ final class Errors implements API\Interfaces\File_Resources
 	 */
 	public function __construct($default_method = self::DB_METHOD)
 	{
-		if (method_exists($this, $default_method)) {
+		if (is_string($default_method) and method_exists($this, $default_method)) {
 			$this->__invoke_method = [$this, $default_method];
 		} else {
 			$this->__invoke_method = [$this, self::DB_METHOD];
@@ -96,6 +97,9 @@ final class Errors implements API\Interfaces\File_Resources
 
 	/**
 	 * Release lock and close file when class is destroyed
+	 *
+	 * @param void
+	 * @return void
 	 */
 	public function __destruct()
 	{
@@ -106,16 +110,30 @@ final class Errors implements API\Interfaces\File_Resources
 	}
 
 	/**
+	 * When class called as function, pass arguments along to $this->__invoke_method
+	 *
+	 * @param  ErrorException $error_exc The error exception
+	 * @return void
+	 */
+	public function __invoke(\ErrorException $error_exc)
+	{
+		call_user_func($this->__invoke_method, $error_exc);
+	}
+
+	/**
 	 * Registers the PDOStatement to execute in DBErrorException
 	 *
 	 * @param PDOStatement $stm     Prepared statement to store errors to database
 	 * @param array        $binders Array or keys to bind to when executing $stm
 	 * @return self
 	 */
-	public function registerPDOStatement(\PDOStatement $stm = null, array $binders = array())
+	public function registerPDOStatement(
+		API\Interfaces\PDOStatement $stm = null,
+		array $binders                   = array()
+	)
 	{
 		if (is_null($stm)) {
-			$this->error_stm = PDO::load(PDO::DEFAULT_CON)->prepare(self::PDO_QUERY);
+			$this->error_stm = Core\PDO::load(PDO::DEFAULT_CON)->prepare(self::PDO_QUERY);
 		} else {
 			$this->error_stm = $stm;
 		}
@@ -156,7 +174,7 @@ final class Errors implements API\Interfaces\File_Resources
 	public function logErrorException(\ErrorException $err_exc)
 	{
 		if (! is_resource($this->fhandle)) {
-			$this->registerLogFile();
+			$this->registerLogFile(self::LOG_FILE);
 		}
 		$this->filePutContents(PHP_EOL . $err_exc . PHP_EOL, FILE_APPEND);
 	}
@@ -169,7 +187,7 @@ final class Errors implements API\Interfaces\File_Resources
 	 */
 	public function DBErrorException(\ErrorException $err_exc)
 	{
-		if (! $this->error_stm instanceof \PDOStatement) {
+		if (! $this->error_stm instanceof API\Interfaces\PDOStatement) {
 			$this->registerPDOStatement();
 		}
 		$this->error_stm->{$this->binders['message']}  = $err_exc->getMessage();
@@ -185,11 +203,12 @@ final class Errors implements API\Interfaces\File_Resources
 	 * Log error exceptions to user console using JSON_Response::error
 	 *
 	 * @param ErrorException $err_exc The error exception
+	 * @return void
 	 * @uses JSON_Response
 	 */
 	public function consoleErrorException(\ErrorException $err_exc)
 	{
-		JSON_Response::load()->error([
+		Core\JSON_Response::load()->error([
 			'message'   => $err_exc->getMessage(),
 			'code'      => $err_exc->getCode(),
 			'severity'  => $err_exc->getSeverity(),
@@ -200,13 +219,16 @@ final class Errors implements API\Interfaces\File_Resources
 	}
 
 	/**
-	 * When class called as function, pass arguments along to $this->__invoke_method
+	 * Delete contents of error log file
 	 *
-	 * @param  ErrorException $error_exc The error exception
-	 * @return void
+	 * @param void
+	 * @return bool
 	 */
-	public function __invoke(\ErrorException $error_exc)
+	public function clearErrorLog()
 	{
-		call_user_func($this->__invoke_method, $error_exc);
+		if (! is_resource($this->fhandle)) {
+			$this->registerLogFile(self::LOG_FILE);
+		}
+		return $this->ftruncate();
 	}
 }
