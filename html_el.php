@@ -28,7 +28,7 @@ use \shgysk8zer0\Core_API as API;
 class HTML_El extends \DOMElement implements API\Interfaces\Magic_Methods, API\Interfaces\String
 {
 	use API\Traits\Magic\DOMElement;
-	use API\Traits\Magic\Call;
+	use API\Traits\Magic\Call_Setter;
 	use API\Traits\MAgic\HTML_String;
 
 	/**
