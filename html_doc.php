@@ -32,6 +32,11 @@ class HTML_Doc extends \DOMDocument implements API\Interfaces\Magic_Methods, API
 	use API\Traits\Magic\Call;
 	use API\Traits\Magic\HTML_String;
 
+	const CHARSET        = 'UTF-8';
+	const DOM_VERSION    = '1.0';
+	const DOCTYPE_FORMAT = '<!doctype %s>';
+	const HTML_DOCTYPE   = 'html';
+
 	/**
 	* Whether or not to print document on exit/unset
 	* @var bool
@@ -56,15 +61,17 @@ class HTML_Doc extends \DOMDocument implements API\Interfaces\Magic_Methods, API
 	 *
 	 * @param string $doctype Doctype for document
 	 */
-	public function __construct($doctype = 'html', $echo_on_destruct = false)
+	public function __construct($doctype = self::HTML_DOCTYPE, $echo_on_destruct = false)
 	{
-		parent::__construct('1.0', 'UTF-8');
-		$this->loadHTML(sprintf('<!doctype %s>', $doctype));
+		parent::__construct(self::DOM_VERSION, self::CHARSET);
+		$this->loadHTML(sprintf(self::DOCTYPE_FORMAT, $doctype));
 		$this->registerNodeClass('\\DOMElement', '\\' . __NAMESPACE__ . '\\' . 'HTML_EL');
-		$html = $this('html', null, [], $this);
-		$this->head = $this('head', null, [], $html);
-		$this->body = $this('body', null, [], $html);
-		$this->_echo_on_destruct = $echo_on_destruct;
+		$html = $this->appendChild($this->createElement('html'));
+		$this->head = $html->appendChild($this->createElement('head'));
+		$this->body = $html->appendChild($this->createElement('body'));
+		if (is_bool($echo_on_destruct)) {
+			$this->_echo_on_destruct = $echo_on_destruct;
+		}
 	}
 
 	/**
