@@ -32,6 +32,8 @@ class File implements API\Interfaces\File_Resources, API\Interfaces\String
 	use API\Traits\File_Resources;
 	use API\Traits\Singleton;
 	use API\Traits\Syntax_Highlighter;
+	use API\Traits\Path_Info;
+	use API\Traits\Mime_Type;
 
 	const TEMP_FILE    = 'php://temp';
 	const DEFAULT_MODE = 'a+';
@@ -49,6 +51,9 @@ class File implements API\Interfaces\File_Resources, API\Interfaces\String
 		$mode             = self::DEFAULT_MODE
 	)
 	{
+		if (@file_exists($filename)) {
+			$this->getPathInfo($filename);
+		}
 		$this->fopen($filename, $use_include_path, $mode);
 		$this->flock(LOCK_EX);
 	}
@@ -81,5 +86,22 @@ class File implements API\Interfaces\File_Resources, API\Interfaces\String
 	final public function __toString()
 	{
 		return $this->fileGetContents();
+	}
+
+	/**
+	* base64 encode file contents, optionally as data: URI (if $type is set)
+	*
+	* @param  mixed  $type  null or string content-type
+	* @return string        base64 encoded or data: URI
+	*/
+	final public function base64Encode($type = null)
+	{
+		if (is_string($type)) {
+			return "data:{$type};base64," . base64_encode($this);
+		} elseif (isset($this->absolute_path)) {
+			return "data:{$this->getMimeTypeFromFile($this->absolute_path)};base64," . base64_encode($this);
+		} {
+			return base64_encode($this);
+		}
 	}
 }
