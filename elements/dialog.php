@@ -49,10 +49,15 @@ final class Dialog extends \DOMElement implements API\Interfaces\String
 		parent::__construct(self::TAG);
 		(new \DOMDocument('1.0', 'UTF-8'))->appendChild($this);
 		$this->setAttribute('id', $id . self::ID_SUFFIX);
-		$button = $this->appendChild(new \DOMElement('button'));
-		$button->setAttribute('data-delete', $this->id);
+		$this->appendChild(new \DOMElement('button'))->setAttribute('data-delete', $this->id);
+		$fullscreen = $this->appendChild(new \DOMElement('button'));
+		$fullscreen->setAttribute('data-fullscreen', $this->id);
+		$fullscreen->setAttribute('title', 'View full-screen');
 		$this->appendChild(new \DOMElement('br'));
-		unset($button);
+		$svg = $fullscreen->appendChild(new \DOMElement('svg'));
+		$svg->setAttribute('class', 'currentColor icon');
+		$use = $svg->appendChild(new \DOMElement('use'));
+		$use->setAttribute('xlink:href', 'images/icons/combined.svg#screen-full');
 		if ($content instanceof \DOMNode) {
 			$this->appendChild(isset($content->ownerDocument)
 				? $this->ownerDocument->importNode($content)
