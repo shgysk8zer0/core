@@ -40,7 +40,6 @@ implements API\Interfaces\PDO, API\Interfaces\Magic_Methods
 	use API\Traits\Passwords;
 
 	const STM_CLASS        = 'PDOStatement';
-	const DEFAULT_CON      = 'connect.json';
 	const MAGIC_PROPERTY   = '_login_data';
 	const RESTRICT_SETTING = true;
 	const PASSWORD_ALGO    = PASSWORD_DEFAULT;
