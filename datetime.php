@@ -33,4 +33,16 @@ class DateTime extends API\Abstracts\DateTime_Formats
 implements \DateTimeInterface, API\Interfaces\String
 {
 	use API\Traits\DateTime;
+
+	/**
+	 * Creates a new instance of DateTime class, with prevention for timezone not set errors
+	 *
+	 * @param string $time         Any valid date/time string
+	 * @param mixed $timezone      String or DateTimeZone object (defaults to system)
+	 * @see https://secure.php.net/manual/en/datetime.construct.php
+	 */
+	public function __construct($time = 'now', $timezone = null)
+	{
+		parent::__construct($time, $this->_getTimeZone($timezone));
+	}
 }
