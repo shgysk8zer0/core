@@ -60,7 +60,7 @@ final class Dialog extends \DOMElement implements API\Interfaces\String
 		$use->setAttribute('xlink:href', 'images/icons/combined.svg#screen-full');
 		if ($content instanceof \DOMNode) {
 			$this->appendChild(isset($content->ownerDocument)
-				? $this->ownerDocument->importNode($content)
+				? $this->ownerDocument->importNode($content, true)
 				: $content
 			);
 		} elseif (is_string($content)) {
