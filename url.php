@@ -46,9 +46,9 @@ final class URL implements API\Interfaces\String
 	 *
 	 * @param string $url Optional URL to parse
 	 */
-	public function __construct($url = null)
+	public function __construct()
 	{
-		$this->parseURL($url);
+		call_user_func_array([$this, 'parseURL'], func_get_args());
 	}
 
 	/**
