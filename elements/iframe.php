@@ -20,11 +20,15 @@
  */
 namespace shgysk8zer0\Core\Elements;
 
+use \shgysk8zer0\Core_API as API;
 /**
  * Class to create <iframe>s and work with attributes using magic methods
  */
-class Iframe extends \DOMElement
+class Iframe extends \DOMElement implements API\Interfaces\Magic_Methods, API\Interfaces\String
 {
+	use API\Traits\Magic\DOMAttributes;
+	use API\Traits\Magic\Call;
+
 	/**
 	 * Creates the DOMElement, appends it to a DOMDocument, and sets attributes
 	 *
@@ -33,78 +37,7 @@ class Iframe extends \DOMElement
 	 */
 	public function __construct($src, array $attributes = array())
 	{
-		parent::__construct('iframe');
-		$dom = new \DOMDocument('1.0', 'UTF-8');
-		$dom->appendChild($this);
-		$this->setAttribute('src', $src);
-		foreach ($attributes as $name => $value) {
-			$this->setAttribute($name, $value);
-		}
-	}
-
-	/**
-	 * Adds new attribute
-	 *
-	 * @param string  $name  The name of the attribute.
-	 * @param mixed   $value The value of the attribute.
-	 * @return void
-	 * @see https://secure.php.net/manual/en/domelement.setattribute.php
-	 * @example $this->class = 'classname'
-	 */
-	public function __set($attr, $value)
-	{
-		$this->setAttribute($attr, $value);
-	}
-
-	/**
-	 * Returns value of attribute
-	 *
-	 * @param  string $name The name of the attribute.
-	 * @return string       The value of the attribute, or an empty string
-	 * @see https://secure.php.net/manual/en/domelement.getattribute.php
-	 * @example echo $this->glass // Echoes 'classname'
-	 */
-	public function __get($attr)
-	{
-		return $this->getAttribute($attr);
-	}
-
-	/**
-	 * Checks to see if attribute exists
-	 *
-	 * @param  string $name The attribute name.
-	 * @return bool         TRUE on success or FALSE on failure.
-	 * @see https://secure.php.net/manual/en/domelement.hasattribute.php
-	 * @example isset($element->class)
-	 */
-	public function __isset($attr)
-	{
-		return $this->hasAttribute($attr);
-	}
-
-	/**
-	 * Removes attribute
-	 *
-	 * @param string $name The name of the attribute.
-	 * @return void
-	 * @see https://secure.php.net/manual/en/domelement.removeattribute.php
-	 * @example unset($element->class)
-	 */
-	public function __unset($attr)
-	{
-		$this->removeAttribute($attr);
-	}
-
-	/**
-	 * Returns the <iframe>'s HTML as a string
-	 *
-	 * @param void
-	 * @return string HTML for the <iframe>
-	 * @see https://secure.php.net/manual/en/domdocument.savehtml.php
-	 * @example echo $element // Echoes '<iframe src="" ...></iframe>'
-	 */
-	public function __toString()
-	{
-		return $this->ownerDocument->saveHTML($this);
+		$attributes['src'] = $src;
+		$this->_createSelf('iframe', $attributes);
 	}
 }
