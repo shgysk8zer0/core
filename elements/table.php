@@ -171,8 +171,7 @@ class Table extends \DOMElement implements API\Interfaces\Magic_Methods, API\Int
 		try {
 			return $this->ownerDocument->saveHTML($this->getNode());
 		} catch (\Exception $e) {
-			//trigger_error($e->getMessage(), E_USER_WARNING);
-			echo "<pre>$e</pre>";
+			trigger_error($e->getMessage(), E_USER_WARNING);
 			return '';
 		}
 	}
