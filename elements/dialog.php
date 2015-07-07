@@ -27,6 +27,9 @@ use \shgysk8zer0\Core_API as API;
  */
 final class Dialog extends \DOMElement implements API\Interfaces\String
 {
+	use API\Traits\DOMImportHTML;
+	use API\Traits\Magic\HTML_String;
+
 	const TAG       = 'dialog';
 	const ID_SUFFIX = '_dialog';
 
@@ -64,24 +67,7 @@ final class Dialog extends \DOMElement implements API\Interfaces\String
 				: $content
 			);
 		} elseif (is_string($content)) {
-			$tmp_doc = new \DOMDocument('1.0', 'UTF-8');
-			$tmp_doc->loadHTML($content);
-			$child = $tmp_doc->documentElement->firstChild;
-			while($child instanceof \DOMNode) {
-				$this->appendChild($this->ownerDocument->importNode($child, true));
-				$child = $child->nextSibling;
-			}
+			$this->importHTML($content);
 		}
-	}
-
-	/**
-	 * Get the <dialog> element as an HTML string
-	 *
-	 * @param void
-	 * @return string HTML content of <dialog>
-	 */
-	public function __toString()
-	{
-		return $this->ownerDocument->saveHTML($this);
 	}
 }
