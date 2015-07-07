@@ -28,6 +28,7 @@ class Iframe extends \DOMElement implements API\Interfaces\Magic_Methods, API\In
 {
 	use API\Traits\Magic\DOMAttributes;
 	use API\Traits\Magic\Call;
+	use API\Traits\Magic\HTML_String;
 
 	/**
 	 * Creates the DOMElement, appends it to a DOMDocument, and sets attributes
