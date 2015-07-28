@@ -2,6 +2,7 @@
 /**
  * @author Chris Zuber <shgysk8zer0@gmail.com>
  * @package shgysk8zer0\Core
+ * @subpackage Elements
  * @version 1.0.0
  * @copyright 2015, Chris Zuber
  * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
@@ -21,24 +22,25 @@
 namespace shgysk8zer0\Core\Elements;
 
 use \shgysk8zer0\Core_API as API;
+
 /**
- * Class to create <iframe>s and work with attributes using magic methods
+ * Allows <meta> elements to be easily created and manipulated
  */
-class Iframe extends \DOMElement implements API\Interfaces\Magic_Methods, API\Interfaces\String
+class Meta extends \DOMElement
 {
 	use API\Traits\Magic\DOMAttributes;
 	use API\Traits\Magic\Call;
 	use API\Traits\Magic\HTML_String;
 
 	/**
-	 * Creates the DOMElement, appends it to a DOMDocument, and sets attributes
+	 * Creates a new <meta> element with an optional array of attributes.
+	 * Appends it to a temporary DOMDocument as required to work with DOMElements,
+	 * so be sure to use `importNode` as needed
 	 *
-	 * @param string $src        The source of the <iframe>
-	 * @param array  $attributes An array of attributes to set
+	 * @param array  $attributes An optional array of additional attributes
 	 */
-	public function __construct($src, array $attributes = array())
+	public function __construct(array $attributes = array())
 	{
-		$attributes['src'] = $src;
-		$this->_createSelf('iframe', $attributes);
+		$this->_createSelf('meta', $attributes);
 	}
 }
