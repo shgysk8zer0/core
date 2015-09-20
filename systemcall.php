@@ -43,7 +43,7 @@ final class SystemCall implements API\Interfaces\String
 	 *
 	 * @var array
 	 */
-	private $_repalce_chars = array(' ', '-');
+	private $_replace_chars = array(' ', '_');
 
 	use API\Traits\Singleton;
 
@@ -156,7 +156,7 @@ final class SystemCall implements API\Interfaces\String
 
 	private function _escapeCommand(&$string)
 	{
-		$string = str_replace($this->_repalce_chars, '-', $string);
+		$string = str_replace($this->_replace_chars, '-', $string);
 	}
 
 	/**
