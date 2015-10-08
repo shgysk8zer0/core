@@ -20,7 +20,7 @@ class Console implements API\Interfaces\String, API\Interfaces\Console
 	/**
 	 * @var string
 	 */
-	const VERSION = '4.1.0';
+	const VERSION = '1.0.0';
 
 	/**
 	 * @var string
@@ -118,51 +118,110 @@ class Console implements API\Interfaces\String, API\Interfaces\Console
 		return utf8_encode(json_encode($this->_json));
 	}
 
+	/**
+	 * logs a variable to the console
+	 *
+	 * @param mixed $data,... unlimited OPTIONAL number of additional logs [...]
+	 * @return void
+	 */
 	public function log()
 	{
 		return $this->_log(self::LOG, func_get_args());
 	}
 
+	/**
+	 * sends an info log
+	 *
+	 * @param mixed $data,... unlimited OPTIONAL number of additional logs [...]
+	 * @return void
+	 */
 	public function info()
 	{
 		return $this->_log(self::INFO, func_get_args());
 	}
 
+	/**
+	 * sends a table log
+	 *
+	 * @param string value
+	 */
 	public function table()
 	{
 		return $this->_log(self::TABLE, func_get_args());
 	}
 
+	/**
+ 	* logs a warning to the console
+ 	*
+ 	* @param mixed $data,... unlimited OPTIONAL number of additional logs [...]
+ 	* @return void
+ 	*/
 	public function warn()
 	{
 		return $this->_log(self::WARN, func_get_args());
 	}
 
+	/**
+	 * logs an error to the console
+	 *
+	 * @param mixed $data,... unlimited OPTIONAL number of additional logs [...]
+	 * @return void
+	 */
 	public function error()
 	{
 		return $this->_log(self::ERROR, func_get_args());
 	}
 
+	/**
+	 * sends a group log
+	 *
+	 * @param string value
+	 */
 	public function group()
 	{
 		return $this->_log(self::GROUP, func_get_args());
 	}
 
+	/**
+	 * sends a collapsed group log
+	 *
+	 * @param string value
+	 */
 	public function groupCollapsed()
 	{
 		return $this->_log(self::GROUP_COLLAPSED, func_get_args());
 	}
 
+	/**
+	 * ends a group log
+	 *
+	 * @param string value
+	 */
 	public function groupEnd()
 	{
 		return $this->_log(self::GROUP_END, func_get_args());
 	}
 
+	/**
+	 * formats the location from backtrace using sprintf
+	 *
+	 * @param  string $file   the file the log was created in
+	 * @param  int    $line   the line the log was created on
+	 * @param  string $format output format
+	 *
+	 * @return string         location formatted according to $format
+	 */
 	protected function _formatLocation($file, $line, $format = self::LOG_FORMAT)
 	{
 		return sprintf($format, $file, $line);
 	}
 
+	/**
+	 * internal logging call
+	 *
+	 * @param string $type
+	 * @return void
+	 */
 	protected function _log($type, array $args)
 	{
 		// nothing passed in, don't do anything
@@ -170,10 +229,8 @@ class Console implements API\Interfaces\String, API\Interfaces\Console
 			return;
 		}
 		$this->_processed = array();
-		$logs = array();
-		foreach ($args as $arg) {
-			$logs[] = $this->_convert($arg);
-		}
+
+		$logs = array_map([$this, '_convert'], $args);
 		$backtrace = debug_backtrace(false);
 		$level = $this->{self::BACKTRACE_LEVEL};
 		$backtrace_message = 'unknown';
@@ -281,6 +338,17 @@ class Console implements API\Interfaces\String, API\Interfaces\Console
 		array_push($this->_json['rows'], array($logs, $backtrace, $type));
 	}
 
+	/**
+	 * logs a PHP error to the console as an error
+	 *
+	 * @param  int    $errno      the level of the error raised
+	 * @param  string $errstr     the error message
+	 * @param  string $errfile    the filename that the error was raised in
+	 * @param  int    $errline    the line number the error was raised at
+	 * @param  array  $errcontext an array that points to the active symbol table at the point the error occurred
+	 *
+	 * @return void
+	 */
 	public function reportError(
 		$errno,
 		$errstr,
@@ -296,6 +364,13 @@ class Console implements API\Interfaces\String, API\Interfaces\Console
 		);
 	}
 
+	/**
+	 * logs a PHP exception to the console as a warn
+	 *
+	 * @param  Exception $e the exception
+	 *
+	 * @return void
+	 */
 	public function reportException(\Exception $e)
 	{
 		$this->_addRow(
