@@ -32,7 +32,7 @@ final class URL implements API\Interfaces\String
 	use API\Traits\Magic_Methods;
 	use API\Traits\Magic\Call;
 
-	const MAGIC_PROPERTY   = 'url_data';
+	const MAGIC_PROPERTY   = '_url_data';
 	const RESTRICT_SETTING = true;
 
 	/**
@@ -46,9 +46,12 @@ final class URL implements API\Interfaces\String
 	 *
 	 * @param string $url Optional URL to parse
 	 */
-	public function __construct()
+	public function __construct($url = null)
 	{
-		call_user_func_array([$this, 'parseURL'], func_get_args());
+		$this->{self::MAGIC_PROPERTY} = array_merge(
+			$this->{self::MAGIC_PROPERTY},
+			static::parseURL($url)
+		);
 	}
 
 	/**
