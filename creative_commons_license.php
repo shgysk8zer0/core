@@ -41,7 +41,7 @@ final class Creative_Commons_License implements API\Interfaces\String
 	const CC_BORDER            = 0;
 	const CC_NS                = 'http://creativecommons.org/ns#';
 	const DCT_NS               = 'http://purl.org/dc/terms/';
-	const SVG_USE              = 'images/icons/combined.svg#CreativeCommons';
+	const SVG_USE              = 'images/combined.svg#CreativeCommons';
 	const ERROR_CHECKING       = true;
 	const FORMAT_OUTPUT        = true;
 	const PRESERVE_WHITETSPACE = true;
