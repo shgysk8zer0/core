@@ -28,7 +28,7 @@ namespace shgysk8zer0\Core\Exceptions;
 final class HTTP extends \Exception
 {
 	const DEFAULT_MESSAGE = 'Internal Server Error';
-	const DEFAULT_CODE    = 500;
+	const DEFAULT_CODE    = \shgysk8zer0\Core_API\Abstracts\HTTPStatusCodes::INTERNAL_SERVER_ERROR;
 
 	/**
 	 * Create a new exception, with default $code now being 500
@@ -44,5 +44,29 @@ final class HTTP extends \Exception
 	)
 	{
 		parent::__construct($message, $code, $previous);
+	}
+
+	/**
+	 * [__toString description]
+	 *
+	 * @param void
+	 * @return string [description]
+	 */
+	public function __toString() {
+		return $this->getMessage();
+	}
+
+	/**
+	 * [__invoke description]
+	 *
+	 * @param  Callable $callback [description]	 *
+	 * @return void
+	 */
+	public function __invoke(Callable $callback = null) {
+		if (is_callable($callback)) {
+			$callback($this);
+		}
+		http_response_code($this->getCode());
+		exit($this);
 	}
 }
