@@ -30,4 +30,26 @@ final class Console extends API\Abstracts\Console implements API\Interfaces\Stri
 	use API\Traits\ConsoleHandlers;
 
 	const MAGIC_PROPERTY = '_settings';
+
+	/**
+	 * Set and send custom header only when class is destroyed
+	 *
+	 * @param void
+	 * @return void
+	 */
+	public function __destruct()
+	{
+		$this->sendLogHeader();
+	}
+
+	/**
+	 * Get log data as a UTF-8 and JSON encoded string
+	 *
+	 * @param void
+	 * @return string Encoded contents of $this->_json
+	 */
+	public function __toString()
+	{
+		return $this->_encodeLogHeader();
+	}
 }
