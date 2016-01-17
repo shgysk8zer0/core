@@ -30,6 +30,7 @@ use \shgysk8zer0\Core_API as API;
 final class Headers implements API\Interfaces\Magic_Methods, \Iterator
 {
 	use API\Traits\Singleton;
+	use API\Traits\GetInstance;
 	use API\Traits\Magic\Get;
 	use API\Traits\Magic\Is_Set;
 	use API\Traits\Magic\Call_Setter;
@@ -62,7 +63,7 @@ final class Headers implements API\Interfaces\Magic_Methods, \Iterator
 	}
 
 	/**
-	 * Magic setter for class. Sets headers clint-side
+	 * Magic setter for class. Sets headers client-side
 	 *
 	 * @param string $key   Header key to set
 	 * @param mixed  $value String or array value to set it to
