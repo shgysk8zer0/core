@@ -4,7 +4,7 @@
  * @package shgysk8zer0\Core
  * @version 1.0.0
  * @link https://developer.github.com/webhooks/
- * @copyright 2015, Chris Zuber
+ * @copyright 2016, Chris Zuber
  * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,24 +25,15 @@ use \shgysk8zer0\Core_API as API;
 
 /**
  * Provides consistent and accessible methods for getting and checking headers.
- * Setter and unset work with headers client-side
+ * Setter and unset work with response headers.
+ * Getter and isset work with request headers.
  */
-final class Headers implements API\Interfaces\Magic_Methods, \Iterator
+final class Headers implements API\Interfaces\Magic_Methods
 {
 	use API\Traits\Singleton;
 	use API\Traits\GetInstance;
-	use API\Traits\Magic\Get;
-	use API\Traits\Magic\Is_Set;
 	use API\Traits\Magic\Call_Setter;
-	use API\Traits\Magic\Iterator;
-
-	const MAGIC_PROPERTY = '_headers';
-
-	/**
-	 * Array of headers received
-	 * @var array
-	 */
-	protected $_headers = [];
+	use API\Traits\Headers;
 
 	/**
 	 * Class constructor sets the $headers array
@@ -51,15 +42,7 @@ final class Headers implements API\Interfaces\Magic_Methods, \Iterator
 	 */
 	public function __construct()
 	{
-		if (function_exists('getallheaders')) {
-			$headers = getallheaders();
-			$keys = array_keys($headers);
-			array_walk($keys, [$this, 'magicPropConvert']);
-			$headers = array_combine($keys, array_values($headers));
-			$this->{self::MAGIC_PROPERTY} = $headers;
-		} else {
-			$this->{self::MAGIC_PROPERTY} = array();
-		}
+		$this->_readHeaders();
 	}
 
 	/**
@@ -72,18 +55,29 @@ final class Headers implements API\Interfaces\Magic_Methods, \Iterator
 	 */
 	public function __set($key, $value)
 	{
-		$this->magicPropConvert($key);
-		if (is_array($value) or (is_object($value) and $value = get_object_vars($value))) {
-			$value = join('; ', array_map(function($key, $val)
-			{
-				if (is_string($key)) {
-					return "$key=$val";
-				} else {
-					return "$val";
-				}
-			}, array_keys($value), array_values($value)));
-		}
-		header("$key: $value");
+		static::setHeader($key, $value);
+	}
+
+	/**
+	 * Get a request header value by name
+	 *
+	 * @param  string $key Name of the header
+	 * @return string      It's value
+	 */
+	public function __get($key)
+	{
+		return static::getHeader($key);
+	}
+
+	/**
+	 * Check if a request header was sent
+	 *
+	 * @param  string  $key Name of the header
+	 * @return boolean      If it was sent
+	 */
+	public function __isset($key)
+	{
+		return static::hasHeader($key);
 	}
 
 	/**
@@ -95,19 +89,6 @@ final class Headers implements API\Interfaces\Magic_Methods, \Iterator
 	 */
 	public function __unset($key)
 	{
-		$this->magicPropConvert($key);
-		header_remove($key);
-	}
-
-	/**
-	 * Makes headers more consistent
-	 *
-	 * @param string $prop  Key for header
-	 * @return void         Works by reference
-	 * @example $this->magicPropConvert($key) // 'content_type' becomes 'Content-Type'
-	 */
-	protected function magicPropConvert(&$prop)
-	{
-		$prop = str_replace(' ', '-', ucwords(str_replace(['-', '_'], ' ', strtolower($prop))));
+		static::removeHeader($key);
 	}
 }
