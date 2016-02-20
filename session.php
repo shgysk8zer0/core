@@ -32,6 +32,7 @@ class Session implements API\Interfaces\Magic_Methods
 {
 	use API\Traits\Singleton;
 	use API\Traits\Magic\Call;
+	use API\Traits\GetInstance;
 
 	/**
 	 * Creates new instance of session. $name is optional, and sets session_name

@@ -45,6 +45,7 @@ implements API\Interfaces\Magic_Methods, API\Interfaces\AJAX_DOM, API\Interfaces
 	use API\Traits\Singleton;
 	use API\Traits\Magic_Methods;
 	use API\Traits\AJAX_DOM;
+	use API\Traits\GetInstance;
 
 	const CONTENT_TYPE = 'text/event-stream';
 	const MAGIC_PROPERTY = 'response';

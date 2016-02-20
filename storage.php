@@ -38,6 +38,7 @@ final class Storage implements API\Interfaces\Magic_Methods
 	use API\Traits\Magic_Methods;
 	use API\Traits\Magic_Call;
 	use API\Traits\Singleton;
+	use API\Traits\GetInstance;
 
 	private $data = [];
 

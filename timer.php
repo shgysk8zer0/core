@@ -30,6 +30,7 @@ namespace shgysk8zer0\Core;
 class Timer implements \shgysk8zer0\Core_API\Interfaces\String
 {
 	use \shgysk8zer0\Core_API\Traits\Singleton;
+	use \shgysk8zer0\Core_API\Traits\GetInstance;
 	/**
 	 * Unix timestamp with microseconds
 	 * @var float

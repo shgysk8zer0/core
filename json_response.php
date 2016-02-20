@@ -49,6 +49,7 @@ implements API\Interfaces\Magic_Methods, API\Interfaces\AJAX_DOM, API\Interfaces
 	use API\Traits\Magic_Methods;
 	use API\Traits\Magic\Call;
 	use API\Traits\AJAX_DOM;
+	use API\Traits\GetInstance;
 
 	const CONTENT_TYPE = 'application/json';
 	const MAGIC_PROPERTY = 'response';

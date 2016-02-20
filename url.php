@@ -28,6 +28,7 @@ use \shgysk8zer0\Core_API as API;
 final class URL implements API\Interfaces\String
 {
 	use API\Traits\Singleton;
+	use API\Traits\GetInstance;
 	use API\Traits\URL;
 	use API\Traits\Magic_Methods;
 	use API\Traits\Magic\Call;

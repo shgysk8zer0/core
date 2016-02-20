@@ -6,6 +6,9 @@ use \shgysk8zer0\Core_API as API;
 use \shgysk8zer0\Core as Core;
 class RESTAPI {
 	use API\Traits\Magic_Methods;
+	use API\Traits\EasyParse;
+	use API\Traits\GetInstance;
+
 	const MAGIC_PROPERTY = '_response';
 	public $method;
 	public $url;
@@ -52,8 +55,10 @@ class RESTAPI {
 				case 'PUT':
 				case 'DELETE':
 				case 'TRACE':
-					$this->request = $this->_parseRequest();
-					$this->{self::MAGIC_PROPERTY} = $this->request;
+					$this->request = $this->parseStringByType(
+						file_get_contents('php://input'),
+						$this->headers->content_type
+					);
 					exit();
 			}
 		} catch (HTTPException $e) {

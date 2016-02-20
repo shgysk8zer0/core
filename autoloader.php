@@ -25,6 +25,8 @@ namespace shgysk8zer0\Core;
  */
 final class Autoloader
 {
+	use \shgysk8zer0\Core_API\Traits\GetInstance;
+
 	/**
 	 * Callback to call when auto-loading a new class
 	 *

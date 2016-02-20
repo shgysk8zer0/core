@@ -33,6 +33,7 @@ final class Cookies implements API\Interfaces\Magic_Methods, \Iterator
 {
 	use API\Traits\Magic\Call;
 	use API\Traits\Singleton;
+	use API\Traits\GetInstance;
 
 	/**
 	 * Timestamp of when the cookie expires

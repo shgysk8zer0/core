@@ -28,4 +28,5 @@ use \shgysk8zer0\Core_API as API;
 class HTTPAuth extends Login
 {
 	use API\Traits\Auth\Basic;
+	use API\Traits\GetInstance;
 }
