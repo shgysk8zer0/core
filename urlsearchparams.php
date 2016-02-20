@@ -23,7 +23,7 @@ namespace shgysk8zer0\Core;
 use \shgysk8zer0\Core_API as API;
 
 /**
- * Class for easily building and altering URLs.
+ * Class for creating and modifying search paramaters for URLs
  */
 final class URLSearchParams implements API\Interfaces\String, \Iterator
 {
