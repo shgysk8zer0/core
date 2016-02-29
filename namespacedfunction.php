@@ -23,15 +23,17 @@ namespace shgysk8zer0\Core;
 use \shgysk8zer0\Core_API as API;
 
 /**
- * An Object-Oriented autoloader for namespaced functions
+ * An Object-Oriented autoloader for namespaced functions that functions similarly
+ * to `spl_autoload` in that it converts namespaces to lower case paths, automatically
+ * adding ".php" extension, and loads this from the include path.
  *
- * @example \shgysk8zer0\Core\NamespacedFunction::load('\Namespace')->function($args...);
- * @example \shgysk8zer0\Core\NamespacedFunction::{'\Namespace\Function'}($args...);
- * @example call_user_func(['\shgysk8zer0\Core\NamespacedFunction', '\Namespace\Function'], $arg[1]...);
+ * @example NamespacedFunction::load('\Namespace')->function($args...);
+ * @example NamespacedFunction::{'\Namespace\Function'}($args...);
+ * @example call_user_func(['NamespacedFunction', '\Namespace\Function'], $arg[1]...);
  *
  * Where all example perform:
- * `require_once /namespace.php`;
- * `\Namespace\function($args[1], ...)`
+ * `require_once "$namespace.php"`;
+ * `\$namespace\$function($args[1], ...)`
  */
 final class NamespacedFunction implements API\Interfaces\String
 {
@@ -122,7 +124,7 @@ final class NamespacedFunction implements API\Interfaces\String
 		if (! pathinfo($script, PATHINFO_EXTENSION)) {
 			$script .= '.php';
 		}
-		return realpath("./$script");
+		return $script;
 	}
 
 	/**
