@@ -71,6 +71,17 @@ final class NamespacedFunction implements API\Interfaces\String
 	}
 
 	/**
+	 * Get the callalble, namespaced function name as a string
+	 *
+	 * @param  string $function The name of the function
+	 * @return callalble        The function name with namespace
+	 */
+	public function __get($function)
+	{
+		return $this . self::NS . $function;
+	}
+
+	/**
 	 * Calls a function from within the namespaced PHP script
 	 *
 	 * @param  string $function The function to call
@@ -79,9 +90,8 @@ final class NamespacedFunction implements API\Interfaces\String
 	 */
 	public function __call($function, Array $args = array())
 	{
-		$function = $this . self::NS . $function;
-		if (function_exists($function)) {
-			return call_user_func_array($function, $args);
+		if ($this->__isset($function)) {
+			return call_user_func_array($this->__get($function), $args);
 		} else {
 			throw new \Exception(sprintf("function '%s' not found or invalid function name in script '%s'", $function, $this->_path));
 		}
@@ -95,7 +105,7 @@ final class NamespacedFunction implements API\Interfaces\String
 	 */
 	public function __isset($function)
 	{
-		return function_exists($this . self::NS . $function);
+		return function_exists($this->__get($function));
 	}
 
 	/**
