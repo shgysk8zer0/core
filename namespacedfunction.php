@@ -88,6 +88,17 @@ final class NamespacedFunction implements API\Interfaces\String
 	}
 
 	/**
+	 * Returns true if function exists in script
+	 *
+	 * @param  string  $function Name of function
+	 * @return boolean           If it exists in the script/namespace
+	 */
+	public function __isset($function)
+	{
+		return function_exists($this . self::NS . $function);
+	}
+
+	/**
 	 * Returns the namespace of the loaded script
 	 *
 	 * @return string Namespace
