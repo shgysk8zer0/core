@@ -110,9 +110,9 @@ final class NamespacedFunction implements API\Interfaces\String
 	 * @param  string  $function Name of function
 	 * @return boolean		   If it exists in the script/namespace
 	 */
-	public function __isset($function)
+	public function __isset($name)
 	{
-		return function_exists($this->__get($function));
+		return $this->__get($name) !== false;
 	}
 
 	/**
