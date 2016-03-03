@@ -71,22 +71,29 @@ final class NamespacedFunction implements API\Interfaces\String
 	}
 
 	/**
-	 * Get the callalble, namespaced function name as a string
+	 * Get the namespaced function name as a string or a namespaced constat
 	 *
-	 * @param  string $function The name of the function
-	 * @return callalble        The function name with namespace
+	 * @param  string $name The name of the function or constant
+	 * @return mixed		Either the function as string or the value of the constant, or false on failure
 	 */
-	public function __get($function)
+	public function __get($name)
 	{
-		return $this . self::NS . $function;
+		$name = $this . self::NS . $name;
+		if (function_exists($name)) {
+			return $name;
+		} elseif (defined($name)) {
+			return constant($name);
+		} else {
+			return false;
+		}
 	}
 
 	/**
 	 * Calls a function from within the namespaced PHP script
 	 *
 	 * @param  string $function The function to call
-	 * @param  array  $args     Array of arguments to pass to it
-	 * @return mixed            The return of the funciton
+	 * @param  array  $args	 Array of arguments to pass to it
+	 * @return mixed			The return of the funciton
 	 */
 	public function __call($function, Array $args = array())
 	{
@@ -101,7 +108,7 @@ final class NamespacedFunction implements API\Interfaces\String
 	 * Returns true if function exists in script
 	 *
 	 * @param  string  $function Name of function
-	 * @return boolean           If it exists in the script/namespace
+	 * @return boolean		   If it exists in the script/namespace
 	 */
 	public function __isset($function)
 	{
@@ -122,8 +129,8 @@ final class NamespacedFunction implements API\Interfaces\String
 	 * Static method to call functions from namespaced scripts, loading file if necessary
 	 *
 	 * @param  string $namespace_func `\Namespace\Function`
-	 * @param  Array  $args           Array of arguments to pass
-	 * @return mixed                  The return of the function
+	 * @param  Array  $args		   Array of arguments to pass
+	 * @return mixed				  The return of the function
 	 */
 	public static function __callStatic($namespace_func, Array $args)
 	{
@@ -136,7 +143,7 @@ final class NamespacedFunction implements API\Interfaces\String
 	/**
 	* Returns the absolute path converted from namespace, based on `DOCUMENT_ROOT`
 	* @param  string $namespace The namespace to use {\Namespace}
-	* @return string            The converted path {/abs_path/to/namespace.php}
+	* @return string			The converted path {/abs_path/to/namespace.php}
 	*/
 	private function _getPath($namespace)
 	{
