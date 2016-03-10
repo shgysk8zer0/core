@@ -53,7 +53,14 @@ final class NamespacedFunction implements API\Interfaces\String
 	private $_path = '';
 
 	/**
+	 * Value returned from `require_once`
+	 * @var mixed
+	 */
+	private $_ret_val = null;
+
+	/**
 	 * Create an instance and load the file, if required
+	 * Use of `::load` via \shgysk8zer0\Core_API\Traits\Singleton is preferred.
 	 *
 	 * @param string $namespace The file's namespace which must relate to its path
 	 */
@@ -64,7 +71,7 @@ final class NamespacedFunction implements API\Interfaces\String
 		$this->_namespace = $namespace;
 		$this->_path = $this->_getPath($namespace);
 		if (file_exists($this->_path)) {
-			include_once $this->_path;
+			$this->_ret_val = include_once $this->_path;
 		} else {
 			throw new \Exception(sprintf('"%s": failed to open stream: No such file or directory', $this->_path));
 		}
@@ -89,22 +96,6 @@ final class NamespacedFunction implements API\Interfaces\String
 	}
 
 	/**
-	 * Calls a function from within the namespaced PHP script
-	 *
-	 * @param  string $function The function to call
-	 * @param  array  $args	 Array of arguments to pass to it
-	 * @return mixed			The return of the funciton
-	 */
-	public function __call($function, Array $args = array())
-	{
-		if ($this->__isset($function)) {
-			return call_user_func_array($this->__get($function), $args);
-		} else {
-			throw new \Exception(sprintf("function '%s' not found or invalid function name in script '%s'", $function, $this->_path));
-		}
-	}
-
-	/**
 	 * Returns true if function exists in script
 	 *
 	 * @param  string  $function Name of function
@@ -123,6 +114,40 @@ final class NamespacedFunction implements API\Interfaces\String
 	public function __toString()
 	{
 		return $this->_namespace;
+	}
+
+	/**
+	 * Calls the function returned by `include_once`,if any, or throws an exception
+	 *
+	 * @param  mixed   [...] Accepts any arguments. Up to returned function.
+	 * @return mixed   Return of the function
+	 */
+	public function __invoke()
+	{
+		if (is_callable($this->_ret_val)) {
+			return call_user_func_array($this->_ret_val, func_get_args());
+		} else {
+			throw new \Exception(sprintf('%s did not return a function.', $this->_namespace));
+		}
+	}
+
+	/**
+	 * Calls a function from within the namespaced PHP script
+	 *
+	 * @param  string $function The function to call
+	 * @param  array  $args	 Array of arguments to pass to it
+	 * @return mixed			The return of the funciton
+	 */
+	public function __call($function, Array $args = array())
+	{
+		if ($this->__isset($function)) {
+			return call_user_func_array($this->__get($function), $args);
+		} else {
+			throw new \Exception(sprintf(
+				"function '%s' not found or invalid function name in script '%s'",
+				$function, $this->_path
+			));
+		}
 	}
 
 	/**
