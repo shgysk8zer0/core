@@ -82,7 +82,7 @@ class CSV implements \shgysk8zer0\Core_API\Interfaces\Magic_Methods
 	public function __construct() {
 
 		$this->data = [];
-		$this->fields = flatten(func_get_args());
+		$this->fields = func_get_args();
 		$this->row = 0;
 		$this->delimiter = ',';
 		$this->enclosure = '"';
