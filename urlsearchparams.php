@@ -25,7 +25,7 @@ use \shgysk8zer0\Core_API as API;
 /**
  * Class for creating and modifying search paramaters for URLs
  */
-final class URLSearchParams implements API\Interfaces\String, \Iterator
+final class URLSearchParams implements API\Interfaces\toString, \Iterator
 {
 	use API\Traits\Magic\Iterator;
 

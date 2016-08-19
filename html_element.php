@@ -29,7 +29,7 @@ use \shgysk8zer0\Core_API as API;
  * @uses \DOMDocument
  * @uses \DOMElement
  */
-class HTML_Element implements API\Interfaces\Magic_Methods, API\Interfaces\String
+class HTML_Element implements API\Interfaces\Magic_Methods, API\Interfaces\toString
 {
 	use API\Traits\Magic_Methods;
 	use API\Traits\Magic\Call;

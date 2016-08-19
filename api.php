@@ -25,7 +25,7 @@ use \shgysk8zer0\Core_API as Core_API;
 /**
  * Generic API class for parsing requests & responses
  */
-class API implements Core_API\Interfaces\String, Core_API\Interfaces\Magic_Methods
+class API implements Core_API\Interfaces\toString, Core_API\Interfaces\Magic_Methods
 {
 	use Core_API\Traits\Magic_Methods;
 	use Core_API\Traits\Magic\Call;

@@ -25,7 +25,7 @@ use \shgysk8zer0\Core_API as API;
 /**
  * Class using Core_API traits & interfaces to easily manipulate images
  */
-final class Image implements API\Interfaces\String, API\Interfaces\Image
+final class Image implements API\Interfaces\toString, API\Interfaces\Image
 {
 	use API\Traits\Image;
 	use API\Traits\Path_Info;

@@ -26,7 +26,7 @@ use \shgysk8zer0\Core_API as API;
 /**
  * Easily create and build <table>s and get either a DOMElement or HTML string
  */
-class Table extends \DOMElement implements API\Interfaces\Magic_Methods, API\Interfaces\String
+class Table extends \DOMElement implements API\Interfaces\Magic_Methods, API\Interfaces\toString
 {
 	use API\Traits\Magic\Call_Setter;
 

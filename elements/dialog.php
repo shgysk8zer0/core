@@ -25,7 +25,7 @@ use \shgysk8zer0\Core_API as API;
 /**
  * Class for easily creating <dialog> elements
  */
-final class Dialog extends \DOMElement implements API\Interfaces\String
+final class Dialog extends \DOMElement implements API\Interfaces\toString
 {
 	use API\Traits\DOMImportHTML;
 	use API\Traits\Magic\HTML_String;

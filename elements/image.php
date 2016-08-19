@@ -25,7 +25,7 @@ use \shgysk8zer0\Core_API as API;
 /**
  * Class for creating <img>s in HTML, automatially attempting to get dimensions
  */
-class Image extends \DOMElement implements API\Interfaces\Magic_Methods, API\Interfaces\String
+class Image extends \DOMElement implements API\Interfaces\Magic_Methods, API\Interfaces\toString
 {
 	use API\Traits\Magic\DOMAttributes;
 	use API\Traits\Magic\Call;

@@ -29,7 +29,7 @@ use \shgysk8zer0\Core_API as API;
  * $return_var = null;
  * $last_line = $git($output, $return_var);
  */
-final class SystemCall implements API\Interfaces\String
+final class SystemCall implements API\Interfaces\toString
 {
 	/**
 	 * Private var to store the command string in

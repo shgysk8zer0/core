@@ -49,7 +49,7 @@ use \shgysk8zer0\Core_API as API;
  * @todo Extend DOMDocument and use taht for building HTML
  * @todo use Core_API traits
  */
-interface Table extends API\Interfaces\Magic_Methods, API\Interfaces\String
+interface Table extends API\Interfaces\Magic_Methods, API\Interfaces\toString
 {
 	/**
 	 * Chaninable magic method, in this case only to set values

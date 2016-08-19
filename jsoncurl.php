@@ -26,7 +26,7 @@ use \shgysk8zer0\Core_API as API;
  * Send cURL requests with the body as a JSON encoded string
  */
 class JSONcURL extends API\Abstracts\cURL_Request
-implements API\Interfaces\cURL, API\Interfaces\String, API\Interfaces\Magic_Methods
+implements API\Interfaces\cURL, API\Interfaces\toString, API\Interfaces\Magic_Methods
 {
 	use API\Traits\Magic_Methods;
 	const CONTENT_TYPE = 'application/json';

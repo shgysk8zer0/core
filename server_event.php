@@ -40,7 +40,7 @@ use \shgysk8zer0\Core_API as API;
  * }
  */
 final class Server_Event
-implements API\Interfaces\Magic_Methods, API\Interfaces\AJAX_DOM, API\Interfaces\String
+implements API\Interfaces\Magic_Methods, API\Interfaces\AJAX_DOM, API\Interfaces\toString
 {
 	use API\Traits\Singleton;
 	use API\Traits\Magic_Methods;

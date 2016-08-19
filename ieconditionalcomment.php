@@ -84,7 +84,7 @@ final class IEConditionalComment extends \DOMComment
 	{
 		parent::__construct();
 
-		if (is_string($content) or $content instanceof \shgysk8zer0\Core_API\Interfaces\String) {
+		if (is_string($content) or $content instanceof \shgysk8zer0\Core_API\Interfaces\toString) {
 			$this->content = "$content";
 		} elseif ($content instanceof \DOMElement) {
 			if (is_null($content->ownerDocument)) {
