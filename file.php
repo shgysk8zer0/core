@@ -27,7 +27,7 @@ use \shgysk8zer0\Core_API as API;
  * Provides a few magic methods to allow writing when used as a function and
  * reading when used as a string
  */
-class File implements API\Interfaces\File_Resources, API\Interfaces\String
+class File implements API\Interfaces\File_Resources, API\Interfaces\toString
 {
 	use API\Traits\File_Resources;
 	use API\Traits\Singleton;

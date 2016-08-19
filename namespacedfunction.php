@@ -35,7 +35,7 @@ use \shgysk8zer0\Core_API as API;
  * `require_once "$namespace.php"`;
  * `\$namespace\$function($args[1], ...)`
  */
-final class NamespacedFunction implements API\Interfaces\String
+final class NamespacedFunction implements API\Interfaces\toString
 {
 	use API\Traits\Singleton;
 	const NS = '\\';

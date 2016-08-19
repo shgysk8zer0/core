@@ -43,7 +43,7 @@ use \shgysk8zer0\Core_API as API;
  * Optimized to be handled by handleJSON in functions.js
  */
 final class JSON_Response
-implements API\Interfaces\Magic_Methods, API\Interfaces\AJAX_DOM, API\Interfaces\String
+implements API\Interfaces\Magic_Methods, API\Interfaces\AJAX_DOM, API\Interfaces\toString
 {
 	use API\Traits\Singleton;
 	use API\Traits\Magic_Methods;

@@ -34,7 +34,7 @@ use \shgysk8zer0\Core_API as API;
  * - Building from multiple traits means this will likely be enhanced over time
  * - Extending this class allows setting `RESTRICT_SETTING` to limit setter
  */
-class Magic_Object implements \Iterator, API\Interfaces\Magic_Methods, API\Interfaces\String
+class Magic_Object implements \Iterator, API\Interfaces\Magic_Methods, API\Interfaces\toString
 {
 	use API\Traits\Magic_Methods;
 	use API\Traits\Magic\Call;

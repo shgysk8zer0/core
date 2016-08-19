@@ -24,7 +24,7 @@ namespace shgysk8zer0\Core;
 /**
  * Class to easy work with query strings
  */
-final class SearchParams extends \stdClass implements \shgysk8zer0\Core_API\Interfaces\String
+final class SearchParams extends \stdClass implements \shgysk8zer0\Core_API\Interfaces\toString
 {
 	/**
 	 * Create instance from optional URL / query string

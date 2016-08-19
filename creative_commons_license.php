@@ -29,7 +29,7 @@ use \shgysk8zer0\Core_API as API;
  * @uses \DateTime
  * @see https://creativecommons.org/choose/
  */
-final class Creative_Commons_License implements API\Interfaces\String
+final class Creative_Commons_License implements API\Interfaces\toString
 {
 	const VERSION              = '1.1';
 	const SVG_NS               = 'http://www.w3.org/2000/svg';

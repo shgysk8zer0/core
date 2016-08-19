@@ -26,7 +26,7 @@ use \shgysk8zer0\Core_API as API;
  * of the Notification API.
  * @see https://developer.mozilla.org/en-US/docs/Web/API/notification/Notification
  */
-class Notification implements API\Interfaces\String
+class Notification implements API\Interfaces\toString
 {
 	use API\Traits\Notification;
 	use API\Traits\Magic_Methods;

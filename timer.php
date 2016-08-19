@@ -27,7 +27,7 @@ namespace shgysk8zer0\Core;
  * // ... Do some stuff
  * echo "Took $timer seconds.";
  */
-class Timer implements \shgysk8zer0\Core_API\Interfaces\String
+class Timer implements \shgysk8zer0\Core_API\Interfaces\toString
 {
 	use \shgysk8zer0\Core_API\Traits\Singleton;
 	use \shgysk8zer0\Core_API\Traits\GetInstance;

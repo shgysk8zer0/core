@@ -25,7 +25,7 @@ use \shgysk8zer0\Core_API as API;
 /**
  * Extends DOMDocument with magic methods (mostly from traits)
  */
-class HTML_Doc extends \DOMDocument implements API\Interfaces\Magic_Methods, API\Interfaces\String
+class HTML_Doc extends \DOMDocument implements API\Interfaces\Magic_Methods, API\Interfaces\toString
 {
 	use API\Traits\Magic\DOMDocument;
 	use API\Traits\Magic\DOMDoc_Invoke;

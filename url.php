@@ -25,7 +25,7 @@ use \shgysk8zer0\Core_API as API;
 /**
  * Class for easily building and altering URLs.
  */
-final class URL implements API\Interfaces\String
+final class URL implements API\Interfaces\toString
 {
 	use API\Traits\Singleton;
 	use API\Traits\GetInstance;

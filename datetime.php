@@ -30,7 +30,7 @@ use \shgysk8zer0\Core_API as API;
  * @uses \shgysk8zer0\Core_API\Abstracts\DateTime_Formats
  */
 class DateTime extends API\Abstracts\DateTime_Formats
-implements \DateTimeInterface, API\Interfaces\String
+implements \DateTimeInterface, API\Interfaces\toString
 {
 	use API\Traits\DateTime;
 

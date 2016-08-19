@@ -34,7 +34,7 @@ use \shgysk8zer0\Core_API as API;
  * 	$template->$placeholder = $value;
  * 	echo $template;
  */
-class Template extends API\Abstracts\RegExp implements API\Interfaces\Magic_Methods, API\Interfaces\String
+class Template extends API\Abstracts\RegExp implements API\Interfaces\Magic_Methods, API\Interfaces\toString
 {
 	use API\Traits\Singleton;
 	use API\Traits\Magic_Methods;
