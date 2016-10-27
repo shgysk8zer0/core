@@ -18,80 +18,82 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-namespace shgysk8zer0\Core;
-
-use \shgysk8zer0\Core_API as API;
+namespace shgysk8zer0\ShareAPI;
 
 /**
- * Class for creating and modifying search paramaters for URLs
+ * Class to create URL query strings / search paramaters in an object-oriented way.
  */
-final class URLSearchParams implements API\Interfaces\toString, \Iterator
+class URLSearchParams extends \ArrayObject implements \shgysk8zer0\Core_API\Interfaces\toString
 {
-	use API\Traits\Magic\Iterator;
-
-	const MAGIC_PROPERTY = '_params';
-	protected $_params = array();
-
 	/**
-	 * Creates a new instance of URLSearchParams
-	 *
-	 * @param string $params Query string for a URL
+	 * Create a new instance of URLSearchParams from string, array, or object
+	 * @param mixed $params Initial value for search paramaters
 	 */
-	public function __construct($params = '')
+	public function __construct($params = null)
 	{
-		parse_str($params, $this->{self::MAGIC_PROPERTY});
+		if (is_string($params)) {
+			parse_str(trim($paramsm, '?'), $params);
+			parent::__construct($params);
+		} else {
+			parent::__construct($params);
+		}
 	}
 
 	/**
-	 * Converts $_params into an HTTP query (without the leading "?")
+	 * Checks if a paramater is set
 	 *
-	 * @return string "foo=bar&name=John+Smith"
+	 * @param  string  $param Query paramater to check for
+	 * @return bool
+	 */
+	public function __isset($param)
+	{
+		return array_key_exists($param, $this);
+	}
+
+	/**
+	 * Removes a paramater
+	 *
+	 * @param string $param Pramater to remove
+	 * @return void
+	 */
+	public function __unset($param)
+	{
+		unset($this[$param]);
+	}
+
+	/**
+	 * Sets a URL paramater
+	 *
+	 * @param string $param Paramater to set
+	 * @param mixed  $value Value to set it to
+	 * @return void
+	 */
+	public function __set($param, $value)
+	{
+		$this[$param] = $value;
+	}
+
+	/**
+	 * Gets the value of a paramater
+	 *
+	 * @param  string $param The paramater to check for
+	 * @return mixed         Its value, if any
+	 */
+	public function __get($param)
+	{
+		if ($this->__isset($param)) {
+			return $this[$param];
+		}
+	}
+
+	/**
+	 * Returns a URL query string
+	 *
+	 * @param void
+	 * @return string The search params / query string
 	 */
 	public function __toString()
 	{
-		return http_build_query($this->{self::MAGIC_PROPERTY});
-	}
-
-	/**
-	 * Magic setter method
-	 *
-	 * @param string $key   Paramater name
-	 * @param mixed  $value Paramater value
-	 */
-	public function __set($key, $value)
-	{
-		$this->{self::MAGIC_PROPERTY}[$key] = $value;
-	}
-
-	/**
-	 * Magic getter method
-	 *
-	 * @param  string $key Paramater name
-	 * @return string      Since these are search params, it must be a string
-	 */
-	public function __get($key)
-	{
-		return isset($this->{$key}) ? $this->{self::MAGIC_PROPERTY}[$key] : null;
-	}
-
-	/**
-	 * Magic isset method
-	 *
-	 * @param  string  $key Paramater name
-	 * @return boolean
-	 */
-	public function __isset($key)
-	{
-		return array_key_exists($key, $this->{self::MAGIC_PROPERTY});
-	}
-
-	/**
-	 * Magic unset method
-	 *
-	 * @param string $key Paramater name
-	 */
-	public function __unset($key)
-	{
-		unset($this->{self::MAGIC_PROPERTY}[$key]);
+		return http_build_query($this);
 	}
 }
