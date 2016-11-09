@@ -32,58 +32,9 @@ class URLSearchParams extends \ArrayObject implements \shgysk8zer0\Core_API\Inte
 	public function __construct($params = null)
 	{
 		if (is_string($params)) {
-			parse_str(trim($paramsm, '?'), $params);
-			parent::__construct($params);
-		} else {
-			parent::__construct($params);
+			parse_str(trim($params, '?'), $params);
 		}
-	}
-
-	/**
-	 * Checks if a paramater is set
-	 *
-	 * @param  string  $param Query paramater to check for
-	 * @return bool
-	 */
-	public function __isset($param)
-	{
-		return array_key_exists($param, $this);
-	}
-
-	/**
-	 * Removes a paramater
-	 *
-	 * @param string $param Pramater to remove
-	 * @return void
-	 */
-	public function __unset($param)
-	{
-		unset($this[$param]);
-	}
-
-	/**
-	 * Sets a URL paramater
-	 *
-	 * @param string $param Paramater to set
-	 * @param mixed  $value Value to set it to
-	 * @return void
-	 */
-	public function __set($param, $value)
-	{
-		$this[$param] = $value;
-	}
-
-	/**
-	 * Gets the value of a paramater
-	 *
-	 * @param  string $param The paramater to check for
-	 * @return mixed         Its value, if any
-	 */
-	public function __get($param)
-	{
-		if ($this->__isset($param)) {
-			return $this[$param];
-		}
+		parent::__construct($params, self::ARRAY_AS_PROPS);
 	}
 
 	/**
