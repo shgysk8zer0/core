@@ -1,7 +1,7 @@
 <?php
 
 namespace shgysk8zer0\Core;
-final class Gravatar extends \ArrayObject
+final class Gravatar extends URLSearchParams
 {
 	const GRAVATAR     = 'https://www.gravatar.com/avatar/';
 	const DEFAULT_SIZE = 80;
@@ -23,7 +23,7 @@ final class Gravatar extends \ArrayObject
 			'max_range' => self::MAX_SIZE
 		]])) {
 			$params['s'] = $size;
-			parent::__construct($params, self::ARRAY_AS_PROPS);
+			parent::__construct($params);
 		} else {
 			throw new \InvalidArgumentException('$size is required to be an integer less than ' . self::MAX_SIZE);
 		}
@@ -31,7 +31,9 @@ final class Gravatar extends \ArrayObject
 
 	public function __toString()
 	{
-		return self::GRAVATAR . md5(strtolower($this->_email)) . '?' . http_build_query($this);
+		$query = parent::__toString();
+		$url = self::GRAVATAR . md5(strtolower($this->_email));
+		return strlen($query) === 0 ? $url : "$url?$query";
 	}
 
 	public function __call($param, $value)
@@ -39,4 +41,3 @@ final class Gravatar extends \ArrayObject
 		$this->$param = count($value) === 1 ?  $value[0] : $value;
 	}
 }
-
