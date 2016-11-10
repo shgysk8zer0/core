@@ -34,8 +34,8 @@ class URLSearchParams extends \ArrayObject implements \shgysk8zer0\Core_API\Inte
 		if (is_string($params)) {
 			parse_str(trim($params, '?'), $params);
 		}
-		parent::__construct($params, self::ARRAY_AS_PROPS);
 	}
+		parent::__construct(is_array($params) ? $params : [], self::ARRAY_AS_PROPS);
 
 	/**
 	 * Returns a URL query string
