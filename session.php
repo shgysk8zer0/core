@@ -3,7 +3,7 @@
  * @author Chris Zuber <shgysk8zer0@gmail.com>
  * @package shgysk8zer0\Core
  * @version 1.0.0
- * @copyright 2015, Chris Zuber
+ * @copyright 2016, Chris Zuber
  * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -34,6 +34,10 @@ class Session implements API\Interfaces\Magic_Methods
 	use API\Traits\Magic\Call;
 	use API\Traits\GetInstance;
 
+	static $lifetime  = 0;
+	static $path      = '/';
+	static $http_only = true;
+
 	/**
 	 * Creates new instance of session. $name is optional, and sets session_name
 	 * if session has not been started
@@ -49,21 +53,29 @@ class Session implements API\Interfaces\Magic_Methods
 			if (PHP_SAPI != 'cli') {
 
 				if (! is_string($name)) {
-					$path = explode(DIRECTORY_SEPARATOR, BASE);
-					$name = end($path);
-					unset($path);
+					if (defined('BASE')) {
+						$path = explode(DIRECTORY_SEPARATOR, BASE);
+						$name = end($path);
+						$name = preg_replace('/[\W]/', null, strtolower($name));
+						unset($path);
+					} else {
+						$name = $_SERVER['SERVER_NAME'];
+					}
 				}
 
-				$name = preg_replace('/[\W]/', null, strtolower($name));
 				session_name($name);
 
 				if (! array_key_exists($name, $_COOKIE)) {
 					session_set_cookie_params(
-						0,
-						parse_url(URL, PHP_URL_PATH),
-						parse_url(URL, PHP_URL_HOST),
-						https(),
-						true
+						static::$lifetime,
+						defined('URL')
+							? parse_url(URL, PHP_URL_PATH)
+							: static::$path,
+						defined('URL')
+							? parse_url(URL, PHP_URL_HOST)
+							: $_SERVER['HTTP_HOST'],
+						array_key_exists('HTTPS', $_SERVER),
+						static::$http_only
 					);
 				}
 			}
@@ -80,8 +92,9 @@ class Session implements API\Interfaces\Magic_Methods
 	 */
 	public function __get($key)
 	{
-		if (isset($this->$key)) {
-			return $_SESSION[$this->getKey($key)];
+		$key = $this->_getKey($key);
+		if (array_key_exists($key, $_SESSION)) {
+			return $_SESSION[$key];
 		}
 		return null;
 	}
@@ -96,7 +109,7 @@ class Session implements API\Interfaces\Magic_Methods
 	 */
 	public function __set($key, $value)
 	{
-		$_SESSION[$this->getKey($key)] = $value;
+		$_SESSION[$this->_getKey($key)] = $value;
 	}
 
 	/**
@@ -106,7 +119,7 @@ class Session implements API\Interfaces\Magic_Methods
 	 */
 	public function __isset($key)
 	{
-		return array_key_exists($this->getKey($key), $_SESSION);
+		return array_key_exists($this->_getKey($key), $_SESSION);
 	}
 
 	/**
@@ -118,7 +131,16 @@ class Session implements API\Interfaces\Magic_Methods
 	 */
 	public function __unset($key)
 	{
-		unset($_SESSION[$this->getKey($key)]);
+		unset($_SESSION[$this->_getKey($key)]);
+	}
+
+	/**
+	 * Called whenever `var_dump` is called on class
+	 * @return array Session data
+	 */
+	public function __debugInfo()
+	{
+		return $_SESSION;
 	}
 
 	/**
@@ -157,7 +179,7 @@ class Session implements API\Interfaces\Magic_Methods
 	 * @param string $key The original value
 	 * @return string     The converted value
 	 */
-	private function getKey($key)
+	private function _getKey($key)
 	{
 		return strtolower(str_replace('_', '-', $key));
 	}
