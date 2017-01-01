@@ -20,8 +20,12 @@
  */
 namespace shgysk8zer0\Core;
 
-final class CSP extends \ArrayObject
+use \shgysk8zer0\Core_API as API;
+
+final class CSP extends \ArrayObject implements API\Interfaces\ToString
 {
+	use \shgysk8zer0\Core_API\Traits\GetInstance;
+
 	/**
 	 * Header to set to enforce policy
 	 * @var string
@@ -51,9 +55,8 @@ final class CSP extends \ArrayObject
 	 */
 	public function __construct(Array $params = array('default-src' => "'self'"))
 	{
-		$keys = array_keys($params);
-		array_walk($keys, [__CLASS__, '_convertKey']);
-		parent::__construct(array_combine($keys, array_values($params)));
+		parent::__construct();
+		array_map([$this,'__set'], array_keys($params), array_values($params));
 	}
 
 	/**
@@ -64,7 +67,15 @@ final class CSP extends \ArrayObject
 	public function __set($param, $value)
 	{
 		static::_convertKey($param);
-		$this[$param] = $value;
+		if (array_key_exists($param, $this) and ! in_array($value, $this[$param])) {
+			is_array($value) ? array_map(
+				[$this, __FUNCTION__],
+				array_pad([], count($value), $param),
+				$value
+			) : array_push($value, $this[$param]);
+		} else {
+			$this[$param] = is_array($value) ? $value : [$value];
+		}
 	}
 
 	/**
@@ -109,16 +120,8 @@ final class CSP extends \ArrayObject
 	 */
 	public function __call($param, Array $values)
 	{
-		static::_convertKey($param);
-		if (array_key_exists($param, $this)) {
-			if (!is_array($this[$param])) {
-				$this[$param] = array_merge([$this[$param]], $values);
-			} else {
-				$this[$param] = array_merge($this[$param], $values);
-			}
-		} else {
-			$this[$param] = $values;
-		}
+		$this->__set($param, $values);
+		return $this;
 	}
 
 	/**
@@ -163,13 +166,21 @@ final class CSP extends \ArrayObject
 	{
 		$src = $this[$item];
 
-		if (is_string($src) and array_key_exists($src, self::KEYWORDS)) {
-			$src = self::KEYWORDS[$src];
-		}
+		array_walk($src, [$this, '_keywordWalk']);
 
-		$carry .= (is_array($src))
-			? $item . ' ' . join(' ', $src) . ';'
-			: "{$item} {$src};";
+		$carry .= $item . ' ' . join(' ', $src) . ';';
 		return $carry;
+	}
+
+	/**
+	 * Replaces any keywords
+	 * @param  string $key "self", "*", "none", etc.
+	 * @return void
+	 */
+	private function _keywordWalk(&$key)
+	{
+		if (array_key_exists($key, self::KEYWORDS)) {
+			$key = self::KEYWORDS[$key];
+		}
 	}
 }
