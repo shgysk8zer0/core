@@ -63,10 +63,10 @@ namespace shgysk8zer0\Core;
 	 */
 	public function saveTo(...$path)
 	{
-		$dir = join(DIRECTORY_SEPARATOR, $path);
+		$dir = rtrim($_SERVER['DOCUMENT_ROOT'], DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+		$dir .= join(DIRECTORY_SEPARATOR, $path) . DIRECTORY_SEPARATOR;
 		$path = join('/', $path);
-		$dir = trim($dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-		$dir = $_SERVER['DOCUMENT_ROOT'] . $dir;
+
 		if (!is_dir($dir)) {
 			mkdir($dir, 0755, true) or trigger_error("Error creating directory, $dir.");
 		}
