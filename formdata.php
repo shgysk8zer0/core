@@ -43,6 +43,11 @@ class FormData extends \ArrayObject
 		return http_build_query($this->getArrayCopy());
 	}
 
+	public function __invoke(Array $def, $add_empty = false)
+	{
+		return filter_var_array($this->getArrayCopy(), $defs, $add_empty);
+	}
+
 	/**
 	 * Returns the request method
 	 * @param void
