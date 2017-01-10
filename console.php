@@ -22,7 +22,7 @@ namespace shgysk8zer0\Core;
 
 use \shgysk8zer0\Core_API as API;
 
-final class Console extends API\Abstracts\Console implements API\Interfaces\toString, API\Interfaces\Console
+final class Console extends API\Abstracts\Console implements API\Interfaces\toString
 {
 	use API\Traits\Magic_Methods;
 	use API\Traits\GetInstance;
