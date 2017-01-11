@@ -33,13 +33,4 @@ final class PDOStatement extends \PDOStatement implements API\Interfaces\PDOStat
 	use API\Traits\PDOStatement;
 	use API\Traits\PDOStatement_Magic;
 	use Traits\Legacy_PDOStatement;
-
-	/**
-	 * Set constructor as private so that it may only be created by PDO
-	 *
-	 * @param void
-	 * @return void
-	 */
-	protected function __construct()
-	{}
 }
