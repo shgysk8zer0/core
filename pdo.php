@@ -44,11 +44,10 @@ implements API\Interfaces\PDO, API\Interfaces\File_Resources
 	 */
 	public function __construct($con = self::DEFAULT_CON)
 	{
-		parent::connect(
-			$con,
-			[
-				self::ATTR_STATEMENT_CLASS => ['\\' . __NAMESPACE__ . '\\' . self::STM_CLASS]
-			]
+		parent::connect($con, []);
+		$this->setAttribute(
+			self::ATTR_STATEMENT_CLASS,
+			[__NAMESPACE__ . '\\' . self::STM_CLASS]
 		);
 	}
 
