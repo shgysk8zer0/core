@@ -22,7 +22,7 @@ namespace shgysk8zer0\Core;
 /**
  * Class to simplify working with data from arrays, such as $_REQUEST
  */
-class FormData extends \ArrayObject
+class FormData extends \ArrayObject implements \JsonSerializable
 {
 	/**
 	 * Creates a new instance of class
@@ -30,7 +30,12 @@ class FormData extends \ArrayObject
 	 */
 	public function __construct(Array $inputs)
 	{
-		parent::__construct(static::_convert($inputs), self::ARRAY_AS_PROPS);
+		foreach ($inputs as $key => $value) {
+			if (is_array($value) and is_string($key)) {
+				$inputs[$key] = new self($value);
+			}
+		}
+		parent::__construct($inputs, self::ARRAY_AS_PROPS);
 	}
 
 	/**
@@ -40,7 +45,12 @@ class FormData extends \ArrayObject
 	 */
 	public function __toString()
 	{
-		return http_build_query($this->getArrayCopy());
+		return urldecode(http_build_query($this->getArrayCopy()));
+	}
+
+	public function jsonSerialize()
+	{
+		return $this->getArrayCopy();
 	}
 
 	public function __invoke(Array $def, $add_empty = false)
@@ -56,22 +66,5 @@ class FormData extends \ArrayObject
 	public function getMethod()
 	{
 		return $_SERVER['REQUEST_METHOD'];
-	}
-
-	/**
-	 * Converts all non-numeric indexed arrays into `\ArrayObject`s
-	 * @param  Array  $arr      Source array
-	 * @return ArrayObject      Array converted into an `\ArrayObject`
-	 */
-	private static function _convert(Array $arr)
-	{
-		$arr = new \ArrayObject($arr, self::ARRAY_AS_PROPS);
-
-		foreach (get_object_vars($arr) as $key => $value) {
-			if (is_array($value) and is_string($key)) {
-				$arr->{$key} = call_user_func(__METHOD__, $value);
-			}
-		}
-		return $arr;
 	}
 }
