@@ -106,5 +106,6 @@ class Listener
 		if (isset($events->{$event})) {
 			$events->{$event}(...$args);
 		}
+		return true;
 	}
 }
