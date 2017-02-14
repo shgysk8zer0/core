@@ -88,7 +88,6 @@ class Image extends \ArrayObject implements \JsonSerializable
 			throw new \InvalidArgumentException("{$image} does not exist");
 		}
 	}
-<<<<<<< HEAD
 
 	/**
 	 * Destroy an image when class instance is destroyed
@@ -117,36 +116,6 @@ class Image extends \ArrayObject implements \JsonSerializable
 	}
 
 	/**
-=======
-
-	/**
-	 * Destroy an image when class instance is destroyed
-	 */
-	public function __destruct()
-	{
-		imagedestroy($this->_handle);
-	}
-
-	/**
-	 * Returns image info for debugging functions, such as `var_dump`
-	 * @return Array Image info
-	 */
-	public function __debugInfo(): Array
-	{
-		return $this->getArrayCopy();
-	}
-
-	/**
-	 * Returns Array of image info for use with `json_encode`
-	 * @return Array Image info
-	 */
-	public function jsonSerialize(): Array
-	{
-		return $this->getArrayCopy();
-	}
-
-	/**
->>>>>>> b3501a049327b88d26a01beee07950a398a77bfb
 	 * Returns the Image as a base64 encoded data URI
 	 * @return string <img src="data:image/jpeg;base64,..." />
 	 */
@@ -302,17 +271,10 @@ class Image extends \ArrayObject implements \JsonSerializable
 	 */
 	final public function writeString(
 		String $string,
-<<<<<<< HEAD
-		Int    $x           = 0,
-		Int    $y           = 0,
-		Int    $color       = self::BLACK,
-		int    $font        = 1,
-=======
 		Int    $x          = 0,
 		Int    $y          = 0,
 		Int    $color      = self::BLACK,
 		int    $font       = 1,
->>>>>>> b3501a049327b88d26a01beee07950a398a77bfb
 		Float  $line_height = 1.3
 	): Array
 	{
@@ -892,11 +854,7 @@ class Image extends \ArrayObject implements \JsonSerializable
 	 * @param  String $mime 'image/*'
 	 * @return Bool         Whether or not it is supported
 	 */
-<<<<<<< HEAD
 	public static function isSupportedMime(String $mime): Bool
-=======
-	public function isSupportedMime(String $mime): Bool
->>>>>>> b3501a049327b88d26a01beee07950a398a77bfb
 	{
 		return array_key_exists($mime, self::EXTS);
 	}
@@ -988,7 +946,6 @@ class Image extends \ArrayObject implements \JsonSerializable
 	 */
 	final public static function fromUpload(UploadFile $file): self
 	{
-<<<<<<< HEAD
 		$img = new self($file->tmp_name);
 		$img->extension = pathinfo($file->name, PATHINFO_EXTENSION);
 		$img->basename = basename($file->name, ".{$img->extension}");
@@ -1006,9 +963,8 @@ class Image extends \ArrayObject implements \JsonSerializable
 		{
 			return static::fromUpload(new UploadFile($file));
 		}, static::normalizeUploads()[$key] ?? []);
-=======
+
 		return new self($file->tmp_name);
->>>>>>> b3501a049327b88d26a01beee07950a398a77bfb
 	}
 
 	/**
@@ -1020,7 +976,6 @@ class Image extends \ArrayObject implements \JsonSerializable
 	final public static function loadFromString(String $string): self
 	{
 		return new self(imagecreatefromstring($string));
-<<<<<<< HEAD
 	}
 
 	/**
@@ -1077,7 +1032,5 @@ class Image extends \ArrayObject implements \JsonSerializable
 			}, []);
 			return $carry;
 		}, []);
-=======
->>>>>>> b3501a049327b88d26a01beee07950a398a77bfb
 	}
 }
