@@ -3,7 +3,7 @@
  * @author Chris Zuber
  * @package shgysk8zer0\Core
  * @version 1.0.0
- * @copyright 2016, Chris Zuber
+ * @copyright 2017, Chris Zuber
  * @license http://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,30 +19,75 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 namespace shgysk8zer0\Core;
+
+use \shgysk8zer0\Core_API as API;
+
 /**
  * Class for validating and working with uploaded files
  */
- class UploadFile extends \ArrayObject
- {
+class UploadFile extends \ArrayObject implements \JSONSerializable
+{
+	use API\Traits\FileUploads;
+
+	const IMAGE_TYPES = [
+		'image/jpeg',
+		'image/png',
+		'image/gif',
+	];
+
+	const AUDIO_TYPES = [
+		'audio/x-vorbis+ogg',
+		'audio/mpeg',
+	];
+
+	const VIDEO_TYPES = [
+		'video/webm',
+		'video/mp4',
+	];
+
+	const DOCUMENT_TYPES = [
+		'text/plain',
+		'application/pdf',
+		'application/rtf',
+		'application/msword',
+		'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+		'application/vnd.oasis.opendocument.text',
+	];
+
+	const SPREADSHEET_TYPES = [
+		'text/csv',
+		'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+		'application/vnd.oasis.opendocument.spreadsheet',
+	];
+
+	const PRESENTATION_TYPES = [
+		'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+		'application/vnd.oasis.opendocument.presentation',
+	];
+
+	const WEB_TYPES = [
+		'text/html',
+		'application/json',
+		'text/css',
+		'application/javascript',
+		'text/x-log',
+		'application/sql',
+		'text/markdown',
+	];
+
 	/**
 	 * Create a new instance
 	 * @param string $key Key, as found in `$_FILES`
 	 */
-	public function __construct($key)
+	public function __construct(
+		Array  $file,
+		Array  $allowed_types = self::IMAGE_TYPES
+	)
 	{
-		if (array_key_exists($key, $_FILES)) {
-			parent::__construct($_FILES[$key], self::ARRAY_AS_PROPS);
-			if (! isset($this->name, $this->size, $this->error, $this->tmp_name)) {
-				throw new \InvalidArgumentException("$key is not a valid file upload.");
-			} elseif (!is_uploaded_file($this->tmp_name)) {
-				throw new \InvalidArgumentException('File is not an uploaded file.');
-			} elseif (!$this->_checkFile()) {
-				trigger_error("{$this->name} does not match uploaded file.", \E_USER_ERROR);
-			} else {
-				$this->_checkError();
-			}
+		if (static::isValidUpload($file, $allowed_types)) {
+			parent::__construct($file, self::ARRAY_AS_PROPS);
 		} else {
-			throw new \InvalidArgumentException("$key not found in _FILES");
+			throw new \InvalidArgumentException('Did not receive a valid file upload');
 		}
 	}
 
@@ -53,7 +98,17 @@ namespace shgysk8zer0\Core;
 	 */
 	public function __toString()
 	{
-		return json_encode($this->getArrayCopy());
+		return $this->name;
+	}
+
+	public function __debugInfo()
+	{
+		return $this->getArrayCopy();
+	}
+
+	public function jsonSerialize()
+	{
+		return $this->getArrayCopy();
 	}
 
 	/**
@@ -76,52 +131,4 @@ namespace shgysk8zer0\Core;
 		}
 		return false;
 	}
-
-	/**
-	 * Checks whether the uploaded file matches MIME and size
-	 * @param void
-	 * @return boolean Whether or not they match
-	 */
-	private function _checkFile()
-	{
-		$info = new \Finfo();
-		return $info->file($this->tmp_name, \FILEINFO_MIME_TYPE) === $this->type
-			and filesize($this->tmp_name) === $this->size;
-	}
-
-	/**
-	 * Checks for upload errors. Triggers error if not `UPLOAD_ERR_OK`.
-	 * @param void
-	 * @return void
-	 */
-	private function _checkError()
-	{
-		switch($this->error) {
-			case UPLOAD_ERR_OK:
-				break;
-			case UPLOAD_ERR_INI_SIZE:
-				trigger_error("{$this->name} exceeds max upload size set in php.ini");
-				break;
-			case UPLOAD_ERR_FORM_SIZE:
-				trigger_error("{$this->name} exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.");
-				break;
-			case UPLOAD_ERR_PARTIAL:
-				trigger_error("{$this->name} was only partially uploaded.");
-				break;
-			case UPLOAD_ERR_NO_FILE:
-				trigger_error("No file was uploaded");
-				break;
-			case UPLOAD_ERR_NO_TMP_DIR:
-				trigger_error("Missing a temporary folder. Could not upload {$this->name}.");
-				break;
-			case UPLOAD_ERR_CANT_WRITE:
-				trigger_error("Failed to write {$this->name} to disk.");
-				break;
-			case UPLOAD_ERR_EXTENSION:
-				trigger_error('A PHP extension stopped the file upload.');
-				break;
-			default:
-				trigger_error('Unknown file upload error.');
-		}
-	}
- }
+}
