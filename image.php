@@ -20,12 +20,14 @@
  */
 namespace shgysk8zer0\Core;
 
+use shgysk8zer0\Core_API\Traits\FileUploads;
+
 /**
  * Greatly simplifies creating, rotating, scaling, and converting images
  */
-
 class Image extends \ArrayObject implements \JsonSerializable
 {
+	use \shgysk8zer0\Core_API\Traits\FileUploads;
 	const EXTS = [
 		'image/jpeg' => 'jpg',
 		'image/png'  => 'png',
@@ -67,7 +69,6 @@ class Image extends \ArrayObject implements \JsonSerializable
 
 	public function __construct($image, Image $from = null)
 	{
-		\shgysk8zer0\Core\Console::info(func_get_args());
 		parent::__construct(
 			(is_resource($image) and isset($from)) ? [
 				'mime'      => $from->mime,
@@ -936,6 +937,16 @@ class Image extends \ArrayObject implements \JsonSerializable
 	{
 		$img = imagecreatetruecolor($width, $height);
 		return new self($img);
+	}
+
+	/**
+	 * Create an image from an already validated file upload
+	 * @param  UploadFile $file Instance of UploadFile
+	 * @return self             Instance of Image created from $file
+	 */
+	final public static function fromUpload(UploadFile $file): self
+	{
+		return new self($file->tmp_name);
 	}
 
 	/**
