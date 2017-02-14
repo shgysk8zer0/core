@@ -88,6 +88,7 @@ class Image extends \ArrayObject implements \JsonSerializable
 			throw new \InvalidArgumentException("{$image} does not exist");
 		}
 	}
+<<<<<<< HEAD
 
 	/**
 	 * Destroy an image when class instance is destroyed
@@ -116,6 +117,36 @@ class Image extends \ArrayObject implements \JsonSerializable
 	}
 
 	/**
+=======
+
+	/**
+	 * Destroy an image when class instance is destroyed
+	 */
+	public function __destruct()
+	{
+		imagedestroy($this->_handle);
+	}
+
+	/**
+	 * Returns image info for debugging functions, such as `var_dump`
+	 * @return Array Image info
+	 */
+	public function __debugInfo(): Array
+	{
+		return $this->getArrayCopy();
+	}
+
+	/**
+	 * Returns Array of image info for use with `json_encode`
+	 * @return Array Image info
+	 */
+	public function jsonSerialize(): Array
+	{
+		return $this->getArrayCopy();
+	}
+
+	/**
+>>>>>>> b3501a049327b88d26a01beee07950a398a77bfb
 	 * Returns the Image as a base64 encoded data URI
 	 * @return string <img src="data:image/jpeg;base64,..." />
 	 */
@@ -271,10 +302,17 @@ class Image extends \ArrayObject implements \JsonSerializable
 	 */
 	final public function writeString(
 		String $string,
+<<<<<<< HEAD
+		Int    $x           = 0,
+		Int    $y           = 0,
+		Int    $color       = self::BLACK,
+		int    $font        = 1,
+=======
 		Int    $x          = 0,
 		Int    $y          = 0,
 		Int    $color      = self::BLACK,
 		int    $font       = 1,
+>>>>>>> b3501a049327b88d26a01beee07950a398a77bfb
 		Float  $line_height = 1.3
 	): Array
 	{
@@ -854,7 +892,11 @@ class Image extends \ArrayObject implements \JsonSerializable
 	 * @param  String $mime 'image/*'
 	 * @return Bool         Whether or not it is supported
 	 */
+<<<<<<< HEAD
+	public static function isSupportedMime(String $mime): Bool
+=======
 	public function isSupportedMime(String $mime): Bool
+>>>>>>> b3501a049327b88d26a01beee07950a398a77bfb
 	{
 		return array_key_exists($mime, self::EXTS);
 	}
@@ -946,7 +988,27 @@ class Image extends \ArrayObject implements \JsonSerializable
 	 */
 	final public static function fromUpload(UploadFile $file): self
 	{
+<<<<<<< HEAD
+		$img = new self($file->tmp_name);
+		$img->extension = pathinfo($file->name, PATHINFO_EXTENSION);
+		$img->basename = basename($file->name, ".{$img->extension}");
+		return $img;
+	}
+
+	/**
+	 * Returns an array of Images from `$_FILES[$key]`
+	 * @param  String $key Array key from `$_FILES`
+	 * @return Array       [Image, Image, ...]
+	 */
+	public static function getAllUploads(String $key): Array
+	{
+		return array_map(function(Array $file): self
+		{
+			return static::fromUpload(new UploadFile($file));
+		}, static::normalizeUploads()[$key] ?? []);
+=======
 		return new self($file->tmp_name);
+>>>>>>> b3501a049327b88d26a01beee07950a398a77bfb
 	}
 
 	/**
@@ -958,5 +1020,64 @@ class Image extends \ArrayObject implements \JsonSerializable
 	final public static function loadFromString(String $string): self
 	{
 		return new self(imagecreatefromstring($string));
+<<<<<<< HEAD
+	}
+
+	/**
+	 * Convert and optimize uploaded images in various sizes & formats, saving to $dir
+	 * @param  String $key     $_FILES[$key]
+	 * @param  Array  $dir     Output directory ['path', 'to', 'outout']: 'path/to/output'
+	 * @param  Array  $sizes   Array of sizes for scaling results
+	 * @param  Array  $fomrats ['image/jpeg', ...]
+	 * @return Array           Array of resulting image data
+	 */
+	final public static function responsiveImagesFromUpload(
+		String $key,
+		Array  $dir,
+		Array  $sizes   = array(1200, 800, 400),
+		Array  $formats = array('image/jpeg', 'image/webp')
+	): Array
+	{
+		$dir = join(DIRECTORY_SEPARATOR, $dir);
+		$formats = array_filter($formats, __CLASS__ . '::isSupportedMime');
+		if (!is_dir($dir) and !mkdir($dir, 0755, true)) {
+			throw new \RuntimeException("$dir does not exist and could not be created");
+		} elseif (!is_writable($dir)) {
+			throw new \RuntimeException("Could not write to directory, '$dir'");
+		}
+		$images = static::getAllUploads($key);
+		return array_reduce($images, function(Array $carry, Image $image) use ($sizes, $formats, $dir): Array
+		{
+			$carry[$image->basename] = array_reduce($formats, function(Array $carry, String $format) use ($image, $sizes, $dir): Array
+			{
+				$carry[$format] = array_reduce($sizes, function(Array $carry, Int $size) use ($image, $format, $dir): Array
+				{
+					if ($image->width < $size) {
+						return $carry;
+					} else {
+						$ext = self::EXTS[$format];
+					}
+					$name = "{$dir}/{$image->basename}-{$size}.{$ext}";
+					$cp = $image->scale($size);
+
+					if ($cp->saveAs($name)) {
+						$carry[$size] = [
+							'path'   => "/{$name}",
+							'height' => $cp->height,
+							'width'  => $cp->width,
+							'type'   => $format,
+							'size'   => filesize($name),
+						];
+					} else {
+						trigger_error("Failed to save '$na,me'");
+					}
+					return $carry;
+				}, []);
+				return $carry;
+			}, []);
+			return $carry;
+		}, []);
+=======
+>>>>>>> b3501a049327b88d26a01beee07950a398a77bfb
 	}
 }
