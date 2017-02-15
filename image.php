@@ -981,10 +981,10 @@ class Image extends \ArrayObject implements \JsonSerializable
 	/**
 	 * Convert and optimize uploaded images in various sizes & formats, saving to $dir
 	 * @param  String $key     $_FILES[$key]
-	 * @param  Array  $dir     Output directory ['path', 'to', 'outout']: 'path/to/output'
+	 * @param  Array  $dir     Output directory ['path', 'to', 'output']: 'path/to/output'
 	 * @param  Array  $sizes   Array of sizes for scaling results
 	 * @param  Array  $fomrats ['image/jpeg', ...]
-	 * @return Array           Array of resulting image data
+	 * @return Array           Array of resulting image data ['image/jpeg' => [...$data]]
 	 */
 	final public static function responsiveImagesFromUpload(
 		String $key,
@@ -995,7 +995,8 @@ class Image extends \ArrayObject implements \JsonSerializable
 	{
 		$dir = join(DIRECTORY_SEPARATOR, $dir);
 		$formats = array_filter($formats, __CLASS__ . '::isSupportedMime');
-		if (!is_dir($dir) and !mkdir($dir, 0755, true)) {
+		arsort($sizes);
+		if (! is_dir($dir) and ! mkdir($dir, 0755, true)) {
 			throw new \RuntimeException("$dir does not exist and could not be created");
 		} elseif (!is_writable($dir)) {
 			throw new \RuntimeException("Could not write to directory, '$dir'");
@@ -1003,7 +1004,7 @@ class Image extends \ArrayObject implements \JsonSerializable
 		$images = static::getAllUploads($key);
 		return array_reduce($images, function(Array $carry, Image $image) use ($sizes, $formats, $dir): Array
 		{
-			$carry[$image->basename] = array_reduce($formats, function(Array $carry, String $format) use ($image, $sizes, $dir): Array
+			return array_reduce($formats, function(Array $carry, String $format) use ($image, $sizes, $dir): Array
 			{
 				$carry[$format] = array_reduce($sizes, function(Array $carry, Int $size) use ($image, $format, $dir): Array
 				{
@@ -1016,20 +1017,26 @@ class Image extends \ArrayObject implements \JsonSerializable
 					$cp = $image->scale($size);
 
 					if ($cp->saveAs($name)) {
-						$carry[$size] = [
-							'path'   => "/{$name}",
+						$carry[] = [
+							'path'   => sprintf(
+								'/%s/%s-%d.%s',
+								$dir,
+								urlencode($image->basename),
+								$cp->width,
+								$ext
+							),
 							'height' => $cp->height,
 							'width'  => $cp->width,
 							'type'   => $format,
-							'size'   => filesize($name),
+							'size'   => filesize("{$dir}/{$image->basename}-{$size}.{$ext}"),
 						];
 					} else {
-						trigger_error("Failed to save '$na,me'");
+						trigger_error("Failed to save '{$image->basename}-{$size}.{$ext}'");
 					}
 					return $carry;
 				}, []);
 				return $carry;
-			}, []);
+			}, $carry);
 			return $carry;
 		}, []);
 	}
