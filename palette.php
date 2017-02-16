@@ -59,6 +59,18 @@ final class Palette extends \ArrayObject implements \JSONSerializable
 	 */
 	const VALUE_ATTR = 'value';
 
+	/**
+	 * Encoding
+	 * @var string
+	 */
+	const CHARSET = 'UTF-8';
+
+	/**
+	 * XML Version
+	 * @var string
+	 */
+	const VERSION = '1.0';
+
 
 	/**
 	 * This is the license used in GnomeBuilder palette exports
@@ -82,27 +94,35 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 	/**
 	 * Create a new Palette instance, optionall from an XML palette file
 	 * @param String $palette_file Optional XML file to load from
+	 * @param String $encoding     Encoding of the document
 	 */
-	public function __construct(String $palette_file = null)
+	public function __construct(
+		String $palette_file = null,
+		String $encoding     = self::CHARSET
+	)
 	{
-		parent::__construct([], self::ARRAY_AS_PROPS);
+		$this->setFlags(self::ARRAY_AS_PROPS);
 		if (isset($palette_file)) {
-			$this->loadFromXML($palette_file);
+			$this->loadFromXML($palette_file, $encoding);
 		}
 	}
 
 	/**
 	 * Loads an XML file and imports `<color>`s
 	 * @param  String $palette_file XML file to import from
+	 * @param String  $encoding     Encoding of the document
 	 * @return self                 Make chainable
 	 */
-	public function loadFromXML(String $palette_file): self
+	public function loadFromXML(
+		String $palette_file,
+		String $encoding     = self::CHARSET
+	): self
 	{
 		if (! pathinfo($palette_file, PATHINFO_EXTENSION)) {
 			$palette_file .= self::EXT;
 		}
 
-		$xml = new \DOMDocument();
+		$xml = new \DOMDocument(self::VERSION, self::CHARSET);
 		$xml->load($palette_file, LIBXML_NOERROR);
 
 		foreach ($xml->getElementsByTagName(self::COLOR_TAG) as $color) {
@@ -128,9 +148,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 		return $this->getArrayCopy();
 	}
 
+	/**
+	 * Returns the palette as an XML formatted string
+	 * @return string `<?xml version="1.0" encoding="UTF-8"?>...`
+	 */
 	public function __toString(): String
 	{
-		return $this->_buildXML()->saveXML();
+		return $this->asDOMDocument()->saveXML();
 	}
 
 	/**
@@ -144,28 +168,41 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 	/**
 	 * Exports Palette to a GnomeBuilder compatible template file
-	 * @param  String $file Filename to save as
-	 * @param  String $name Optional name attribute to give the `<palette>`
-	 * @return Bool         Whether or not it was save successfully
+	 * @param  String $file      Filename to save as
+	 * @param  String $name      Optional name attribute to give the `<palette>`
+	 * @param  String  $encoding Encoding of the document
+	 * @return Bool              Whether or not it was save successfully
 	 */
-	public function save(String $file, String $name = null): Bool
+	public function save(
+		String $file,
+		String $name     = null,
+		String $encoding = self::CHARSET
+	): Bool
 	{
 		if (! pathinfo($file, PATHINFO_EXTENSION)) {
 			$file .= self::EXT;
 		}
-		return $this->_buildXML($name)->save($file) !== false;
+		return $this->_buildXML($name, $encoding)->save($file) !== false;
 	}
 
 	/**
 	 * Creates a GnomeBuilder compatible DOM object
-	 * @param  String $name Optional name attribute to give the `<palette>`
-	 * @return DOMDocument  The DOMDocument containing the `<palette>` & `<color>`s
+	 * @param  String $name                Optional name attribute to give the `<palette>`
+	 * @param  String $encoding            Encoding of the document
+	 * @param  Bool   $format_output       Format output with indentation and extra space
+	 * @param  Bool   $preserve_whitespace Do not remove redundant white space
+	 * @return DOMDocument                 `<palette><color name="..." value="...">...`
 	 */
-	protected function _buildXML(String $name = null): \DOMDocument
+	public function asDOMDocument(
+		String $name                = null,
+		String $encoding            = self::CHARSET,
+		Bool   $format_output       = true,
+		Bool   $preserve_whitespace = true
+	): \DOMDocument
 	{
-		$dom = new \DOMDocument();
-		$dom->formatOutput = true;
-		$dom->preserveWhitespace = true;
+		$dom = new \DOMDocument(self::VERSION, $encoding);
+		$dom->formatOutput = $format_output;
+		$dom->preserveWhitespace = $preserve_whitespace;
 
 		$dom->appendChild($dom->createComment(self::LICENSE));
 		$dom->appendChild($dom->createElement(self::ROOT_EL));
