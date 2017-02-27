@@ -776,6 +776,8 @@ class Image extends \ArrayObject implements \JsonSerializable
 	{
 		if (is_null($to)) {
 			header('Content-Type: image/jpeg');
+		} elseif (! $this->_checkDir(dirname($to))) {
+			trigger_error("Error creating directory for {$to}");
 		}
 		return imagejpeg($this->_handle, $to, $quality);
 	}
@@ -792,6 +794,8 @@ class Image extends \ArrayObject implements \JsonSerializable
 	{
 		if (is_null($to)) {
 			header('Content-Type: image/png');
+		} elseif (! $this->_checkDir(dirname($to))) {
+			trigger_error("Error creating directory for {$to}");
 		}
 		return imagepng($this->_handle, $to, $quality, $filters);
 	}
@@ -806,6 +810,8 @@ class Image extends \ArrayObject implements \JsonSerializable
 	{
 		if (is_null($to)) {
 			header('Content-Type: image/gif');
+		} elseif (! $this->_checkDir(dirname($to))) {
+			trigger_error("Error creating directory for {$to}");
 		}
 		return imagegif($this->_handle, $to);
 	}
@@ -820,6 +826,8 @@ class Image extends \ArrayObject implements \JsonSerializable
 	{
 		if (is_null($to)) {
 			header('Content-Type: image/webp');
+		} elseif (! $this->_checkDir(dirname($to))) {
+			trigger_error("Error creating directory for {$to}");
 		}
 		return imagewebp($this->_handle, $to, $quality);
 	}
@@ -1039,5 +1047,21 @@ class Image extends \ArrayObject implements \JsonSerializable
 			}, $carry);
 			return $carry;
 		}, []);
+	}
+
+	/**
+	 * Checks if a directory exists and creates it if it doesn't
+	 * @param  String  $dir       Directory to check
+	 * @param  integer $mode      Bitwise permissions
+	 * @param  boolean $recursive Whether or not to create parent directories
+	 * @return Bool               Whether or not it exists / was created
+	 */
+	final private function _checkDir(
+		String $dir,
+		Int    $mode      = 0755,
+		Bool   $recursive = true
+		): Bool
+	{
+		return is_dir($dir) or mkdir($dir, $mode, $recursive);
 	}
 }
