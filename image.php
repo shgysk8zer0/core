@@ -969,10 +969,11 @@ class Image extends \ArrayObject implements \JsonSerializable
 	{
 		return array_map(function(Array $file): self
 		{
-			return static::fromUpload(new UploadFile($file));
+			$upload = new UploadFile($file);
+			$img = static::fromUpload($upload);
+			$img->hash = sha1_file($upload->tmp_name);
+			return $img;
 		}, static::normalizeUploads()[$key] ?? []);
-
-		return new self($file->tmp_name);
 	}
 
 	/**
@@ -1021,7 +1022,7 @@ class Image extends \ArrayObject implements \JsonSerializable
 					} else {
 						$ext = self::EXTS[$format];
 					}
-					$name = "{$dir}/{$image->basename}-{$size}.{$ext}";
+					$name = "{$dir}/{$image->hash}-{$size}.{$ext}";
 					$cp = $image->scale($size);
 
 					if ($cp->saveAs($name)) {
@@ -1029,17 +1030,17 @@ class Image extends \ArrayObject implements \JsonSerializable
 							'path'   => sprintf(
 								'/%s/%s-%d.%s',
 								$dir,
-								urlencode($image->basename),
+								urlencode($image->hash),
 								$cp->width,
 								$ext
 							),
 							'height' => $cp->height,
 							'width'  => $cp->width,
 							'type'   => $format,
-							'size'   => filesize("{$dir}/{$image->basename}-{$size}.{$ext}"),
+							'size'   => filesize("{$dir}/{$image->hash}-{$size}.{$ext}"),
 						];
 					} else {
-						trigger_error("Failed to save '{$image->basename}-{$size}.{$ext}'");
+						trigger_error("Failed to save '{$image->hash}-{$size}.{$ext}'");
 					}
 					return $carry;
 				}, []);
