@@ -1015,7 +1015,7 @@ class Image extends \ArrayObject implements \JsonSerializable
 		{
 			return array_reduce($formats, function(Array $carry, String $format) use ($image, $sizes, $dir): Array
 			{
-				$carry[$format] = array_reduce($sizes, function(Array $carry, Int $size) use ($image, $format, $dir): Array
+				return array_reduce($sizes, function(Array $carry, Int $size) use ($image, $format, $dir): Array
 				{
 					if ($image->width < $size) {
 						return $carry;
@@ -1024,27 +1024,19 @@ class Image extends \ArrayObject implements \JsonSerializable
 					}
 					$name = "{$dir}/{$image->hash}-{$size}.{$ext}";
 					$cp = $image->scale($size);
-
-					if ($cp->saveAs($name)) {
+					if (@file_exists($name) or $cp->saveAs($name)) {
 						$carry[] = [
-							'path'   => sprintf(
-								'/%s/%s-%d.%s',
-								$dir,
-								urlencode($image->hash),
-								$cp->width,
-								$ext
-							),
+							'path'   => $name,
 							'height' => $cp->height,
 							'width'  => $cp->width,
 							'type'   => $format,
-							'size'   => filesize("{$dir}/{$image->hash}-{$size}.{$ext}"),
+							'size'   => filesize($name),
 						];
 					} else {
-						trigger_error("Failed to save '{$image->hash}-{$size}.{$ext}'");
+						trigger_error("Failed to save '{$name}'");
 					}
 					return $carry;
-				}, []);
-				return $carry;
+				}, $carry);
 			}, $carry);
 			return $carry;
 		}, []);
